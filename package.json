@@ -1,0 +1,23 @@
+{
+  "name": "session-2",
+  "version": "1.0.0",
+  "description": "Today we continue to work with NPM and start looking at ExpressJS and server side development.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/front-end-summer19/session-2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/front-end-summer19/session-2/issues"
+  },
+  "homepage": "https://github.com/front-end-summer19/session-2#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
