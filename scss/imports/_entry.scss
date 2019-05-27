@@ -1,0 +1,32 @@
+.entry {
+  margin-bottom: 1.5rem;
+  display: flex;
+}
+
+.entry h4 {
+  margin: 0.25rem 0;
+}
+.entry p {
+  margin: 0;
+  margin-left: 0.75rem;
+}
+.entry img {
+  width: 75px;
+  height: 75px;
+}
+.entry a {
+  color: #007eb6;
+  text-decoration: none;
+  font-weight: normal;
+  display: inline-block;
+  line-height: 1.1;
+  margin-left: 0.75rem;
+}
+
+.section-head {
+  text-transform: uppercase;
+  padding-bottom: 0.25rem;
+  margin-bottom: 1rem;
+  color: #666;
+  border-bottom: 1px solid #007eb6;
+}
