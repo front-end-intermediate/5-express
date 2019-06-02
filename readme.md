@@ -987,8 +987,3 @@ app.get('*.json', (req, res) => {
   res.download('./other/json/travel.json', 'virus.exe')
 })
 ```
-
-
-
-
-
