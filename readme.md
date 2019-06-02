@@ -1,5 +1,22 @@
 # III - Server Side with ExpressJS
 
+- [III - Server Side with ExpressJS](#iii---server-side-with-expressjs)
+  - [Homework](#homework)
+  - [NODE](#node)
+  - [Express](#express)
+  - [Developing Our Server](#developing-our-server)
+  - [Nodemon](#nodemon)
+    - [Node File System](#node-file-system)
+  - [Express Middleware](#express-middleware)
+  - [CRUD](#crud)
+  - [Proxy browser-sync](#proxy-browser-sync)
+    - [Pug Demo](#pug-demo)
+    - [Handlebars](#handlebars)
+    - [Images](#images)
+  - [A Story Page](#a-story-page)
+  - [SASS](#sass)
+  - [Notes](#notes)
+
 Today we continue to work with NPM and start looking at ExpressJS and server side development.
 
 ## Homework
@@ -62,7 +79,7 @@ npm init -y
 npm i -S express
 ```
 
-(`-S` is the shortcut for `--save`.)
+`-S` is the shortcut for `--save`.
 
 ## Developing Our Server
 
@@ -408,8 +425,8 @@ Add the following to `index.html`:
 Our form requires:
 
 1. an action attribute: `/entries`
-1. a method attribute: `POST`
-1. and name attributes on all `<input>` elements within the form
+2. a method attribute: `POST`
+3. and name attributes on all `<input>` elements within the form
 
 The action attribute tells the browser where to navigate to in our Express app.
 
