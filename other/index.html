@@ -7,6 +7,16 @@
     <title>Testing</title>
   </head>
   <body>
-    <h3>Testing</h3>
+    <div id="root"></div>
+    <script>
+      var elem = document.querySelector('#root');
+      function fetchRecipes() {
+        fetch(
+          `https://api.nytimes.com/svc/topstories/v2/${section}.json?api-key=${nytapi}`,
+        )
+          .then(response => response.json())
+          .then(myJson => renderStories(myJson));
+      }
+    </script>
   </body>
 </html>
