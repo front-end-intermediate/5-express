@@ -30,6 +30,10 @@ Build out an HTML page that displays the recipe data when you click on a link. A
 
 ## Reading
 
+https://developer.mozilla.org/en-US/docs/Learn/Server-side/First_steps/Client-Server_overview
+
+https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/deployment
+
 * Watch [Express JS Crash Course](https://youtu.be/L72fhGm1tfE)
 
 ## NODE

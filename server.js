@@ -14,11 +14,13 @@ const RecipeSchema = new mongoose.Schema({
 const Recipe = mongoose.model('Recipe', RecipeSchema);
 
 // Note recipes? = the database we will use on Atlas
-const mongoURI =
+const dev_db_url =
   'mongodb+srv://daniel:dd2345@recipes-3k4ea.mongodb.net/recipes?retryWrites=true&w=majority';
 
+var mongoDB = process.env.MONGODB_URI || dev_db_url;
+
 mongoose
-  .connect(mongoURI, { useNewUrlParser: true })
+  .connect(mongoDB, { useNewUrlParser: true })
   .then(() => console.log('MongoDb connected'))
   .catch(err => console.log(err));
 

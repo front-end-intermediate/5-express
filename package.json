@@ -1,15 +1,18 @@
 {
-  "name": "exp",
+  "name": "expess",
   "version": "1.0.0",
-  "description": "test",
+  "description": "testing",
   "main": "index.js",
+  "engines": {
+    "node": "11.8.0"
+  },
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/front-end-summer19/session2.git"
+    "url": "git+https://github.com/front-end-summer19/ExpressJS.git"
   },
   "keywords": [],
   "author": "",
