@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <title>Recipes</title>
+  </head>
+  <body>
+    <div id="root">
+      <h1>Recipes!</h1>
+    </div>
+    <script>
+      var root = document.querySelector('#root');
+      function fetchRecipes() {
+        fetch(`api/recipes`)
+          .then(response => response.json())
+          .then(recipes => renderStories(recipes));
+      }
+
+      const renderStories = recipes => {
+        console.log(recipes);
+        recipes.forEach(recipe => {
+          recipeEl = document.createElement('div');
+          recipeEl.innerHTML = `
+            <img src="img/${recipe.image}" />
+            <h3>${recipe.title}</h3>
+            <p>${recipe.description}</p>
+          `;
+          root.append(recipeEl);
+        });
+      };
+
+      fetchRecipes();
+    </script>
+  </body>
+</html>

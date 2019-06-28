@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 
 const app = express();
 
+app.use(express.static('static'));
+
 const RecipeSchema = new mongoose.Schema({
   title: String,
   description: String,
@@ -20,10 +22,15 @@ mongoose
   .then(() => console.log('MongoDb connected'))
   .catch(err => console.log(err));
 
-// our first route
 app.get('/', (req, res) => {
   console.log(__dirname);
-  res.sendFile(__dirname + '/other/index.html');
+  res.sendFile(__dirname + '/app/index.html');
+});
+
+app.get('/api/recipes', (req, res) => {
+  Recipe.find({}, function(err, results) {
+    return res.send(results);
+  });
 });
 
 app.get('/api/import', (req, res) => {
