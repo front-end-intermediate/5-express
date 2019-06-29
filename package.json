@@ -2,7 +2,6 @@
   "name": "expess",
   "version": "1.0.0",
   "description": "testing",
-  "main": "index.js",
   "engines": {
     "node": "11.8.0"
   },
@@ -17,10 +16,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/front-end-summer19/session2/issues"
-  },
-  "homepage": "https://github.com/front-end-summer19/session2#readme",
   "dependencies": {
     "express": "^4.17.1",
     "mongoose": "^5.6.1"
