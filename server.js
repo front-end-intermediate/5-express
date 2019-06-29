@@ -26,7 +26,7 @@ mongoose
 
 app.get('/', (req, res) => {
   console.log(__dirname);
-  res.sendFile(__dirname + '/app/index.html');
+  res.sendFile(__dirname + '/public/index.html');
 });
 
 app.get('/api/recipes', (req, res) => {
