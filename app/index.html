@@ -12,7 +12,6 @@
       <h1>Recipes!</h1>
     </div>
     <script>
-      var root = document.querySelector('#root');
       function fetchRecipes() {
         fetch(`api/recipes`)
           .then(response => response.json())
@@ -28,7 +27,7 @@
             <h3>${recipe.title}</h3>
             <p>${recipe.description}</p>
           `;
-          root.append(recipeEl);
+          document.querySelector('#root').append(recipeEl);
         });
       };
 
