@@ -2,11 +2,13 @@
 - [II - Server Side with ExpressJS](#II---Server-Side-with-ExpressJS)
   - [Homework](#Homework)
   - [Reading](#Reading)
+  - [Overview](#Overview)
   - [NODE](#NODE)
   - [Scaffolding Our Server](#Scaffolding-Our-Server)
   - [Express](#Express)
-    - [DEMO: Routes and Schemas](#DEMO-Routes-and-Schemas)
-  - [Receiving Data from a Request](#Receiving-Data-from-a-Request)
+  - [Create a Database](#Create-a-Database)
+  - [Connect to the Database](#Connect-to-the-Database)
+  - [Create a Mongoose Schema](#Create-a-Mongoose-Schema)
   - [Using CommonJS](#Using-CommonJS)
     - [Controllers](#Controllers)
     - [Define Data Models (Mongoose)](#Define-Data-Models-Mongoose)
@@ -29,7 +31,15 @@ Build out an HTML page that displays the recipe data when you click on a link. A
 
 ## Reading
 
+https://developer.mozilla.org/en-US/docs/Learn/Server-side/First_steps/Client-Server_overview
+
+https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/deployment
+
 * Watch [Express JS Crash Course](https://youtu.be/L72fhGm1tfE)
+
+## Overview
+
+JSON Server and Postman?
 
 ## NODE
 
@@ -53,6 +63,31 @@ In the terminal:
 node script.js 
 ```
 
+Try:
+
+```js
+const http = require('http');
+
+const hostname = '127.0.0.1';
+const port = 3000;
+
+const server = http.createServer((req, res) => {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('Hello World\n');
+});
+
+server.listen(port, hostname, () => {
+  console.log(`Server running at http://${hostname}:${port}/`);
+});
+```
+
+Note:
+
+`const http = require('http');` is the syntax for importing in node applications. It is different from the ES6 module system we have been using in React, e.g. `import Header from './Header'`. Node uses the CommonJS module system. 
+
+CommonJS specifies that you need to have a `require()` function to fetch dependencies and an `exports` variable to export module contents. CommonJS was not  designed for browsers.
+
 ## Scaffolding Our Server
 
 1. Run `$ npm init -y`
@@ -62,7 +97,7 @@ node script.js
 
 ```js
 "scripts": {
-  "start": "node serve.js",
+  "start": "node server.js",
   "dev": "nodemon server.js"
 },
 ```
@@ -81,20 +116,22 @@ const app = express();
 
 // our first route
 app.get('/', function(req, res) {
-  res.send('Ahoy there');
+  res.send('Hello from the backend.');
 });
 
-app.listen(3001);
-console.log('Server running at http://localhost:3001/');
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => console.log(`Server running at ${PORT}`));
+
 ```
 
-Run the app using `npm start` and view the [output](http://localhost:3001)
+We could run this using `node server.js` but since we added commands to our package.json file we will use `npm start`. You sould be able to view the [output](http://localhost:5000) at `http://localhost:5000`.
 
 `require()` uses the CommonJS modular system to access applications from `node_modules`.
 
-`app.get('/')` is the primary route for the front end. The URL is the root of the site, the callback handler is an anonymous function, and the response is plain text for now.
+`app.get('/')` is a route. The URL '/' is the root of the site. The callback function is an anonymous function that takes incoming (`req`) and outgoing (`res`) parameters. The `res` object has a `send` method that returns plain text for now.
 
-[Body Parser](https://www.npmjs.com/package/body-parser) parses and places incoming requests in a `req.body` property so our handlers can use them.
+<!-- [Body Parser](https://www.npmjs.com/package/body-parser) parses and places incoming requests in a `req.body` property so our handlers can use them. -->
 
 Add a second route and test:
 
@@ -107,6 +144,10 @@ app.get('/music', function(req, res) {
     `);
 });
 ```
+
+[Test](http://localhost:5000/music) it at `http://localhost:5000/music`
+
+It didn't work. We need to restart the server with Control-c and `npm run start`.
 
 Edit the second route to include a request variable and test in the browser:
 
@@ -121,7 +162,27 @@ app.get('/music/:type', function(req, res) {
 });
 ```
 
-### DEMO: Routes and Schemas
+Now we are using both `req` and `res`.
+
+Test it at `http://localhost:5000/music/Jazz`
+
+Again the server needs to be restarted but this time we will use `npm run dev`. Nodemon (installed earlier) will listen for changes to server.js and restart it as needed.
+
+Test Nodemon by adding a new route:
+
+```js
+// our third route
+app.get('/test', function(req, res) {
+  res.sendFile(__dirname + '/other/index.html');
+  console.log(__dirname);
+});
+```
+
+And go to the `test` endpoint in the browser.
+
+Instead of using `res.send` we are using `res.sendFile`. `__dirname` is a special Node global that gives us the current directory.
+
+<!-- ### DEMO: Routes and Schemas
 
 Here is a simple ExpressJS application using the Mongoose driver. Let's break it down.
 
@@ -163,21 +224,14 @@ app.get('/api/recipes', function(req, res){
 // initialization
 mongoose.connect(mongoUri, { useNewUrlParser: true });
 
-app.listen(PORT, () => console.log('Server running on port ${PORT}'); );
+app.listen(PORT, () => console.log('Server running on port ${PORT}'));
 
-```
+``` -->
 
-Express apps can use any database supported by Node including PostgreSQL, MySQL, MongoDB, etc. Since we want to use Mongo, we installed Mongoose, a driver for MongoDB, using npm.
-
-Note: this is not the MongoDB database, just the driver needed to work with it. 
-
-We connect to a Mongo DB through the Mongoose's connect method, `mongoose.connect(mongoUri, { useNewUrlParser: true });`, and pass any configuration options in using an object.
-
-Note the Schema `RecipeSchema`. In Mongoose a [Schema](https://mongoosejs.com/docs/guide.html#schemas) maps to a MongoDB collection and defines the shape of the documents in that collection. Here, we've got a schema with two properties, `name` which will be a string and `ingredients` which will be an array.
 
 <!-- NEW -->
 
-Currently we have the following in our `server.js` file:
+<!-- Currently we have the following in our `server.js` file:
 
 ```js
 const express = require('express');
@@ -190,9 +244,9 @@ app.get('/', function(req, res) {
 
 app.listen(3001);
 console.log('Server running at http://localhost:3001/');
-```
+``` -->
 
-## Receiving Data from a Request
+<!-- ## Receiving Data from a Request
 
 ```js
 const bodyParser = require('body-parser');
@@ -214,24 +268,52 @@ app.post('/entries', (req, res) => {
   console.log(req.body); 
   res.redirect('/'); 
 });
-```
+``` -->
 
-Connect to a database:
+## Create a Database
+
+Rather than installing a database on our local computer we will be using [MongoDB's](https://www.mongodb.com) cloud service Atlas for our database.
+
+Create an account and sign in. 
+
+Create a cluster and a database user with Read/Write access. Create a database user (this is different from the login username and password) and whitelist access from anywhere.
+
+## Connect to the Database
+
+There are a variety of ways to connect to the database. Express apps can use [any database supported by Node](https://expressjs.com/en/guide/database-integration.html) including PostgreSQL, MySQL, MongoDB, etc. Since we want to use Mongo, we installed [Mongoose](https://mongoosejs.com), a driver for MongoDB, using npm. It is easier to use than the standard [MongoClient](https://expressjs.com/en/guide/database-integration.html#mongodb).
+
+Note: Mongoose is not the MongoDB database, just the driver needed to work with it. 
+
+First, import mongoose in server.js:
 
 ```js
 const mongoose = require('mongoose');
 ```
 
-```js
-const mongoUri = 'mongodb://devereld:dd2345@ds015730.mlab.com:15730/recipes-dd';
+We connect to a Mongo DB through the Mongoose's connect method, `mongoose.connect(URL, { options });`, and pass any configuration options in using an object.
 
+Store the database URL in a variable:
+
+```js
+const dataBaseURL =
+  'mongodb+srv://daniel:dd2345@recipes-3k4ea.mongodb.net/test?retryWrites=true&w=majority';
+```
+
+Call mongoose's connect method, passing it the URL. 
+
+```js
 mongoose
-  .connect(mongoUri, { useNewUrlParser: true })
+  .connect(dataBaseURL, { useNewUrlParser: true })
   .then(() => console.log('MongoDb connected'))
   .catch(err => console.log(err));
 ```
 
-Create a Mongoose Schema:
+Note that, like `fetch()` the connect method returns a promise which we are using to log to the console (the terminal here) and show any errors.
+
+
+## Create a Mongoose Schema
+
+Mongoose uses [schemas](https://mongoosejs.com/docs/guide.html#definition) to define your data and provides methods to add, remove, delete and etc.
 
 ```js
 const Schema = mongoose.Schema;
@@ -246,6 +328,8 @@ const RecipeSchema = new Schema({
 
 const Recipe = mongoose.model('Recipe', RecipeSchema);
 ```
+
+In Mongoose a [Schema](https://mongoosejs.com/docs/guide.html#schemas) maps to a MongoDB collection and defines the shape of the documents in that collection. Here, we've got a schema with two properties, `name` which will be a string and `ingredients` which will be an array.
 
 Create a route that displays recipes:
 
