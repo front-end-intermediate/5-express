@@ -9,6 +9,21 @@
   - [Connect to the Database](#Connect-to-the-Database)
   - [Create a Mongoose Schema](#Create-a-Mongoose-Schema)
   - [Import Data](#Import-Data)
+  - [Front End](#Front-End)
+  - [Static Files](#Static-Files)
+  - [Using CommonJS](#Using-CommonJS)
+    - [Controllers](#Controllers)
+    - [Define Data Models (Mongoose)](#Define-Data-Models-Mongoose)
+    - [Using Mongoose Methods and Schema](#Using-Mongoose-Methods-and-Schema)
+    - [Importing Data](#Importing-Data)
+    - [Facilitate Testing](#Facilitate-Testing)
+    - [Introducing Postman](#Introducing-Postman)
+    - [Test the Model](#Test-the-Model)
+    - [Find By id](#Find-By-id)
+    - [Add a Recipe](#Add-a-Recipe)
+    - [Create a new Recipe in Postman](#Create-a-new-Recipe-in-Postman)
+    - [Delete](#Delete)
+  - [Front End](#Front-End-1)
   - [Notes](#Notes)
 
 
@@ -300,6 +315,7 @@ app.get('/api/import', (req, res) => {
     },
   );
 });
+```
 
 Now go to the import endpoint (note that the page loads indefinitely) and then return to the `http://localhost:3000/api/recipes` endpoint to see the data.
 
