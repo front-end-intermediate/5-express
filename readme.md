@@ -1,86 +1,32 @@
-<<<<<<< HEAD
-# II - Server Side with ExpressJS
-- [II - Server Side with ExpressJS](#II---Server-Side-with-ExpressJS)
-  - [Homework](#Homework)
-  - [Reading](#Reading)
-  - [Overview](#Overview)
-=======
 # Server Side with ExpressJS
 - [Server Side with ExpressJS](#Server-Side-with-ExpressJS)
   - [Homework](#Homework)
   - [Reading](#Reading)
->>>>>>> 6a426f37762fb7627d599783f6357b964139000e
   - [NODE](#NODE)
   - [Scaffolding Our Server](#Scaffolding-Our-Server)
   - [Express](#Express)
   - [Create a Database](#Create-a-Database)
   - [Connect to the Database](#Connect-to-the-Database)
   - [Create a Mongoose Schema](#Create-a-Mongoose-Schema)
-<<<<<<< HEAD
-=======
   - [Import Data](#Import-Data)
-  - [Front End](#Front-End)
-  - [Static Files](#Static-Files)
->>>>>>> 6a426f37762fb7627d599783f6357b964139000e
-  - [Using CommonJS](#Using-CommonJS)
-    - [Controllers](#Controllers)
-    - [Define Data Models (Mongoose)](#Define-Data-Models-Mongoose)
-    - [Using Mongoose Methods and Schema](#Using-Mongoose-Methods-and-Schema)
-    - [Importing Data](#Importing-Data)
-    - [Facilitate Testing](#Facilitate-Testing)
-    - [Introducing Postman](#Introducing-Postman)
-    - [Test the Model](#Test-the-Model)
-    - [Find By id](#Find-By-id)
-    - [Add a Recipe](#Add-a-Recipe)
-    - [Create a new Recipe in Postman](#Create-a-new-Recipe-in-Postman)
-    - [Delete](#Delete)
-<<<<<<< HEAD
-  - [Front End](#Front-End)
-=======
-  - [Front End](#Front-End-1)
->>>>>>> 6a426f37762fb7627d599783f6357b964139000e
   - [Notes](#Notes)
 
 
 ## Homework
  
-<<<<<<< HEAD
-Build out an HTML page that displays the recipe data when you click on a link. Add a form that calls the api to create a new recipe.
 
 ## Reading
 
-https://developer.mozilla.org/en-US/docs/Learn/Server-side/First_steps/Client-Server_overview
-
-https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/deployment
-
-* Watch [Express JS Crash Course](https://youtu.be/L72fhGm1tfE)
-
-## Overview
-
-JSON Server and Postman?
-=======
-
->>>>>>> 6a426f37762fb7627d599783f6357b964139000e
-
-## Reading
-
-<<<<<<< HEAD
-An implementation of Chrome's JavaScript engine _outside the browser_.
-=======
 * Technology stack [overview](https://developer.mozilla.org/en-US/docs/Learn/Server-side/First_steps/Client-Server_overview)
 * Watch [Express JS Crash Course](https://youtu.be/L72fhGm1tfE)
 * The MDN [Server Side Tutorial](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs)
->>>>>>> 6a426f37762fb7627d599783f6357b964139000e
 
 ## NODE
 
-<<<<<<< HEAD
-=======
 An implementation of Chrome's JavaScript engine _outside the browser_.
 
 A simple demo:
 
->>>>>>> 6a426f37762fb7627d599783f6357b964139000e
 `script.js`:
 
 ```js
@@ -124,17 +70,10 @@ CommonJS specifies that you need to have a `require()` function to fetch depende
 
 ## Scaffolding Our Server
 
-<<<<<<< HEAD
-1. Run `$ npm init -y`
-2. Setup tooling and dependencies `npm i -S express mongoose body-parser`
-3. Setup tooling and developmental dependencies `npm i -D nodemon`
-4. Create an npm script for nodemon 
-=======
 1. Run `$ npm init` using `server.js` as the entry for main
 2. Setup tooling and dependencies `npm i -S express mongoose`
 3. Setup tooling and developmental dependencies `npm i -D nodemon`
 4. Create an npm script for nodemon in package.json:
->>>>>>> 6a426f37762fb7627d599783f6357b964139000e
 
 ```js
 "scripts": {
@@ -160,21 +99,6 @@ app.get('/', function(req, res) {
   res.send('Hello from the backend.');
 });
 
-<<<<<<< HEAD
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => console.log(`Server running at ${PORT}`));
-
-```
-
-We could run this using `node server.js` but since we added commands to our package.json file we will use `npm start`. You sould be able to view the [output](http://localhost:5000) at `http://localhost:5000`.
-
-`require()` uses the CommonJS modular system to access applications from `node_modules`.
-
-`app.get('/')` is a route. The URL '/' is the root of the site. The callback function is an anonymous function that takes incoming (`req`) and outgoing (`res`) parameters. The `res` object has a `send` method that returns plain text for now.
-
-<!-- [Body Parser](https://www.npmjs.com/package/body-parser) parses and places incoming requests in a `req.body` property so our handlers can use them. -->
-=======
 const PORT = 3000;
 
 app.listen(PORT, () => console.log(`Server running at port ${PORT}`));
@@ -188,7 +112,6 @@ You should be able to view the [output](http://localhost:3000) at `http://localh
 `require()` uses the CommonJS module system to access applications from `node_modules`.
 
 `app.get('/')` is a route. The URL '/' is the root of the site. The callback function is an anonymous function that takes incoming (`req`) and outgoing (`res`) parameters. The `res` object has a `send` method that returns plain text for now.
->>>>>>> 6a426f37762fb7627d599783f6357b964139000e
 
 Add a second route and test:
 
@@ -202,11 +125,7 @@ app.get('/music', function(req, res) {
 });
 ```
 
-<<<<<<< HEAD
-[Test](http://localhost:5000/music) it at `http://localhost:5000/music`
-=======
 [Test](http://localhost:3000/music) it at `http://localhost:3000/music`
->>>>>>> 6a426f37762fb7627d599783f6357b964139000e
 
 It didn't work. We need to restart the server with Control-c and `npm run start`.
 
@@ -224,150 +143,22 @@ app.get('/music/:type', function(req, res) {
 ```
 
 Now we are using both `req` and `res`.
-<<<<<<< HEAD
-
-Test it at `http://localhost:5000/music/Jazz`
-
-Again the server needs to be restarted but this time we will use `npm run dev`. Nodemon (installed earlier) will listen for changes to server.js and restart it as needed.
-
-=======
 
 Test it at `http://localhost:3000/music/jazz`
 
 Again the server needs to be restarted but this time we will use `npm run dev`. Nodemon (installed earlier) will listen for changes to server.js and restart it as needed.
 
->>>>>>> 6a426f37762fb7627d599783f6357b964139000e
 Test Nodemon by adding a new route:
 
 ```js
 // our third route
 app.get('/test', function(req, res) {
-<<<<<<< HEAD
-  res.sendFile(__dirname + '/other/index.html');
-=======
   res.sendFile(__dirname + '/public/index.html');
->>>>>>> 6a426f37762fb7627d599783f6357b964139000e
   console.log(__dirname);
 });
 ```
 
 And go to the `test` endpoint in the browser.
-<<<<<<< HEAD
-
-Instead of using `res.send` we are using `res.sendFile`. `__dirname` is a special Node global that gives us the current directory.
-
-<!-- ### DEMO: Routes and Schemas
-
-Here is a simple ExpressJS application using the Mongoose driver. Let's break it down.
-
-```js
-// requires
-const express = require('express');
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-
-// variables
-const app = express();
-const Schema = mongoose.Schema;
-const mongoUri = 'mongodb://devereld:dd2345@ds163630.mlab.com:63630/recipes-dmz';
-
-const PORT = process.env.PORT || 3001
-
-// schema
-const RecipeSchema = new Schema({
-  name: String,
-  ingredients: Array
-});
-
-const Recipe = mongoose.model('Recipe', RecipeSchema);
-
-// middleware
-app.use(bodyParser.json());
-
-// routes
-app.get('/', function(req, res) {
-  res.send('Ahoy there');
-});
-
-app.get('/api/recipes', function(req, res){
-  Recipe.find({}, function(err, results) {
-    return res.send(results);
-  });
-});
-
-// initialization
-mongoose.connect(mongoUri, { useNewUrlParser: true });
-
-app.listen(PORT, () => console.log('Server running on port ${PORT}'));
-
-``` -->
-
-
-<!-- NEW -->
-
-<!-- Currently we have the following in our `server.js` file:
-
-```js
-const express = require('express');
-const app = express();
-
-// our first route
-app.get('/', function(req, res) {
-  res.send('Ahoy there');
-});
-
-app.listen(3001);
-console.log('Server running at http://localhost:3001/');
-``` -->
-
-<!-- ## Receiving Data from a Request
-
-```js
-const bodyParser = require('body-parser');
-```
-
-```js
-app.use(bodyParser.urlencoded({ extended: true }));
-```
-
-```js
-app.get('/', (req, res) => {
-  console.log(__dirname)
-  res.sendFile(__dirname + '/app/index.html');
-});
-```
-
-```js
-app.post('/entries', (req, res) => {
-  console.log(req.body); 
-  res.redirect('/'); 
-});
-``` -->
-
-## Create a Database
-
-Rather than installing a database on our local computer we will be using [MongoDB's](https://www.mongodb.com) cloud service Atlas for our database.
-
-Create an account and sign in. 
-
-Create a cluster and a database user with Read/Write access. Create a database user (this is different from the login username and password) and whitelist access from anywhere.
-
-## Connect to the Database
-
-There are a variety of ways to connect to the database. Express apps can use [any database supported by Node](https://expressjs.com/en/guide/database-integration.html) including PostgreSQL, MySQL, MongoDB, etc. Since we want to use Mongo, we installed [Mongoose](https://mongoosejs.com), a driver for MongoDB, using npm. It is easier to use than the standard [MongoClient](https://expressjs.com/en/guide/database-integration.html#mongodb).
-
-Note: Mongoose is not the MongoDB database, just the driver needed to work with it. 
-
-First, import mongoose in server.js:
-
-```js
-const mongoose = require('mongoose');
-```
-
-We connect to a Mongo DB through the Mongoose's connect method, `mongoose.connect(URL, { options });`, and pass any configuration options in using an object.
-
-Store the database URL in a variable:
-=======
 
 Instead of using `res.send` we are using `res.sendFile`. `__dirname` is a special Node global that gives us the current directory.
 
@@ -438,41 +229,9 @@ Note that, like `fetch()` the connect method returns a promise which we are usin
 Mongoose uses [schemas](https://mongoosejs.com/docs/guide.html#definition) to define your data and provides methods to add, remove, delete and etc.
 
 Create an instance of a Mongoose schema, RecipeSchema:
->>>>>>> 6a426f37762fb7627d599783f6357b964139000e
 
 Add to `server.js`: 
 ```js
-<<<<<<< HEAD
-const dataBaseURL =
-  'mongodb+srv://daniel:dd2345@recipes-3k4ea.mongodb.net/test?retryWrites=true&w=majority';
-```
-
-Call mongoose's connect method, passing it the URL. 
-
-```js
-mongoose
-  .connect(dataBaseURL, { useNewUrlParser: true })
-  .then(() => console.log('MongoDb connected'))
-  .catch(err => console.log(err));
-```
-
-Note that, like `fetch()` the connect method returns a promise which we are using to log to the console (the terminal here) and show any errors.
-
-
-## Create a Mongoose Schema
-
-Mongoose uses [schemas](https://mongoosejs.com/docs/guide.html#definition) to define your data and provides methods to add, remove, delete and etc.
-
-```js
-const Schema = mongoose.Schema;
-
-const RecipeSchema = new Schema({
-  name: String,
-  title: String,
-  date: String,
-  description: String,
-  image: String,
-=======
 const RecipeSchema = new mongoose.Schema({
   title: String,
   description: String,
@@ -540,76 +299,8 @@ app.get('/api/import', (req, res) => {
       image: 'hamburger.png',
     },
   );
->>>>>>> 6a426f37762fb7627d599783f6357b964139000e
 });
 
-<<<<<<< HEAD
-const Recipe = mongoose.model('Recipe', RecipeSchema);
-```
-
-In Mongoose a [Schema](https://mongoosejs.com/docs/guide.html#schemas) maps to a MongoDB collection and defines the shape of the documents in that collection. Here, we've got a schema with two properties, `name` which will be a string and `ingredients` which will be an array.
-
-Create a route that displays recipes:
-
-```js
-app.get('/api/recipes', function(req, res) {
-  Recipe.find({}, function(err, results) {
-    return res.send(results);
-  });
-});
-```
-
-or
-
-```js
-app.get('/api/recipes', (req, res) => {
-  Recipe.find({}, results => res.send(results));
-});
-```
-
-
-
-```js
-const express = require('express');
-const bodyParser = require('body-parser');
-const app = express();
-
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-
-const recipes = require('./api/recipe.controllers');
-
-const RecipeSchema = new Schema({
-  name: String,
-  title: String,
-  date: String,
-  description: String,
-  image: String,
-});
-
-const Recipe = mongoose.model('Recipe', RecipeSchema);
-
-// this line always appears before any routes
-app.use(bodyParser.json());
-
-app.get('/', function(req, res) {
-  res.send('Ahoy there');
-});
-
-app.get('/api/recipes', function(req, res) {
-  Recipe.find({}, function(err, results) {
-    return res.send(results);
-  });
-});
-
-app.get('/api/import', recipes.import);
-
-const mongoUri = 'mongodb://devereld:dd2345@ds015730.mlab.com:15730/recipes-dd';
-mongoose.connect(mongoUri, { useNewUrlParser: true });
-
-app.listen(3001);
-console.log('Server running at http://localhost:3001/');
-=======
 Now go to the import endpoint (note that the page loads indefinitely) and then return to the `http://localhost:3000/api/recipes` endpoint to see the data.
 
 The page loads indefinitely because the endpoint never actually returns anything to the browser.
@@ -686,168 +377,9 @@ const renderStories = recipes => {
   });
 };
 
->>>>>>> 6a426f37762fb7627d599783f6357b964139000e
 ```
 <!-- NEW -->
 
-<<<<<<< HEAD
-## Using CommonJS
-
-We are going to use CommonJS components to organize our code.
-
-### Controllers
-
-Create a new folder `api` and a file inside called `recipe.controllers.js`. We'll export each handler and create the functions in this file one by one. They are just empty functions for the moment.
-
-Add the following to `recipe.controllers.js`:
-
-```js
-exports.findAll = function() {};
-exports.findById = function() {};
-exports.add = function() {};
-exports.update = function() {};
-exports.delete = function() {};
-```
-
-Note the use of `exports`. This makes the function available for import elsewhere in a our application.
-
-Update `server.js` to require our controllers (the .js file extension can be omitted):
-
-```js
-const recipes = require('./api/recipe.controllers');
-```
-
-Now we can call the functions in `recipe.controllers`.
-
-Add the following to `server.js`:
-
-```js
-app.get('/api/recipes', recipes.findAll);
-app.get('/api/recipes/:id', recipes.findById);
-app.post('/api/recipes', recipes.add);
-app.put('/api/recipes/:id', recipes.update);
-app.delete('/api/recipes/:id', recipes.delete);
-```
-
-Each route consists of three parts:
-
-* A specific HTTP Action (`get, put, post, delete`)
-* A specific URL path (`/api/recipes/:id` etc.)
-* A handler method (`findAll`)
-
-The most common elements of a [REST application](http://www.restapitutorial.com/lessons/httpmethods.html) are accounted for here.
-
-We've modeled our URL routes off of REST API conventions, and named our handling methods clearly - prefixing them with `api/` in order to differentiate them from any routes we create to serve the front end.
-
-Note the `recipes.function` notation. We're using our imported recipes controller file and have placed all our request event handling methods inside the it.
-
-<!-- ### Check if its working
-
-Update findAll's definition in `recipe.controllers.js` to send a json snippet:
-
-```js
-exports.findAll = function(req, res) {
-  res.send([
-    {
-      name: 'recipe1309',
-      title: 'Lasagna',
-      date: '2013-09-01',
-      description:
-        'Lasagna noodles piled high and layered full of three kinds of cheese to go along with the perfect blend of meaty and zesty, tomato pasta sauce all loaded with herbs.',
-      image: 'lasagna.png'
-    }
-  ]);
-};
-```
-
-3: Navigate to the specified route in `app.get('/api/recipes', recipes.findAll);`:
-
-`localhost:3001/api/recipes`
-
-You should see the json in the bowser. -->
-
-### Define Data Models (Mongoose)
-
-Rather than using the MongoClient as we did previously ( e.g. `const mongo = require('mongoDB').MongoClient;`), we will use [Mongoose](http://mongoosejs.com) to model application data and connect to our database. Here's the [quickstart guide](http://mongoosejs.com/docs/).
-
-Mongoose is built upon the MongoDB driver we used previously so everything we are doing here would work with the original driver. However, Mongoose allows us to model our data - declare that the data be of a certain type, validate the data, and build queries.
-
-Since we are in a Node app we will continue to use CommonJS modules. 
-
-Add a new file `recipe.model.js` to `api` for our Recipe Model.
-
-Require Mongoose in this file, and create a new Schema object:
-
-```js
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-
-const RecipeSchema = new Schema({
-  name: String,
-  title: String,
-  date: String,
-  description: String,
-  image: String
-});
-
-module.exports = mongoose.model('Recipe', RecipeSchema);
-```
-
-We require mongoose and create and export an instance of a mongoose Schema.
-
-The schema makes sure we're getting and setting well-formed data to and from the Mongo collection. Our schema has five String properties which define a Recipe object.
-
-The last line exports the RecipeShema together with Mongoose's built in MongoDb interfacing methods. We'll refer to this Recipe object in other files.
-
-### Using Mongoose Methods and Schema
-
-1: Update `server.js` with these lines (in their appropriate locations):
-
-```js
-const mongoose = require('mongoose');
-
-const mongoUri = 'mongodb://devereld:dd2345@ds015730.mlab.com:15730/recipes-dd';
-
-mongoose.connect(mongoUri);
-```
-
-To use a different database, simply drop a different connection string into the `mongoUri` variable.
-
-If we want to wrap our Express app startup inside the MongoDB connection it would look like:
-
-```js
-mongoose.connect(mongoUri, { useNewUrlParser: true }, () => {
-  app.listen(3001);
-  console.log('Server running at http://localhost:3001/');
-});
-```
-
-2: Add a reference to our model `const recipeModels = require('./api/recipe.model');`:
-
-```js
-const express = require('express');
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-
-const recipes = require('./api/recipe.controllers');
-const recipeModels = require('./api/recipe.model');
-
-const app = express();
-const mongoUri = 'mongodb://devereld:dd2345@ds015730.mlab.com:15730/recipes-dd';
-
-app.use(bodyParser.json());
-
-app.get('/', function(req, res) {
-  res.send('Ahoy there');
-});
-
-app.get('/api/recipes', recipes.findAll);
-app.get('/api/recipes/:id', recipes.findById);
-app.post('/api/recipes', recipes.add);
-app.put('/api/recipes/:id', recipes.update);
-app.delete('/api/recipes/:id', recipes.delete);
-
-=======
 Note that neither the CSS nor the images are working.
 
 ## Static Files
@@ -1022,7 +554,6 @@ app.post('/api/recipes', recipes.add);
 app.put('/api/recipes/:id', recipes.update);
 app.delete('/api/recipes/:id', recipes.delete);
 
->>>>>>> 6a426f37762fb7627d599783f6357b964139000e
 mongoose.connect(mongoUri, { useNewUrlParser: true }, () => {
   app.listen(3001);
   console.log('Server running at http://localhost:3001/');
@@ -1329,7 +860,6 @@ Certain data types allow you to customize how the data is stored and retrieved f
 The Number and Date properties both support specifying a minimum and maximum value that is allowed for that field.
 
 Most of the eight allowed data types should be quite familiar to you. However, there are several exceptions that may jump out to you, such as Buffer, Mixed, ObjectId, and Array.
-<<<<<<< HEAD
 
 The Buffer data type allows you to save binary data. A common example of binary data would be an image or an encoded file, such as a PDF document.
 
@@ -1337,15 +867,6 @@ The Mixed data type turns the property into an "anything goes" field. This field
 
 The ObjectId data type commonly specifies a link to another document in your database. For example, if you had a collection of books and authors, the book document might contain an ObjectId property that refers to the specific author of the document.
 
-=======
-
-The Buffer data type allows you to save binary data. A common example of binary data would be an image or an encoded file, such as a PDF document.
-
-The Mixed data type turns the property into an "anything goes" field. This field resembles how many developers may use MongoDB because there is no defined structure. Be wary of using this data type as it loses many of the great features that Mongoose provides, such as data validation and detecting entity changes to automatically know to update the property when saving.
-
-The ObjectId data type commonly specifies a link to another document in your database. For example, if you had a collection of books and authors, the book document might contain an ObjectId property that refers to the specific author of the document.
-
->>>>>>> 6a426f37762fb7627d599783f6357b964139000e
 The Array data type allows you to store JavaScript-like arrays. With an Array data type, you can perform common JavaScript array operations on them, such as push, pop, shift, slice, etc.
 
 ### Find By id
@@ -1610,11 +1131,7 @@ function getEm(){
   -->
 			
 
-<<<<<<< HEAD
-
-=======
   
->>>>>>> 6a426f37762fb7627d599783f6357b964139000e
 
 <!-- While we are here let's add these lines to `server.js` together with the other `app.use` middleware:
 
