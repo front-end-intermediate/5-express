@@ -1189,6 +1189,21 @@ exports.update = (req, res) => {
 };
 ```
 
+New form:
+
+```html
+<form>
+   <input type="text" placeholder="Recipe Title" name="title" />
+   <input type="text" placeholder="Image" name="image" />
+   <textarea
+     type="text"
+     placeholder="Description"
+     name="description"
+   ></textarea>
+   <button onclick="updateRecipe()">Update</button>
+</form>
+```
+
 server.js
 
 ```js
