@@ -1,0 +1,29 @@
+{
+  "name": "ExpressJS",
+  "version": "1.0.0",
+  "description": "- [Server Side with ExpressJS](#Server-Side-with-ExpressJS)   - [Homework](#Homework)   - [Reading](#Reading)   - [NODE](#NODE)   - [Scaffolding Our Server](#Scaffolding-Our-Server)   - [Express](#Express)   - [Create a Database](#Create-a-Database)   - [Connect to the Database](#Connect-to-the-Database)   - [Create a Mongoose Schema](#Create-a-Mongoose-Schema)   - [Import Data](#Import-Data)   - [Front End](#Front-End)   - [Static Files](#Static-Files)   - [Using CommonJS](#Using-CommonJS)     - [Controllers](#Controllers)     - [Using Mongoose Methods and Schema](#Using-Mongoose-Methods-and-Schema)     - [Importing Data](#Importing-Data)     - [Facilitate Testing](#Facilitate-Testing)   - [Introducing Postman](#Introducing-Postman)     - [Test the Model](#Test-the-Model)     - [Find By id](#Find-By-id)   - [Add a Recipe](#Add-a-Recipe)     - [Create a new Recipe in Postman](#Create-a-new-Recipe-in-Postman)   - [The New Recipe Form](#The-New-Recipe-Form)     - [Delete](#Delete)   - [Delete on the Front End](#Delete-on-the-Front-End)   - [Find by ID](#Find-by-ID)   - [Detail Page](#Detail-Page)   - [Notes](#Notes)",
+  "main": "server.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.6.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/front-end-summer19/ExpressJS.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/front-end-summer19/ExpressJS/issues"
+  },
+  "homepage": "https://github.com/front-end-summer19/ExpressJS#readme"
+}
