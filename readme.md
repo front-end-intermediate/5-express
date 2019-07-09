@@ -24,7 +24,7 @@
   - [Delete on the Front End](#Delete-on-the-Front-End)
   - [Find by ID](#Find-by-ID)
   - [Detail Page](#Detail-Page)
-  - [Update](#Update)
+  - [Update/Edit a Recipe](#UpdateEdit-a-Recipe)
   - [Notes](#Notes)
 
 
@@ -1223,9 +1223,9 @@ const detail = () => {
 
 ```
 
-`https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams`
+Note the use of [URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams).
 
-Render it to the page:
+Render a single recipe to the page:
 
 ```js
 const detail = () => {
@@ -1250,9 +1250,9 @@ const detail = () => {
 };
 ```
 
-## Update
+## Update/Edit a Recipe
 
-Update (recipe.controllers)
+Update recipe.controllers:
 
 ```js
 exports.update = (req, res) => {
@@ -1263,6 +1263,24 @@ exports.update = (req, res) => {
     res.send(response);
   });
 };
+```
+
+We will use `findByIdAndUpdate`
+
+New form:
+
+```html
+<h3>Edit Recipe</h3>
+<form>
+   <input type="text" placeholder="Recipe Title" name="title" />
+   <input type="text" placeholder="Image" name="image" />
+   <textarea
+     type="text"
+     placeholder="Description"
+     name="description"
+   ></textarea>
+   <button onclick="updateRecipe()">Update</button>
+</form>
 ```
 
 server.js
