@@ -1197,6 +1197,18 @@ Fence the JavaScript for the homepage:
 
 Save index.html as detail.html.
 
+Start by filling out the findByID function to use Mongoose's `Model.findOne`:
+
+```js
+exports.findById = (req, res) => {
+  const id = req.params.id;
+  Recipe.findOne({ _id: id }, (err, json) => {
+    if (err) return console.log(err);
+    return res.send(json);
+  });
+};
+```
+
 And create a new function for the detail page:
 
 ```js
@@ -1237,10 +1249,10 @@ const detail = () => {
   };
 };
 ```
+
 ## Update
 
-
-Update (contollers)
+Update (recipe.controllers)
 
 ```js
 exports.update = (req, res) => {
@@ -1264,7 +1276,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 ```
 
-Test with static:
+Test using Fetch with static content and an options object:
 
 ```js
 const updateRecipe = () => {
