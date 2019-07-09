@@ -1283,6 +1283,38 @@ New form:
 </form>
 ```
 
+Note the button action. 
+
+Populate the form fields using data from the recipe:
+
+```js
+const detail = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const recipeId = urlParams.get('recipe');
+  console.log(recipeId);
+  fetch(`api/recipes/${recipeId}`)
+    .then(response => response.json())
+    .then(recipe => renderStory(recipe));
+
+  const renderStory = recipe => {
+    recipeEl = document.createElement('div');
+    recipeEl.innerHTML = `
+      <img src="img/${recipe.image}" />
+      <h3>${recipe.title}</h3>
+      <p>${recipe.description}</p>
+      <a href="/">Back</a>
+      `;
+    document.querySelector('#root').append(recipeEl);
+
+    const editForm = document.querySelector('form');
+    editForm.title.value = recipe.title;
+    editForm.image.value = recipe.image;
+    editForm.description.value = recipe.description;
+    // console.log(editForm.description);
+  };
+};
+```
+
 server.js
 
 ```js
@@ -1294,7 +1326,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 ```
 
-Test using Fetch with static content and an options object:
+Test using Fetch with static content and an options object.
+
+Be sure to replace the hard coded id with the one in the browser location bar:
 
 ```js
 const updateRecipe = () => {
@@ -1316,7 +1350,7 @@ const updateRecipe = () => {
 };
 ```
 
-Run dynamic:
+Edit the script to harvest the form values as the updated recipe:
 
 ```js
 const updateRecipe = () => {
