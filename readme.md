@@ -9,31 +9,29 @@
   - [Connect to the Database](#Connect-to-the-Database)
   - [Create a Mongoose Schema](#Create-a-Mongoose-Schema)
   - [Import Data](#Import-Data)
+    - [Aside - Status Codes](#Aside---Status-Codes)
   - [Front End](#Front-End)
   - [Static Files](#Static-Files)
   - [Using CommonJS](#Using-CommonJS)
     - [Controllers](#Controllers)
-    - [Using Mongoose Methods and Schema](#Using-Mongoose-Methods-and-Schema)
+    - [Recipe Model](#Recipe-Model)
     - [Importing Data](#Importing-Data)
-    - [Facilitate Testing](#Facilitate-Testing)
-  - [Introducing Postman](#Introducing-Postman)
-    - [Test the Model](#Test-the-Model)
+    - [Model.DeleteMany()](#ModelDeleteMany)
     - [Find By id](#Find-By-id)
   - [Add a Recipe](#Add-a-Recipe)
     - [Create a new Recipe in Postman](#Create-a-new-Recipe-in-Postman)
-  - [The New Recipe Form](#The-New-Recipe-Form)
     - [Delete](#Delete)
   - [Delete on the Front End](#Delete-on-the-Front-End)
   - [Find by ID](#Find-by-ID)
   - [Detail Page](#Detail-Page)
+  - [Update/Edit a Recipe](#UpdateEdit-a-Recipe)
   - [Notes](#Notes)
 
 
 ## Homework
- 
+Midterm assignment.
 
 ## Reading
-
 * Technology stack [overview](https://developer.mozilla.org/en-US/docs/Learn/Server-side/First_steps/Client-Server_overview)
 * Watch [Express JS Crash Course](https://youtu.be/L72fhGm1tfE)
 * The MDN [Server Side Tutorial](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs)
@@ -60,7 +58,7 @@ In the terminal:
 node script.js 
 ```
 
-Try:
+Here's the canonical example:
 
 ```js
 const http = require('http');
@@ -83,11 +81,11 @@ Note:
 
 `const http = require('http');` is the syntax for importing in node applications. It is different from the ES6 module system we have been using in React, e.g. `import Header from './Header'`. Node uses the CommonJS module system. 
 
-CommonJS specifies that you need to have a `require()` function to fetch dependencies and an `exports` variable to export module contents. CommonJS was not  designed for browsers.
+CommonJS uses a `require()` function to fetch dependencies and an `exports` variable to export module contents. CommonJS was not really designed for browsers were ES6 modules are used instead.
 
 ## Scaffolding Our Server
 
-1. Run `$ npm init` using `server.js` as the entry for main
+1. Run `$ npm init -y` and edit package.json to specify `"main": "server.js",` as the entry for main
 2. Setup tooling and dependencies `npm i -S express mongoose`
 3. Setup tooling and developmental dependencies `npm i -D nodemon`
 4. Create an npm script for nodemon in package.json:
@@ -101,9 +99,9 @@ CommonJS specifies that you need to have a `require()` function to fetch depende
 
 ## Express 
 
-[Express](https://expressjs.com/) is a server-side or "back-end" framework for building web applications on Node.js. It simplifies the server creation process and uses JavaScript as the server-side language. It is not comparable to React which is a front-end framework.
+[Express](https://expressjs.com/) is a server-side or "back-end" framework for building web applications on Node.js. It simplifies the server creation process and uses JavaScript as the server-side language. 
 
-Common web-development tasks are not directly supported by Node. Express allows you to add specific handling for different HTTP verbs (e.g. GET, POST, DELETE, etc.), separately handle requests at different URL paths ("routes"), serve static files, and use templates to dynamically create the response.
+Common web-development tasks are not directly supported by Node. Express allows you to add specific handling for different HTTP verbs (e.g. GET, POST, DELETE, etc.), separately handle requests at different URL paths ("routes"), serve static files, and use templates to dynamically create the server's response to the browser.
 
 Create `server.js` for express at the top level of the folder:
 
@@ -129,6 +127,8 @@ You should be able to view the [output](http://localhost:3000) at `http://localh
 `require()` uses the CommonJS module system to access applications from `node_modules`.
 
 `app.get('/')` is a route. The URL '/' is the root of the site. The callback function is an anonymous function that takes incoming (`req`) and outgoing (`res`) parameters. The `res` object has a `send` method that returns plain text for now.
+
+* [ExpressJS 4.x Response reference](https://expressjs.com/en/4x/api.html#res)
 
 Add a second route and test:
 
@@ -160,6 +160,8 @@ app.get('/music/:type', function(req, res) {
 ```
 
 Now we are using both `req` and `res`.
+
+* [ExpressJS 4.x Request reference](https://expressjs.com/en/4x/api.html#req)
 
 Test it at `http://localhost:3000/music/jazz`
 
@@ -262,7 +264,7 @@ const Recipe = mongoose.model('Recipe', RecipeSchema);
 
 Models are defined by passing a Schema instance to mongoose.model. Here we are saving the model to a variable `Recipe`.
 
-Once you have a model you can call methods on it. The actual interaction with the data happens with the Model. That's the object that you can call `.find()`, `.findOne()`, etc on. The documentation for [finding documents](https://mongoosejs.com/docs/api/model.html#model_Model.find) is pretty straightforward. There are a number of [useful methods](https://mongoosejs.com/docs/api/model.html) on the model.
+Once you have a model you can call methods on it. The actual interaction with the data happens with the Model. That's the object that you can call `.find()`, `.findOne()`, etc on. The documentation for [finding documents](https://mongoosejs.com/docs/api/model.html#model_Model.find) is a good example. There are quite a number of [useful methods](https://mongoosejs.com/docs/api/model.html) on Mongoose models.
 
 Create a route in `server.js` that displays recipes:
 
@@ -274,7 +276,7 @@ app.get('/api/recipes', function(req, res) {
 });
 ```
 
-Note the path: `/api/recipes`. Go to that endpoint in your browser to see the empty array.
+Note the path: `/api/recipes`. Go to that endpoint in your browser to see the array.
 
 ## Import Data
 
@@ -350,7 +352,11 @@ Let's return an HTTP status:
 
 Travelling to `http://localhost:3000/api/import` will import the data again but, this time, since we return something to the browser it will not be stuck on loading. 
 
+### Aside - Status Codes
+
 `sendStatus` communicates with the front end by returning a standard [http status code](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes). As the backend developer it is up to you to return appropriate status codes.
+
+451 - 'Unavailable For Legal Reasons', is used when resource access is denied for legal reasons, e.g. censorship or government-mandated blocked access. It is a reference to the novel Fahrenheit 451, where books are outlawed.
 
 ## Front End
 
@@ -374,7 +380,7 @@ And in the head:
 <link rel="stylesheet" href="css/styles.css" />
 ```
 
-Use the browser's fetch API to call our api end point:
+Use the browser's fetch API to call our api endpoint:
 
 ```html
 <script>
@@ -382,8 +388,9 @@ fetch(`api/recipes`)
   .then(response => response.json())
   .then(recipes => console.log(recipes));
 </script>
-
 ```
+
+Examine the browser's console.
 
 Render some HTML to the DOM:
 
@@ -406,7 +413,6 @@ const renderStories = recipes => {
 };
 
 ```
-<!-- NEW -->
 
 Note that neither the CSS nor the images are working.
 
@@ -428,7 +434,7 @@ app.use(express.static('public'))
 
 ## Using CommonJS
 
-We are going to use CommonJS components to organize our code.
+Before we get any further we are going to use CommonJS to organize our code.
 
 ### Controllers
 
@@ -437,6 +443,9 @@ Create a new folder `api` and a file inside called `recipe.controllers.js`. We'l
 Add the following to `recipe.controllers.js`:
 
 ```js
+const mongoose = require('mongoose');
+const Recipe = mongoose.model('Recipe');
+
 exports.findAll = function() {};
 exports.findById = function() {};
 exports.add = function() {};
@@ -444,9 +453,9 @@ exports.update = function() {};
 exports.delete = function() {};
 ```
 
-Note the use of `exports`. This makes the function available for import elsewhere in a our application.
+The CommonJS `exports` makes the function available for import elsewhere in our application.
 
-Update `server.js` to require our controllers (the .js file extension can be omitted):
+Update `server.js` to require our controllers:
 
 ```js
 const recipeControllers = require('./api/recipe.controllers');
@@ -467,16 +476,12 @@ app.delete('/api/recipes/:id', recipeControllers.delete);
 Each route consists of three parts:
 
 * A specific HTTP Action (`get, put, post, delete`)
-* A specific URL path (`/api/recipes/:id` etc.)
-* A handler method (`findAll`)
-
-The most common elements of a [REST application](http://www.restapitutorial.com/lessons/httpmethods.html) are accounted for here.
+* A specific URL path (`/api/recipes/:id`)
+* A handler method (`findAll`) that corresponds to the exported function in our recipe controllers file
 
 We've modeled our URL routes off of REST API conventions, and named our handling methods clearly - prefixing them with `api/` in order to differentiate them from any routes we create to serve the front end.
 
-<!-- Note the `recipes.function` notation. We're using our imported recipes controller file and have placed all our request event handling methods inside the it. -->
-
-<!-- ### Check if its working
+Delete the find route from server.js.
 
 Update findAll's definition in `recipe.controllers.js` to send a json snippet:
 
@@ -484,9 +489,7 @@ Update findAll's definition in `recipe.controllers.js` to send a json snippet:
 exports.findAll = function(req, res) {
   res.send([
     {
-      name: 'recipe1309',
       title: 'Lasagna',
-      date: '2013-09-01',
       description:
         'Lasagna noodles piled high and layered full of three kinds of cheese to go along with the perfect blend of meaty and zesty, tomato pasta sauce all loaded with herbs.',
       image: 'lasagna.png'
@@ -495,19 +498,9 @@ exports.findAll = function(req, res) {
 };
 ```
 
-3: Navigate to the specified route in `app.get('/api/recipes', recipes.findAll);`:
+You should see the recipe in the browser and, at the specified route `/api/recipes'`, you should see the json in the browser.
 
-`localhost:3001/api/recipes`
-
-You should see the json in the bowser. -->
-
-<!-- ### Define Data Models (Mongoose)
-
-Rather than using the MongoClient as we did previously ( e.g. `const mongo = require('mongoDB').MongoClient;`), we will use [Mongoose](http://mongoosejs.com) to model application data and connect to our database. Here's the [quickstart guide](http://mongoosejs.com/docs/).
-
-Mongoose is built upon the MongoDB driver we used previously so everything we are doing here would work with the original driver. However, Mongoose allows us to model our data - declare that the data be of a certain type, validate the data, and build queries. -->
-
-<!-- Since we are in a Node app we will continue to use CommonJS modules.  -->
+### Recipe Model
 
 Add a new file `recipe.model.js` to `api` for our Recipe Model.
 
@@ -527,13 +520,11 @@ module.exports = mongoose.model('Recipe', RecipeSchema);
 
 ```
 
-We require mongoose and create and export an instance of a mongoose Schema.
-
-The schema makes sure we're getting and setting well-formed data to and from the Mongo collection. 
+We require mongoose and create and export an instance of a mongoose Schema to make sure we're getting and setting well-formed data to and from the Mongo collection. 
 
 The last line exports the RecipeShema together with Mongoose's built in MongoDb interfacing methods. We'll refer to this Recipe object in other files.
 
-### Using Mongoose Methods and Schema
+<!-- ### Using Mongoose Methods and Schema -->
 
 <!-- 1: Update `server.js` with these lines (in their appropriate locations):
 
@@ -587,7 +578,7 @@ mongoose.connect(mongoUri, { useNewUrlParser: true }, () => {
 });
 ``` -->
 
-3: Update `api/recipe.controllers.js` to require Mongoose, so we can create an instance of our Recipe model to work with.
+<!-- 3: Update `api/recipe.controllers.js` to require Mongoose, so we can create an instance of our Recipe model to work with.
 
 Add to the top of that file:
 
@@ -601,16 +592,16 @@ exports.add = function() {};
 exports.update = function() {};
 exports.delete = function() {};
 
-```
+``` -->
 
-Order is important. In `server.js` we must require the model _before_ the controllers.
+Delete the model in server.js and import recipe.model.js. Order is important. In `server.js` we must require the model _before_ the controllers.
 
 ```js
 const recipeModel = require('./api/recipe.model');
 const recipes = require('./api/recipe.controllers');
 ```
 
-Update the `findAll()` function in `recipe.controllers` to query Mongo with the `find()` method.
+Delete the `findAll()` function in `server.js` and update the `findAll()` function in `recipe.controllers` to query Mongo with the `find()` method.
 
 ```js
 const mongoose = require('mongoose');
@@ -628,6 +619,8 @@ exports.update = function() {};
 exports.delete = function() {};
 ```
 
+Refactor to use arrow functions if desired:
+
 ```js
 exports.findAll = (req, res) => {
   Recipe.find({}, (err, json) => {
@@ -641,11 +634,11 @@ exports.findAll = (req, res) => {
 
 Once Mongoose looks up the data and returns a result set, we use `res.send()` to return the raw results.
 
-Check that the server is still running and then visit the API endpoint for all recipes [localhost:3001/api/recipes](localhost:3001/api/recipes). You'll get JSON data back from the database - possibly an empty array `[]`.
+Check that the server is still running and then visit the API endpoint for all recipes [localhost:3000/api/recipes](localhost:3000/api/recipes). You'll get JSON data back from the database - possibly an empty array `[]`.
 
 ### Importing Data
 
-1: Add a new api route - `app.get('/api/import', recipeControllers.import);` - to our list in `server.js`:
+Add a new api route - `app.get('/api/import', recipeControllers.import);` - to our list in `server.js`:
 
 ```js
 app.get('/api/recipes', recipeControllers.findAll);
@@ -656,41 +649,33 @@ app.delete('/api/recipes/:id', recipeControllers.delete);
 app.get('/api/import', recipeControllers.import);
 ```
 
-2: define the import method in our controllers file - `recipe.controllers.js`:
+Delete the import route in server.js and define it in `recipe.controllers.js`:
 
 ```js
 exports.import = function(req, res) {
   Recipe.create(
     {
-      name: 'recipe1309',
       title: 'Lasagna',
-      date: '2013-09-01',
       description:
         'Lasagna noodles piled high and layered full of three kinds of cheese to go along with the perfect blend of meaty and zesty, tomato pasta sauce all loaded with herbs.',
       image: 'lasagna.png'
     },
     {
-      name: 'recipe1404',
       title: 'Pho-Chicken Noodle Soup',
-      date: '2014-04-15',
       description:
         'Pho (pronounced "fuh") is the most popular food in Vietnam, often eaten for breakfast, lunch and dinner. It is made from a special broth that simmers for several hours infused with exotic spices and served over rice noodles with fresh herbs.',
       image: 'pho.png'
     },
 
     {
-      name: 'recipe1210',
       title: 'Guacamole',
-      date: '2016-10-01',
       description:
         'Guacamole is definitely a staple of Mexican cuisine. Even though Guacamole is pretty simple, it can be tough to get the perfect flavor - with this authentic Mexican guacamole recipe, though, you will be an expert in no time.',
       image: 'guacamole.png'
     },
 
     {
-      name: 'recipe1810',
       title: 'Hamburger',
-      date: '2012-10-20',
       description:
         'A Hamburger (often called a burger) is a type of sandwich in the form of  rounded bread sliced in half with its center filled with a patty which is usually ground beef, then topped with vegetables such as lettuce, tomatoes and onions.',
       image: 'hamburger.png'
@@ -707,15 +692,15 @@ exports.import = function(req, res) {
 
 <!-- In Mongoose, there is Model.create and Collection.insert - the latter isn't strictly part of Mongoose, but of the underlying MongoDB driver. -->
 
-This import method adds four items from the JSON to a recipes collection. The Recipe model is referenced here to call its create method. `Model.create()` takes one or more documents in JSON form, and a callback to run on completion. If an error occurs, Terminal will return the error and the request will timeout in the browser. On success, the 202 "Accepted" HTTP status code is returned to the browser.
+<!-- This import method adds four items from the JSON to a recipes collection. The Recipe model is referenced here to call its create method. `Model.create()` takes one or more documents in JSON form, and a callback to run on completion. If an error occurs, Terminal will return the error and the request will timeout in the browser. On success, the 202 "Accepted" HTTP status code is returned to the browser. -->
 
-Visit this new endpoint to import data:
+<!-- Visit this new endpoint to import data:
 
-[localhost:3001/api/import/](localhost:3001/api/import/)
+[localhost:3001/api/import/](localhost:3001/api/import/) -->
 
-Now visit the [http://localhost:3001/api/recipes](http://localhost:3001/api/recipes) endpoint to view the new recipes data. You'll see an array of JSON objects, each in the defined schema, with an additional generated unique private `_id`.
+<!-- Now visit the [http://localhost:3001/api/recipes](http://localhost:3001/api/recipes) endpoint to view the new recipes data. You'll see an array of JSON objects, each in the defined schema, with an additional generated unique private `_id`. -->
 
-### Facilitate Testing 
+### Model.DeleteMany() 
 
 Review some of the [documentation](http://mongoosejs.com/docs/queries.html) for Mongoose and create a script to delete all recipes with [deleteMany](http://mongoosejs.com/docs/queries.html).
 
@@ -737,7 +722,7 @@ Add the corresponding function to the controllers file:
 
 ```js
 exports.killall = function(req, res) {
-  Recipe.deleteMany({ title: 'Lasagna' }, (err) => {
+  Recipe.deleteMany( { title: 'Lasagna' }, (err) => {
     if (err) return console.log(err);
     return res.sendStatus(202);
   })
@@ -748,18 +733,18 @@ Run the function by visiting the killall endpoint and then returning to the reci
 
 In this example we are deleting only those recipes where the title is Lasagna. 
 
-Change the filter `{ title: 'Lasagna' }` to `{}` to remove them all and run the function again.
+Change the filter `{ title: 'Lasagna' }` to `{}` to remove them all and run the functions again.
 
-## Introducing Postman
+<!-- ## Introducing Postman
 
 Since modeling endpoints is a common task and few enjoy using curl (more on curl in a moment), most people use a utility such as [Postman](https://www.getpostman.com/).
 
 Download and install it [here](https://www.getpostman.com/). (You need not create an account to use it.)
 
-Test a GET in postman with [http://localhost:3001/api/recipes/](http://localhost:3001/api/recipes/) and then delete all the recipes: [http://localhost:3001/api/killall/](http://localhost:3001/api/killall/)
+Test a GET in postman with [http://localhost:3001/api/recipes/](http://localhost:3001/api/recipes/) and then delete all the recipes: [http://localhost:3001/api/killall/](http://localhost:3001/api/killall/) -->
 
 
-### Test the Model
+<!-- ### Test the Model
 
 Try removing date from `recipe.model`:
 
@@ -935,9 +920,24 @@ At your findAll endpoint `http://localhost:3001/api/recipes`, copy one of the id
 
 e.g. `http://localhost:3001/api/recipes/< id goes here >`
 
+
+
+
+ -->
+
+
+
+
+
+
+
+
+
+
+
 ## Add a Recipe
 
-We used `create()` for our import function inn order to add multiple documents to our Recipes Mongo collection. Our POST handler uses the same method to add a single Recipe to the collection. Once added, the response is the full new Recipe's JSON object.
+We used `create()` in our import function in order to add multiple documents to our Recipes  collection. Our POST handler uses the same method to add a single Recipe to the collection. Once added, the response is the full new Recipe's JSON object.
 
 Edit `recipe-controllers.js`:
 
@@ -950,7 +950,7 @@ exports.add = function(req, res) {
 };
 ```
 
-In a new terminal tab - use cURL to POST to the add endpoint with the full Recipe JSON as the request body (making sure to check the URL port and path).
+<!-- In a new terminal tab - use cURL to POST to the add endpoint with the full Recipe JSON as the request body (making sure to check the URL port and path).
 
 ```sh
 curl -i -X POST -H 'Content-Type: application/json' -d '{"title": "Toast", "image": "toast.png", "description":"Tasty!"}' http://localhost:3001/api/recipes
@@ -959,15 +959,17 @@ curl -i -X POST -H 'Content-Type: application/json' -d '{"title": "Toast", "imag
 ### Create a new Recipe in Postman
 
 1. Set Postman to POST, set the URL in Postman to `http://localhost:3001/api/recipes/`
-1. Choose `raw` in `Body` and set the text type to `JSON(application/json)`
-1. Set Body to `{"title": "Toast", "image": "toast.jpg", "description":"Postman? Tasty!"}`
-1. Hit `Send`
+2. Choose `raw` in `Body` and set the text type to `JSON(application/json)`
+3. Set Body to `{"title": "Toast", "image": "toast.jpg", "description":"Postman? Tasty!"}`
+4. Hit `Send`
 
 Refresh `http://localhost:3001/recipes` or use Postman's history to see the new entry at the end.
 
-Save your query in Postman to a new Postman collection.
+Save your query in Postman to a new Postman collection. -->
 
-## The New Recipe Form
+
+
+Add a form to index.html:
 
 ```html
 <form action="/api/recipes" method="POST">
@@ -977,6 +979,10 @@ Save your query in Postman to a new Postman collection.
   <button type="submit">Submit</button>
 </form>
 ```
+
+Note the action and method attributes.
+
+Add supporting CSS:
 
 ```css
 input, textarea {
@@ -995,19 +1001,23 @@ button {
 }
 ```
 
+If we try to run the form now we get a new empty recipe. 
+
+We need to unpack the data on the server side. [body-parser](https://github.com/expressjs/body-parser) parses the incoming request body (req.body)
+
 Install `body-parser`:
 
 ```sh
 npm i body-parser
 ```
 
-Require it:
+Require it in server.js:
 
 ```js
 const bodyParser = require('body-parser');
 ```
 
-Add to server.js:
+Add to server.js with options:
 
 ```js
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -1051,13 +1061,13 @@ exports.delete = function(req, res) {
 };
 ```
 
-Forms only support GET and POST
+Forms only support GET and POST and are inappropriate for deleting.
 
-`<a href="api/recipe/${recipe._id}">Delete</a>`
+Add a Delete link to the script:
 
-451 - 'Unavailable For Legal Reasons', is used when resource access is denied for legal reasons, e.g. censorship or government-mandated blocked access. It is a reference to the novel Fahrenheit 451, where books are outlawed.
+`<a class="del" data-id=${recipe._id} href="#">Delete</a>`
 
-FWIW - [this](https://www.ietf.org/rfc/rfc2324.txt) was considered funny in 1999.
+Note the use of data attributes here.
 
 ## Delete on the Front End
 
@@ -1073,6 +1083,12 @@ const deleteBtns = document.querySelector('.del');
     e.preventDefault();
   });
 ```
+
+Note the method option passed to fetch.
+
+Note the use of `dataset`.
+
+`(node:31390) DeprecationWarning: collection.remove is deprecated. Use deleteOne, deleteMany, or bulkWrite instead.`
 
 Make sure this code is inside the renderStories function.
 
@@ -1102,11 +1118,14 @@ const renderStories = recipes => {
       method: 'DELETE'
     });
     e.preventDefault();
+    location.reload();
   });
 };
 ```
 
 Note the use of `dataset` here.
+
+Note the `location.reload();`
 
 Instead on one button, many:
 
@@ -1121,6 +1140,7 @@ delBtns.forEach(btn => {
      method: 'DELETE'
    });
    e.preventDefault();
+   location.reload();
  });
 });
 ```
@@ -1135,7 +1155,66 @@ Let's create a detail page for each recipe using findById function:
 
 ## Detail Page
 
-Fence the JavaScript for the homepage and create a new function for the detail page:
+Fence the JavaScript for the homepage:
+
+```html
+ <script src="js/scripts.js"></script>
+ <script>
+   homepage();
+ </script>
+ ```
+
+ ```js
+ const homepage = () => {
+  fetch(`api/recipes`)
+    .then(response => response.json())
+    .then(recipes => renderStories(recipes));
+
+  const renderStories = recipes => {
+    console.log(recipes);
+    recipes.forEach(recipe => {
+      recipeEl = document.createElement('div');
+      recipeEl.innerHTML = `
+         <img src="img/${recipe.image}" />
+         <h3><a href="detail.html?recipe=${recipe._id}">${recipe.title}</a></h3>
+         <p>${recipe.description}</p>
+         <a class="del" data-id=${recipe._id} href="#0">Delete</a>
+         `;
+      document.querySelector('#root').append(recipeEl);
+    });
+
+    const deleteBtns = document.querySelectorAll('.del');
+    console.log(deleteBtns);
+    const delBtns = Array.from(deleteBtns);
+    console.log(delBtns);
+    delBtns.forEach(btn => {
+      btn.addEventListener('click', e => {
+        fetch(`api/recipes/${btn.dataset.id}`, {
+          method: 'DELETE'
+        });
+        e.preventDefault();
+        location.reload();
+      });
+    });
+  };
+};
+```
+
+Save index.html as detail.html.
+
+Start by filling out the findByID function to use Mongoose's `Model.findOne`:
+
+```js
+exports.findById = (req, res) => {
+  const id = req.params.id;
+  Recipe.findOne({ _id: id }, (err, json) => {
+    if (err) return console.log(err);
+    return res.send(json);
+  });
+};
+```
+
+And create a new function for the detail page:
 
 ```js
 const detail = () => {
@@ -1149,9 +1228,9 @@ const detail = () => {
 
 ```
 
-`https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams`
+Note the use of [URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams).
 
-Render it to the page:
+Render a single recipe to the page:
 
 ```js
 const detail = () => {
@@ -1176,7 +1255,9 @@ const detail = () => {
 };
 ```
 
-Update (contollers)
+## Update/Edit a Recipe
+
+Update recipe.controllers:
 
 ```js
 exports.update = (req, res) => {
@@ -1189,9 +1270,12 @@ exports.update = (req, res) => {
 };
 ```
 
+We will use `findByIdAndUpdate`
+
 New form:
 
 ```html
+<h3>Edit Recipe</h3>
 <form>
    <input type="text" placeholder="Recipe Title" name="title" />
    <input type="text" placeholder="Image" name="image" />
@@ -1204,18 +1288,49 @@ New form:
 </form>
 ```
 
+Note the button action. 
+
+Populate the form fields using data from the recipe:
+
+```js
+const detail = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const recipeId = urlParams.get('recipe');
+  console.log(recipeId);
+  fetch(`api/recipes/${recipeId}`)
+    .then(response => response.json())
+    .then(recipe => renderStory(recipe));
+
+  const renderStory = recipe => {
+    recipeEl = document.createElement('div');
+    recipeEl.innerHTML = `
+      <img src="img/${recipe.image}" />
+      <h3>${recipe.title}</h3>
+      <p>${recipe.description}</p>
+      <a href="/">Back</a>
+      `;
+    document.querySelector('#root').append(recipeEl);
+
+    const editForm = document.querySelector('form');
+    editForm.title.value = recipe.title;
+    editForm.image.value = recipe.image;
+    editForm.description.value = recipe.description;
+    // console.log(editForm.description);
+  };
+};
+```
+
 server.js
 
 ```js
-// app.use(bodyParser.urlencoded({ extended: true }));
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
-
+app.use(bodyParser.urlencoded({ extended: true }));
 // parse application/json
 app.use(bodyParser.json());
 ```
 
-Test with static:
+Test using Fetch with static content and an options object.
+
+Be sure to replace the hard coded id (`api/recipes/5d222a54334b1112c44a6066`) with the one in the browser location bar:
 
 ```js
 const updateRecipe = () => {
@@ -1237,7 +1352,7 @@ const updateRecipe = () => {
 };
 ```
 
-Run dynamic:
+Edit the script to harvest the form values as the updated recipe:
 
 ```js
 const updateRecipe = () => {
