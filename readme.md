@@ -1118,11 +1118,14 @@ const renderStories = recipes => {
       method: 'DELETE'
     });
     e.preventDefault();
+    location.reload();
   });
 };
 ```
 
 Note the use of `dataset` here.
+
+Note the `location.reload();`
 
 Instead on one button, many:
 
@@ -1137,6 +1140,7 @@ delBtns.forEach(btn => {
      method: 'DELETE'
    });
    e.preventDefault();
+   location.reload();
  });
 });
 ```
@@ -1171,11 +1175,11 @@ Fence the JavaScript for the homepage:
     recipes.forEach(recipe => {
       recipeEl = document.createElement('div');
       recipeEl.innerHTML = `
-<img src="img/${recipe.image}" />
-<h3><a href="detail.html?recipe=${recipe._id}">${recipe.title}</a></h3>
-<p>${recipe.description}</p>
-<a class="del" data-id=${recipe._id} href="#0">Delete</a>
-`;
+         <img src="img/${recipe.image}" />
+         <h3><a href="detail.html?recipe=${recipe._id}">${recipe.title}</a></h3>
+         <p>${recipe.description}</p>
+         <a class="del" data-id=${recipe._id} href="#0">Delete</a>
+         `;
       document.querySelector('#root').append(recipeEl);
     });
 
@@ -1189,6 +1193,7 @@ Fence the JavaScript for the homepage:
           method: 'DELETE'
         });
         e.preventDefault();
+        location.reload();
       });
     });
   };
@@ -1318,17 +1323,14 @@ const detail = () => {
 server.js
 
 ```js
-// app.use(bodyParser.urlencoded({ extended: true }));
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
-
+app.use(bodyParser.urlencoded({ extended: true }));
 // parse application/json
 app.use(bodyParser.json());
 ```
 
 Test using Fetch with static content and an options object.
 
-Be sure to replace the hard coded id with the one in the browser location bar:
+Be sure to replace the hard coded id (`api/recipes/5d222a54334b1112c44a6066`) with the one in the browser location bar:
 
 ```js
 const updateRecipe = () => {

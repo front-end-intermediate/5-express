@@ -26,6 +26,7 @@ const homepage = () => {
           method: 'DELETE'
         });
         e.preventDefault();
+        location.reload();
       });
     });
   };
