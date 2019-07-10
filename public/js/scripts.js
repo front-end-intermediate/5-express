@@ -33,7 +33,7 @@ const homepage = () => {
 };
 
 const detail = () => {
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = new URLSearchParams(location.search);
   const recipeId = urlParams.get('recipe');
   console.log(recipeId);
   fetch(`api/recipes/${recipeId}`)
