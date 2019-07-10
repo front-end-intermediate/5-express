@@ -28,6 +28,8 @@
     - [Create a new Recipe in Postman](#Create-a-new-Recipe-in-Postman)
 
 
+Today we will be building the back and front end for a simple recipes app.
+
 ## Homework
 Midterm assignment.
 
