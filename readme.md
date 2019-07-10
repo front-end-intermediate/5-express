@@ -103,6 +103,17 @@ CommonJS uses a `require()` function to fetch dependencies and an `exports` vari
 
 Common web-development tasks are not directly supported by Node. Express allows you to add specific handling for different HTTP verbs (e.g. GET, POST, DELETE, etc.), separately handle requests at different URL paths ("routes"), serve static files, and use templates to dynamically create the server's response to the browser.
 
+Express was an [application generator](https://expressjs.com/en/starter/generator.html) not unlike create-react-app, but we will not be using that today.
+
+Demo of the Express application generator:
+
+```sh
+npx express-generator --view=pug --css=sass expressGenerator
+cd expressGenerator
+npm install
+DEBUG=myapp:* npm start
+```
+
 Create `server.js` for express at the top level of the folder:
 
 ```js

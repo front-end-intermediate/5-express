@@ -9,19 +9,20 @@
   </head>
   <body>
     <div id="root">
-      <h1>Recipe Detail</h1>
+      <h3>Edit Recipe</h3>
+      <form style="clear:both;">
+        <input type="text" placeholder="Recipe Title" name="title" />
+        <input type="text" placeholder="Image" name="image" />
+        <textarea
+          type="text"
+          placeholder="Description"
+          name="description"
+        ></textarea>
+        <button onclick="updateRecipe()">Update</button>
+      </form>
+      <!-- <button onclick="() => ">Back</button> -->
+      <a href="/">Back</a> <a href="/api/import">Import</a>
     </div>
-    <h3>Edit Recipe</h3>
-    <form>
-      <input type="text" placeholder="Recipe Title" name="title" />
-      <input type="text" placeholder="Image" name="image" />
-      <textarea
-        type="text"
-        placeholder="Description"
-        name="description"
-      ></textarea>
-      <button onclick="updateRecipe()">Update</button>
-    </form>
 
     <script src="js/scripts.js"></script>
     <script>

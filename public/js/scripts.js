@@ -8,18 +8,18 @@ const homepage = () => {
     recipes.forEach(recipe => {
       recipeEl = document.createElement('div');
       recipeEl.innerHTML = `
-<img src="img/${recipe.image}" />
-<h3><a href="detail.html?recipe=${recipe._id}">${recipe.title}</a></h3>
-<p>${recipe.description}</p>
-<a class="del" data-id=${recipe._id} href="#0">Delete</a>
-`;
-      document.querySelector('#root').append(recipeEl);
+        <img src="img/${recipe.image}" />
+        <h3><a href="detail.html?recipe=${recipe._id}">${recipe.title}</a></h3>
+        <p>${recipe.description}</p>
+        <a class="del" data-id=${recipe._id} href="#0">Delete</a>
+        `;
+      document.querySelector('#root').prepend(recipeEl);
     });
 
     const deleteBtns = document.querySelectorAll('.del');
-    console.log(deleteBtns);
+    // console.log(deleteBtns);
     const delBtns = Array.from(deleteBtns);
-    console.log(delBtns);
+    // console.log(delBtns);
     delBtns.forEach(btn => {
       btn.addEventListener('click', e => {
         fetch(`api/recipes/${btn.dataset.id}`, {
@@ -43,12 +43,13 @@ const detail = () => {
   const renderStory = recipe => {
     recipeEl = document.createElement('div');
     recipeEl.innerHTML = `
+    <h1>${recipe.title}</h1>
       <img src="img/${recipe.image}" />
-      <h3>${recipe.title}</h3>
+      
       <p>${recipe.description}</p>
       <a href="/">Back</a>
       `;
-    document.querySelector('#root').append(recipeEl);
+    document.querySelector('#root').prepend(recipeEl);
 
     const editForm = document.querySelector('form');
     editForm.title.value = recipe.title;
@@ -60,7 +61,7 @@ const detail = () => {
 
 const updateRecipe = () => {
   const editForm = document.querySelector('form');
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = new URLSearchParams(location.search);
   const recipeId = urlParams.get('recipe');
   const updatedRecipe = {
     title: editForm.title.value,
