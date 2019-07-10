@@ -1,0 +1,42 @@
+body {
+  max-width: 940px;
+  margin: 0 auto;
+  font-family: sans-serif;
+  color: #333;
+  background-color: #eee;
+}
+
+#root {
+  padding: 1rem;
+  background-color: #fff;
+}
+a {
+  color: #007eb6;
+  text-decoration: none;
+}
+img {
+  max-width: 200px;
+}
+input,
+textarea {
+  font-size: 1rem;
+  display: block;
+  width: 90%;
+  padding: 0.5rem;
+  margin: 1rem 0;
+}
+textarea {
+  height: 100px;
+}
+button {
+  color: #fff;
+  font-size: 1rem;
+  padding: 0.5rem;
+  margin: 1rem 0;
+  background: #007eb6;
+}
+.del {
+  width: 100%;
+  display: inline-block;
+  text-align: right;
+}
