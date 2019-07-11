@@ -4,35 +4,36 @@
   - [Reading](#Reading)
   - [NODE](#NODE)
   - [Scaffolding Our Server](#Scaffolding-Our-Server)
-  - [Express](#Express)
-  - [Create a Database](#Create-a-Database)
-  - [Connect to the Database](#Connect-to-the-Database)
-  - [Create a Mongoose Schema](#Create-a-Mongoose-Schema)
-  - [Import Data](#Import-Data)
+  - [ExpressJS](#ExpressJS)
+    - [Express Routes](#Express-Routes)
+  - [MongoDB](#MongoDB)
+  - [Mongoose](#Mongoose)
+    - [Mongoose Schema](#Mongoose-Schema)
+    - [Import Data](#Import-Data)
     - [Aside - Status Codes](#Aside---Status-Codes)
   - [Front End](#Front-End)
-  - [Static Files](#Static-Files)
+  - [Express Static Files](#Express-Static-Files)
   - [Using CommonJS](#Using-CommonJS)
     - [Controllers](#Controllers)
     - [Recipe Model](#Recipe-Model)
-  - [Importing with Mongoose Model.create](#Importing-with-Mongoose-Modelcreate)
-  - [Model.DeleteMany()](#ModelDeleteMany)
-  - [Add a Recipe: Model.create](#Add-a-Recipe-Modelcreate)
-  - [Delete: Model.remove](#Delete-Modelremove)
-  - [Delete on the Front End](#Delete-on-the-Front-End)
+  - [Mongoose Model.create](#Mongoose-Modelcreate)
+  - [Mongoose Model.DeleteMany()](#Mongoose-ModelDeleteMany)
+  - [Mongoose Model.create](#Mongoose-Modelcreate-1)
+  - [Mongoose Model.remove](#Mongoose-Modelremove)
+  - [Deleting on the Front End](#Deleting-on-the-Front-End)
   - [Find by ID](#Find-by-ID)
   - [Detail Page](#Detail-Page)
-  - [Update/Edit: Model.findByIdAndUpdate](#UpdateEdit-ModelfindByIdAndUpdate)
+  - [Mongoose Model.findByIdAndUpdate](#Mongoose-ModelfindByIdAndUpdate)
   - [Deployment](#Deployment)
   - [Notes](#Notes)
     - [Find By id](#Find-By-id)
     - [Create a new Recipe in Postman](#Create-a-new-Recipe-in-Postman)
 
 
-Today we will be building the back and front end for a simple recipes app.
+Today we will be building the back and front end for a [simple recipes app](https://morning-falls-57252.herokuapp.com).
 
 ## Homework
-Midterm assignment.
+Midterm assignment: use the steps below to create your own REST API. 
 
 ## Reading
 * Technology stack [overview](https://developer.mozilla.org/en-US/docs/Learn/Server-side/First_steps/Client-Server_overview)
@@ -100,15 +101,17 @@ CommonJS uses a `require()` function to fetch dependencies and an `exports` vari
 },
 ```
 
-## Express 
+## ExpressJS
 
 [Express](https://expressjs.com/) is a server-side or "back-end" framework for building web applications on Node.js. It simplifies the server creation process and uses JavaScript as the server-side language. 
 
 Common web-development tasks are not directly supported by Node. Express allows you to add specific handling for different HTTP verbs (e.g. GET, POST, DELETE, etc.), separately handle requests at different URL paths ("routes"), serve static files, and use templates to dynamically create the server's response to the browser.
 
-Express was an [application generator](https://expressjs.com/en/starter/generator.html) not unlike create-react-app, but we will not be using that today.
+Express has an [application generator](https://expressjs.com/en/starter/generator.html) (not unlike create-react-app), but we will not be using it today.
 
-Demo of the Express application generator:
+Demo the Express application generator.
+
+Terminal:
 
 ```sh
 npx express-generator --view=pug --css=sass expressGenerator
@@ -116,6 +119,8 @@ cd expressGenerator
 npm install
 DEBUG=myapp:* npm start
 ```
+
+### Express Routes
 
 Create `server.js` for express at the top level of the folder:
 
@@ -210,7 +215,7 @@ const PORT = 3000;
 app.listen(PORT, () => console.log(`Server running at port ${PORT}`));
 ```
 
-## Create a Database
+## MongoDB
 
 Express apps can use [any database supported by Node](https://expressjs.com/en/guide/database-integration.html) including PostgreSQL, MySQL, MongoDB, etc. 
 
@@ -226,7 +231,7 @@ Rather than installing a database on our local computer we will be using [MongoD
 <!-- mongodb+srv://daniel:dd2345@recipes-1c9td.mongodb.net/test?retryWrites=true&w=majority -->
 <!-- mongodb+srv://daniel:dd2345@recipes-3k4ea.mongodb.net/test?retryWrites=true&w=majority -->
 
-## Connect to the Database
+## Mongoose
 
 There are a variety of ways to connect to the database from Express applications. Since we want to use Mongo, we installed [Mongoose](https://mongoosejs.com), a driver for MongoDB, using npm. It is easier to use than the standard [MongoClient](https://expressjs.com/en/guide/database-integration.html#mongodb) and works with models or schemas.
 
@@ -263,7 +268,7 @@ mongoose
 Note that, like `fetch()` the connect method returns a promise which we are using to log to the console (the terminal here) and show any errors.
 
 
-## Create a Mongoose Schema
+### Mongoose Schema
 
 Mongoose uses [schemas](https://mongoosejs.com/docs/guide.html#definition) to define your data and provides methods to add, remove, delete and etc.
 
@@ -296,7 +301,7 @@ app.get('/api/recipes', function(req, res) {
 
 Note the path: `/api/recipes`. Go to that endpoint in your browser to see the array.
 
-## Import Data
+### Import Data
 
 We will create a new endpoint that populates our database with a starter data set using the `model.create()` method.
 
@@ -378,7 +383,7 @@ Travelling to `http://localhost:3000/api/import` will import the data again but,
 
 ## Front End
 
-Let's conclude this section by outputting the data in a simple index page.
+Let's conclude this section by outputting the data using JavaScript in a simple index page.
 
 In the body tag of `public/index.html`:
 
@@ -434,7 +439,7 @@ const renderStories = recipes => {
 
 Note that neither the CSS nor the images are working.
 
-## Static Files
+## Express Static Files
 
 To serve [static files](https://expressjs.com/en/starter/static-files.html) such as images, CSS files, and JavaScript files, use the `express.static` built-in function in Express.
 
@@ -654,7 +659,9 @@ Once Mongoose looks up the data and returns a result set, we use `res.send()` to
 
 Check that the server is still running and then visit the API endpoint for all recipes [localhost:3000/api/recipes](localhost:3000/api/recipes). You'll get JSON data back from the database - possibly an empty array `[]`.
 
-## Importing with Mongoose Model.create
+## Mongoose Model.create
+
+We will again use the Mongoose method `Model.create` to import data into our application. 
 
 Add a new api route - `app.get('/api/import', recipeControllers.import);` - to our list in `server.js`:
 
@@ -718,7 +725,7 @@ exports.import = function(req, res) {
 
 <!-- Now visit the [http://localhost:3001/api/recipes](http://localhost:3001/api/recipes) endpoint to view the new recipes data. You'll see an array of JSON objects, each in the defined schema, with an additional generated unique private `_id`. -->
 
-## Model.DeleteMany() 
+## Mongoose Model.DeleteMany() 
 
 Review some of the [documentation](http://mongoosejs.com/docs/queries.html) for Mongoose and create a script to delete all recipes with [deleteMany](http://mongoosejs.com/docs/queries.html).
 
@@ -753,7 +760,7 @@ In this example we are deleting only those recipes where the title is Lasagna.
 
 Change the filter `{ title: 'Lasagna' }` to `{}` to remove them all and run the functions again.
 
-## Add a Recipe: Model.create
+## Mongoose Model.create
 
 We used `create()` in our import function in order to add multiple documents to our Recipes  collection. Our POST handler uses the same method to add a single Recipe to the collection. Once added, the response is the full new Recipe's JSON object.
 
@@ -824,7 +831,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 Test the form using the information from Pho.
 
-## Delete: Model.remove
+## Mongoose Model.remove
 
 Our next REST endpoint, delete, reuses what we've done above. Add this to `recipe.controllers.js`.
 
@@ -868,7 +875,7 @@ Add a Delete link to the script:
 
 Note the use of data attributes here.
 
-## Delete on the Front End
+## Deleting on the Front End
 
 Run a single link first:
 
@@ -1054,7 +1061,7 @@ const detail = () => {
 };
 ```
 
-## Update/Edit: Model.findByIdAndUpdate
+## Mongoose Model.findByIdAndUpdate
 
 Update recipe.controllers:
 
@@ -1178,6 +1185,8 @@ const updateRecipe = () => {
 
 ## Deployment
 
+Heroku
+
 .env:
 
 ```sh
@@ -1189,7 +1198,7 @@ PORT=5000
 Server.js:
 
 ```js
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running at port ${PORT}`));
 ```
 
