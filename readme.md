@@ -31,10 +31,10 @@
     - [Update the Model](#Update-the-Model)
 
 
-Today we will be building the back and front end for a [simple recipes app](https://morning-falls-57252.herokuapp.com). Foor a final version of this project see the `local` branch of this repo.
+Today we will be building the back and front end for a [simple recipes app](https://morning-falls-57252.herokuapp.com). For a final version of this project see the `local` branch of this repo.
 
 ## Homework
-Midterm assignment: use the steps below to create your own REST API. Deploy the app to Heroku using a [Git branch](https://devcenter.heroku.com/categories/deploying-with-git). 
+Midterm assignment: use the steps below to create your own REST API. Deploy the app to Heroku using a [Git branch](https://devcenter.heroku.com/categories/deploying-with-git).
 
 ## Reading
 * [Client-Server Overview](https://developer.mozilla.org/en-US/docs/Learn/Server-side/First_steps/Client-Server_overview) on MDN
