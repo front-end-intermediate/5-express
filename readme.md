@@ -23,6 +23,7 @@
   - [Find by ID](#Find-by-ID)
   - [Detail Page](#Detail-Page)
   - [Update/Edit: Model.findByIdAndUpdate](#UpdateEdit-ModelfindByIdAndUpdate)
+  - [Deployment](#Deployment)
   - [Notes](#Notes)
     - [Find By id](#Find-By-id)
     - [Create a new Recipe in Postman](#Create-a-new-Recipe-in-Postman)
@@ -1173,6 +1174,23 @@ const updateRecipe = () => {
     .then(() => location.reload()),
     event.preventDefault();
 };
+```
+
+## Deployment
+
+.env:
+
+```sh
+NODE_ENV=development
+DATABASE=mongodb+srv://daniel:dd2345@recipes-3k4ea.mongodb.net/recipes?retryWrites=true&w=majority
+PORT=5000
+```
+
+Server.js:
+
+```js
+const PORT = process.env.PORT;
+app.listen(PORT, () => console.log(`Server running at port ${PORT}`));
 ```
 
 ## Notes
