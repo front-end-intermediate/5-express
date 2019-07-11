@@ -25,7 +25,7 @@ app.delete('/api/recipes/:id', recipeControllers.delete);
 app.get('/api/import', recipeControllers.import);
 app.get('/api/killall', recipeControllers.killall);
 
-const PORT = 3000;
+const PORT = process.env.PORT;
 
 mongoose
   .connect(dataBaseURL, { useNewUrlParser: true })
