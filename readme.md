@@ -20,6 +20,7 @@
   - [Mongoose Model.create](#Mongoose-Modelcreate)
   - [Mongoose Model.DeleteMany()](#Mongoose-ModelDeleteMany)
   - [Mongoose Model.create](#Mongoose-Modelcreate-1)
+    - [Demo: Posting via Postman](#Demo-Posting-via-Postman)
   - [Mongoose Model.remove](#Mongoose-Modelremove)
   - [Deleting on the Front End](#Deleting-on-the-Front-End)
   - [Find by ID](#Find-by-ID)
@@ -27,10 +28,7 @@
   - [Mongoose Model.findByIdAndUpdate](#Mongoose-ModelfindByIdAndUpdate)
   - [Deployment](#Deployment)
   - [Notes](#Notes)
-    - [More Postman](#More-Postman)
-    - [Test the Model](#Test-the-Model)
-    - [Find By id](#Find-By-id)
-    - [Posting via Postman](#Posting-via-Postman)
+    - [Update the Model](#Update-the-Model)
 
 
 Today we will be building the back and front end for a [simple recipes app](https://morning-falls-57252.herokuapp.com). Foor a final version of this project see the `local` branch of this repo.
@@ -246,6 +244,8 @@ Store the database URL in a variable:
 const dataBaseURL =
   'mongodb+srv://daniel:dd2345@recipes-3k4ea.mongodb.net/test?retryWrites=true&w=majority';
 ```
+
+To use a different database, simply drop a different connection string into the `dataBaseURL` variable.
 
 Call mongoose's connect method, passing it the URL. 
 
@@ -544,76 +544,6 @@ We require mongoose and create and export an instance of a mongoose Schema to ma
 
 The last line exports the RecipeShema together with Mongoose's built in MongoDb interfacing methods. We'll refer to this Recipe object in other files.
 
-<!-- ### Using Mongoose Methods and Schema -->
-
-<!-- 1: Update `server.js` with these lines (in their appropriate locations):
-
-```js
-const mongoose = require('mongoose');
-
-const mongoUri = 'mongodb://devereld:dd2345@ds015730.mlab.com:15730/recipes-dd';
-
-mongoose.connect(mongoUri);
-``` -->
-
-<!-- To use a different database, simply drop a different connection string into the `mongoUri` variable.
-
-If we want to wrap our Express app startup inside the MongoDB connection it would look like:
-
-```js
-mongoose.connect(mongoUri, { useNewUrlParser: true }, () => {
-  app.listen(3001);
-  console.log('Server running at http://localhost:3001/');
-});
-``` -->
-
-<!-- 2: Add a reference to our model `const recipeModel = require('./api/recipe.model');`:
-
-```js
-const express = require('express');
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-
-const recipes = require('./api/recipe.controllers');
-const recipeModels = require('./api/recipe.model');
-
-const app = express();
-const mongoUri = 'mongodb://devereld:dd2345@ds015730.mlab.com:15730/recipes-dd';
-
-app.use(bodyParser.json());
-
-app.get('/', function(req, res) {
-  res.send('Ahoy there');
-});
-
-app.get('/api/recipes', recipes.findAll);
-app.get('/api/recipes/:id', recipes.findById);
-app.post('/api/recipes', recipes.add);
-app.put('/api/recipes/:id', recipes.update);
-app.delete('/api/recipes/:id', recipes.delete);
-
-mongoose.connect(mongoUri, { useNewUrlParser: true }, () => {
-  app.listen(3001);
-  console.log('Server running at http://localhost:3001/');
-});
-``` -->
-
-<!-- 3: Update `api/recipe.controllers.js` to require Mongoose, so we can create an instance of our Recipe model to work with.
-
-Add to the top of that file:
-
-```js
-const mongoose = require('mongoose');
-const Recipe = mongoose.model('Recipe');
-
-exports.findAll = function() {};
-exports.findById = function() {};
-exports.add = function() {};
-exports.update = function() {};
-exports.delete = function() {};
-
-``` -->
-
 Delete the model in server.js and import `recipe.model.js`. Order is important. In `server.js` we must require the model _before_ the controllers.
 
 ```js
@@ -713,16 +643,6 @@ exports.import = function(req, res) {
 ```
 
 `Recipe` refers to the mongoose Recipe model we imported. `Model.create()` is a mongoose method
-
-<!-- In Mongoose, there is Model.create and Collection.insert - the latter isn't strictly part of Mongoose, but of the underlying MongoDB driver. -->
-
-<!-- This import method adds four items from the JSON to a recipes collection. The Recipe model is referenced here to call its create method. `Model.create()` takes one or more documents in JSON form, and a callback to run on completion. If an error occurs, Terminal will return the error and the request will timeout in the browser. On success, the 202 "Accepted" HTTP status code is returned to the browser. -->
-
-<!-- Visit this new endpoint to import data:
-
-[localhost:3001/api/import/](localhost:3001/api/import/) -->
-
-<!-- Now visit the [http://localhost:3001/api/recipes](http://localhost:3001/api/recipes) endpoint to view the new recipes data. You'll see an array of JSON objects, each in the defined schema, with an additional generated unique private `_id`. -->
 
 ## Mongoose Model.DeleteMany() 
 
@@ -830,6 +750,31 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 Test the form using the information from Pho.
 
+### Demo: Posting via Postman
+
+Since modeling endpoints is a common task and few enjoy using curl (more on curl in a moment), most people use a utility such as [Postman](https://www.getpostman.com/).
+
+You can download and install it [here](https://www.getpostman.com/). (You need not create an account to use it.)
+
+Test a GET in postman with [http://localhost:3000/api/recipes/](http://localhost:3000/api/recipes/) and then delete all the recipes: [http://localhost:3000/api/killall/](http://localhost:3000/api/killall/)
+
+In a new terminal tab - use cURL to POST to the add endpoint with the full Recipe JSON as the request body (making sure to check the URL port and path).
+
+```sh
+curl -i -X POST -H 'Content-Type: application/json' -d '{"title": "Toast", "image": "toast.png", "description":"Tasty!"}' http://localhost:3000/api/recipes
+```
+
+Create a new Recipe in Postman
+
+1. Set Postman to POST, set the URL in Postman to `http://localhost:3000/api/recipes/`
+2. Choose `raw` in `Body` and set the text type to `JSON(application/json)`
+3. Set Body to `{"title": "Toast", "image": "toast.jpg", "description":"Postman? Tasty!"}`
+4. Hit `Send`
+
+Refresh `http://localhost:3000/recipes` or use Postman's history to see the new entry at the end.
+
+Save the query in Postman to a new Postman collection.
+
 ## Mongoose Model.remove
 
 Our next REST endpoint, delete, reuses what we've done above. Add this to `recipe.controllers.js`.
@@ -853,7 +798,7 @@ Or by a Delete action in Postman.
 
 1. Set the action to Delete
 2. Append an id from the recipes endpoint to the /api/recipes endpoint
-3. Hit Send (e.g.: `http://localhost:3001/api/recipes/58c39048b3ddce0348706837`)
+3. Hit Send (e.g.: `http://localhost:3000/api/recipes/58c39048b3ddce0348706837`)
 
 It probably doesn't make much sense to send the results back from a delete function (since there are no results) so change it to use an [HTTP status code](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#2xx_Success).
 
@@ -865,8 +810,6 @@ exports.delete = function(req, res) {
   });
 };
 ```
-
-<!-- postman post -->
 
 Forms only support GET and POST and are inappropriate for deleting.
 
@@ -1221,16 +1164,8 @@ Your homework is to recreate the back end and the front end as above with your o
 
 ## Notes
 
-### More Postman
 
-Since modeling endpoints is a common task and few enjoy using curl (more on curl in a moment), most people use a utility such as [Postman](https://www.getpostman.com/).
-
-Download and install it [here](https://www.getpostman.com/). (You need not create an account to use it.)
-
-Test a GET in postman with [http://localhost:3001/api/recipes/](http://localhost:3001/api/recipes/) and then delete all the recipes: [http://localhost:3001/api/killall/](http://localhost:3001/api/killall/)
-
-
-### Test the Model
+### Update the Model
 
 Try removing title from `recipe.model`:
 
@@ -1381,44 +1316,4 @@ The ObjectId data type commonly specifies a link to another document in your dat
 
 The Array data type allows you to store JavaScript-like arrays. With an Array data type, you can perform common JavaScript array operations on them, such as push, pop, shift, slice, etc.
 
-### Find By id
 
-Recall our route for getting an entry by id: `app.get('/recipes/:id', recipes.findById)`.
-
-Add the handler method to `recipe.controllers.js`:
-
-```js
-exports.findById = (req, res) => {
-  const id = req.params.id;
-  Recipe.findOne({ _id: id }, (err, json) => {
-    if (err) return console.log(err);
-    return res.send(json);
-  });
-};
-```
-
-This route's path uses a parameter pattern for id `/recipes/:id` which we can refer to in `req` to look up and return just one document.
-
-At your findAll endpoint `http://localhost:3001/api/recipes`, copy one of the ids, paste it in at the end of the current url in the browser and refresh. You'll get a single JSON object for that one recipe's document.
-
-e.g. `http://localhost:3001/api/recipes/< id goes here >`
-
-
-### Posting via Postman
-
- In a new terminal tab - use cURL to POST to the add endpoint with the full Recipe JSON as the request body (making sure to check the URL port and path).
-
-```sh
-curl -i -X POST -H 'Content-Type: application/json' -d '{"title": "Toast", "image": "toast.png", "description":"Tasty!"}' http://localhost:3001/api/recipes
-```
-
-Create a new Recipe in Postman
-
-1. Set Postman to POST, set the URL in Postman to `http://localhost:3001/api/recipes/`
-2. Choose `raw` in `Body` and set the text type to `JSON(application/json)`
-3. Set Body to `{"title": "Toast", "image": "toast.jpg", "description":"Postman? Tasty!"}`
-4. Hit `Send`
-
-Refresh `http://localhost:3001/recipes` or use Postman's history to see the new entry at the end.
-
-Save your query in Postman to a new Postman collection.
