@@ -2,9 +2,10 @@
 - [Server Side with ExpressJS](#Server-Side-with-ExpressJS)
   - [Homework](#Homework)
   - [Reading](#Reading)
-  - [NODE](#NODE)
+  - [NodeJS](#NodeJS)
   - [Scaffolding Our Server](#Scaffolding-Our-Server)
   - [ExpressJS](#ExpressJS)
+    - [Aside: Express generator](#Aside-Express-generator)
     - [Express Routes](#Express-Routes)
   - [MongoDB](#MongoDB)
   - [Mongoose](#Mongoose)
@@ -26,27 +27,29 @@
   - [Mongoose Model.findByIdAndUpdate](#Mongoose-ModelfindByIdAndUpdate)
   - [Deployment](#Deployment)
   - [Notes](#Notes)
+    - [More Postman](#More-Postman)
+    - [Test the Model](#Test-the-Model)
     - [Find By id](#Find-By-id)
-    - [Create a new Recipe in Postman](#Create-a-new-Recipe-in-Postman)
+    - [Posting via Postman](#Posting-via-Postman)
 
 
-Today we will be building the back and front end for a [simple recipes app](https://morning-falls-57252.herokuapp.com).
+Today we will be building the back and front end for a [simple recipes app](https://morning-falls-57252.herokuapp.com). Foor a final version of this project see the `local` branch of this repo.
 
 ## Homework
-Midterm assignment: use the steps below to create your own REST API. 
+Midterm assignment: use the steps below to create your own REST API. Deploy the app to Heroku using a [Git branch](https://devcenter.heroku.com/categories/deploying-with-git). 
 
 ## Reading
-* Technology stack [overview](https://developer.mozilla.org/en-US/docs/Learn/Server-side/First_steps/Client-Server_overview)
-* Watch [Express JS Crash Course](https://youtu.be/L72fhGm1tfE)
-* The MDN [Server Side Tutorial](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs)
+* [Client-Server Overview](https://developer.mozilla.org/en-US/docs/Learn/Server-side/First_steps/Client-Server_overview) on MDN
+* Watch Traversey's [Express JS Crash Course](https://youtu.be/L72fhGm1tfE)
+* The MDN [Express web framework](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs) tutorial uses the Express application generator and pug as a templating language
 
-## NODE
+## NodeJS
 
 An implementation of Chrome's JavaScript engine _outside the browser_.
 
 A simple demo:
 
-`script.js`:
+`server.js`:
 
 ```js
 var addItems = function (num1, num2) {
@@ -83,9 +86,9 @@ server.listen(port, hostname, () => {
 
 Note:
 
-`const http = require('http');` is the syntax for importing in node applications. It is different from the ES6 module system we have been using in React, e.g. `import Header from './Header'`. Node uses the CommonJS module system. 
+Node uses the CommonJS module system. `const http = require('http');` is the syntax for importing in node applications. It is different from the ES6 module system we have been using in React, e.g. `import Header from './Header'`. 
 
-CommonJS uses a `require()` function to fetch dependencies and an `exports` variable to export module contents. CommonJS was not really designed for browsers were ES6 modules are used instead.
+CommonJS uses a `require()` function to fetch dependencies and an `exports` or `module.exports` variable to export module contents. CommonJS was not really designed for browsers where ES6 modules are used instead.
 
 ## Scaffolding Our Server
 
@@ -103,11 +106,13 @@ CommonJS uses a `require()` function to fetch dependencies and an `exports` vari
 
 ## ExpressJS
 
-[Express](https://expressjs.com/) is a server-side or "back-end" framework for building web applications on Node.js. It simplifies the server creation process and uses JavaScript as the server-side language. 
+[Express](https://expressjs.com/) is a [popular](https://2018.stateofjs.com/back-end-frameworks/overview/) server-side or "back-end" framework for building web applications on Node.js. It simplifies the server creation process and uses JavaScript as the server-side language. 
 
-Common web-development tasks are not directly supported by Node. Express allows you to add specific handling for different HTTP verbs (e.g. GET, POST, DELETE, etc.), separately handle requests at different URL paths ("routes"), serve static files, and use templates to dynamically create the server's response to the browser.
+Common web-development tasks are not directly supported by Node. Express allows you to add specific handling for different HTTP verbs (e.g. GET, POST, DELETE), separately handle requests at different URL paths ("routes"), serve static files, and dynamically create the server's response to the browser.
 
 Express has an [application generator](https://expressjs.com/en/starter/generator.html) (not unlike create-react-app), but we will not be using it today.
+
+### Aside: Express generator
 
 Demo the Express application generator.
 
@@ -180,25 +185,13 @@ app.get('/music/:type', function(req, res) {
 
 Now we are using both `req` and `res`.
 
-* [ExpressJS 4.x Request reference](https://expressjs.com/en/4x/api.html#req)
+Route parameters are named URL segments that are used to capture values. The captured values are populated in the `req.params` object, with the name of the route parameter specified in the path as their respective keys.
+
+See also the [ExpressJS Request reference](https://expressjs.com/en/4x/api.html#req)
 
 Test it at `http://localhost:3000/music/jazz`
 
 Again the server needs to be restarted but this time we will use `npm run dev`. Nodemon (installed earlier) will listen for changes to server.js and restart it as needed.
-
-Test Nodemon by adding a new route:
-
-```js
-// our third route
-app.get('/test', function(req, res) {
-  res.sendFile(__dirname + '/public/index.html');
-  console.log(__dirname);
-});
-```
-
-And go to the `test` endpoint in the browser.
-
-Instead of using `res.send` we are using `res.sendFile`. `__dirname` is a special Node global that gives us the current directory.
 
 Rollback server.js to:
 
@@ -210,10 +203,12 @@ app.get('/', function(req, res) {
   res.sendFile(__dirname + '/public/index.html');
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => console.log(`Server running at port ${PORT}`));
 ```
+
+Instead of using `res.send` we are using `res.sendFile`. `__dirname` is a special Node global that gives us the current directory.
 
 ## MongoDB
 
@@ -265,16 +260,16 @@ mongoose
   .catch(err => console.log(err));
 ```
 
-Note that, like `fetch()` the connect method returns a promise which we are using to log to the console (the terminal here) and show any errors.
-
+Note that, like `fetch()` Mongoose's connect method returns a promise which we are using to log to the console (the terminal) and show any errors.
 
 ### Mongoose Schema
 
-Mongoose uses [schemas](https://mongoosejs.com/docs/guide.html#definition) to define your data and provides methods to add, remove, delete and etc.
+Mongoose uses [schemas](https://mongoosejs.com/docs/guide.html#definition) to define data and provides methods to add, remove, delete and more.
 
 Create an instance of a Mongoose schema, RecipeSchema:
 
 Add to `server.js`: 
+
 ```js
 const RecipeSchema = new mongoose.Schema({
   title: String,
@@ -299,7 +294,7 @@ app.get('/api/recipes', function(req, res) {
 });
 ```
 
-Note the path: `/api/recipes`. Go to that endpoint in your browser to see the array.
+Note the path: `/api/recipes`. Go to that endpoint in your browser to see the data.
 
 ### Import Data
 
@@ -467,7 +462,7 @@ Add the following to `recipe.controllers.js`:
 
 ```js
 const mongoose = require('mongoose');
-const Recipe = mongoose.model('Recipe');
+// const Recipe = mongoose.model('Recipe');
 
 exports.findAll = function() {};
 exports.findById = function() {};
@@ -476,7 +471,7 @@ exports.update = function() {};
 exports.delete = function() {};
 ```
 
-The CommonJS `exports` makes the function available for import elsewhere in our application.
+The CommonJS `exports` allows the functions to be available for import elsewhere in our application.
 
 Update `server.js` to require our controllers:
 
@@ -520,6 +515,8 @@ exports.findAll = function(req, res) {
   ]);
 };
 ```
+
+And test the API endpoint.
 
 You should see the recipe in the browser and, at the specified route `/api/recipes'`, you should see the json in the browser.
 
@@ -617,14 +614,14 @@ exports.delete = function() {};
 
 ``` -->
 
-Delete the model in server.js and import recipe.model.js. Order is important. In `server.js` we must require the model _before_ the controllers.
+Delete the model in server.js and import `recipe.model.js`. Order is important. In `server.js` we must require the model _before_ the controllers.
 
 ```js
 const recipeModel = require('./api/recipe.model');
-const recipes = require('./api/recipe.controllers');
+const recipeControllers = require('./api/recipe.controllers');
 ```
 
-Delete the `findAll()` function in `server.js` and update the `findAll()` function in `recipe.controllers` to query Mongo with the `find()` method.
+Update the `findAll()` function in `recipe.controllers` to query Mongo with the `find()` method.
 
 ```js
 const mongoose = require('mongoose');
@@ -641,6 +638,8 @@ exports.add = function() {};
 exports.update = function() {};
 exports.delete = function() {};
 ```
+
+Note that we need to reference the Mongoose schema `const Recipe = mongoose.model('Recipe')` as we are using it in `Recipe.find`.
 
 Refactor to use arrow functions if desired:
 
@@ -809,12 +808,12 @@ button {
 
 If we try to run the form now we get a new empty recipe. 
 
-We need to unpack the data on the server side. [body-parser](https://github.com/expressjs/body-parser) parses the incoming request body (req.body)
+We need to unpack the data on the server side. We will use [body-parser](https://github.com/expressjs/body-parser) to parse the incoming request body (req.body)
 
 Install `body-parser`:
 
 ```sh
-npm i body-parser
+npm i -S body-parser
 ```
 
 Require it in server.js:
@@ -844,10 +843,10 @@ exports.delete = function(req, res) {
 };
 ```
 
-Check it out with curl (replacing the id at the end of the URL with a known id from you `api/recipes` endpoint):
+Check it out with curl (replacing the id at the end of the URL with a known id from the `api/recipes` endpoint):
 
 ```sh
-curl -i -X DELETE http://localhost:3001/api/recipes/5be48fb63746760366a67484
+curl -i -X DELETE http://localhost:3000/api/recipes/5d27783364d7acb966b2b9ac
 ```
 
 Or by a Delete action in Postman.
@@ -862,10 +861,12 @@ It probably doesn't make much sense to send the results back from a delete funct
 exports.delete = function(req, res) {
   let id = req.params.id;
   Recipe.remove({ _id: id }, (result) => {
-    return res.sendStatus(451);
+    return res.sendStatus(200);
   });
 };
 ```
+
+<!-- postman post -->
 
 Forms only support GET and POST and are inappropriate for deleting.
 
@@ -894,7 +895,7 @@ Note the method option passed to fetch.
 
 Note the use of `dataset`.
 
-`(node:31390) DeprecationWarning: collection.remove is deprecated. Use deleteOne, deleteMany, or bulkWrite instead.`
+<!-- `(node:31390) DeprecationWarning: collection.remove is deprecated. Use deleteOne, deleteMany, or bulkWrite instead.` -->
 
 Make sure this code is inside the renderStories function.
 
@@ -953,22 +954,23 @@ delBtns.forEach(btn => {
 
 ## Find by ID
 
-Let's create a detail page for each recipe using findById function:
+Let's create a detail page for each recipe using findById function.
 
-` <h3><a href="api/recipes/${recipe._id}">${recipe.title}</a></h3>`
+First, add a link to the page we will create:
 
-`<h3><a href="detail.html?recipe=${recipe._id}">${recipe.title}</a></h3>`
+<!-- ` <h3><a href="api/recipes/${recipe._id}">${recipe.title}</a></h3>` -->
+
+```html
+<h3><a href="detail.html?recipe=${recipe._id}">${recipe.title}</a></h3>
+```
 
 ## Detail Page
 
-Fence the JavaScript for the homepage:
+Before creating the detail page let's create an external JavaScript file in `public/js/scripts.js`.
 
-```html
- <script src="js/scripts.js"></script>
- <script>
-   homepage();
- </script>
- ```
+Link it to `index.html`:
+ 
+And call a new `homepage();` function:
 
  ```js
  const homepage = () => {
@@ -1006,9 +1008,16 @@ Fence the JavaScript for the homepage:
 };
 ```
 
-Save index.html as detail.html.
+Save index.html as detail.html and change the script:
 
-Start by filling out the findByID function to use Mongoose's `Model.findOne`:
+```html
+ <script src="js/scripts.js"></script>
+ <script>
+   detail();
+ </script>
+ ```
+
+Start by filling out the findByID function to use Mongoose's `Model.findOne` in `recipe.controllers`:
 
 ```js
 exports.findById = (req, res) => {
@@ -1031,10 +1040,11 @@ const detail = () => {
     .then(response => response.json())
     .then(recipe => console.log(recipe));
 };
-
 ```
 
 Note the use of [URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams).
+
+Now we should be able to navigate tot he detail page and see the recipe in the console.
 
 Render a single recipe to the page:
 
@@ -1063,7 +1073,9 @@ const detail = () => {
 
 ## Mongoose Model.findByIdAndUpdate
 
-Update recipe.controllers:
+We will use the form in `detail.html`  to update and edit the recipe. 
+
+Update `recipe.controllers`:
 
 ```js
 exports.update = (req, res) => {
@@ -1078,7 +1090,7 @@ exports.update = (req, res) => {
 
 We will use `findByIdAndUpdate`
 
-New form:
+Edit the form:
 
 ```html
 <h3>Edit Recipe</h3>
@@ -1126,7 +1138,7 @@ const detail = () => {
 };
 ```
 
-server.js
+In order to make this work we need to add json parsing to server.js
 
 ```js
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -1185,69 +1197,56 @@ const updateRecipe = () => {
 
 ## Deployment
 
-Heroku
+To prepare for deployment create a `.env` file in the root of the project:
 
-.env:
+`.env`:
 
 ```sh
 NODE_ENV=development
 DATABASE=mongodb+srv://daniel:dd2345@recipes-3k4ea.mongodb.net/recipes?retryWrites=true&w=majority
 PORT=5000
 ```
+Note: you should use your own database. You should also not push this file to Github by using `.gitignore`.
 
-Server.js:
+Ensure that `server.js` specifies `process.env`:
 
 ```js
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running at port ${PORT}`));
 ```
 
+Ensure that your package json includes `server.js` as the `main` file and that you have a start script defined: ` "start": "node server.js"`.
+
+Your homework is to recreate the back end and the front end as above with your own database, your own data, and to deploy the result to Heroku following the instructions of Heroku's site.
+
 ## Notes
 
-```js
-var xhr = new XMLHttpRequest();
-xhr.open('DELETE', 'api/recipes/5d2211f8e71dff0bc9230abe');
-xhr.setRequestHeader('Content-Type', 'application/json');
-xhr.onload = () => {
-  if (xhr.status === 200) {
-    location.reload(true);
-    console.log(xhr.responseText);
-  } else {
-    console.log(xhr.status, xhr.responseText);
-  }
-};
-xhr.send();
-```
-
-<!-- ## Introducing Postman
+### More Postman
 
 Since modeling endpoints is a common task and few enjoy using curl (more on curl in a moment), most people use a utility such as [Postman](https://www.getpostman.com/).
 
 Download and install it [here](https://www.getpostman.com/). (You need not create an account to use it.)
 
-Test a GET in postman with [http://localhost:3001/api/recipes/](http://localhost:3001/api/recipes/) and then delete all the recipes: [http://localhost:3001/api/killall/](http://localhost:3001/api/killall/) -->
+Test a GET in postman with [http://localhost:3001/api/recipes/](http://localhost:3001/api/recipes/) and then delete all the recipes: [http://localhost:3001/api/killall/](http://localhost:3001/api/killall/)
 
 
-<!-- ### Test the Model
+### Test the Model
 
-Try removing date from `recipe.model`:
+Try removing title from `recipe.model`:
 
 ```js
 const RecipeSchema = new Schema({
-  name: String,
-  title: String,
   description: String,
   image: String
 });
 ```
 
-Run import again. The date property will be missing from the imported items.
+Run import again. The title property will be missing from the imported items.
 
-Add it back to the schema, this time using a default `created` value of type Date:
+Add it back to the schema, this time including a default `created` value of type Date:
 
 ```js
 const RecipeSchema = new Schema({
-  name: String,
   title: String,
   created: { 
     type: Date,
@@ -1405,20 +1404,15 @@ At your findAll endpoint `http://localhost:3001/api/recipes`, copy one of the id
 e.g. `http://localhost:3001/api/recipes/< id goes here >`
 
 
+### Posting via Postman
 
-
- -->
-
-
-
-
- <!-- In a new terminal tab - use cURL to POST to the add endpoint with the full Recipe JSON as the request body (making sure to check the URL port and path).
+ In a new terminal tab - use cURL to POST to the add endpoint with the full Recipe JSON as the request body (making sure to check the URL port and path).
 
 ```sh
 curl -i -X POST -H 'Content-Type: application/json' -d '{"title": "Toast", "image": "toast.png", "description":"Tasty!"}' http://localhost:3001/api/recipes
 ```
 
-### Create a new Recipe in Postman
+Create a new Recipe in Postman
 
 1. Set Postman to POST, set the URL in Postman to `http://localhost:3001/api/recipes/`
 2. Choose `raw` in `Body` and set the text type to `JSON(application/json)`
@@ -1427,4 +1421,4 @@ curl -i -X POST -H 'Content-Type: application/json' -d '{"title": "Toast", "imag
 
 Refresh `http://localhost:3001/recipes` or use Postman's history to see the new entry at the end.
 
-Save your query in Postman to a new Postman collection. -->
+Save your query in Postman to a new Postman collection.
