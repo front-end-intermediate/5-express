@@ -16,6 +16,8 @@ a {
 }
 img {
   max-width: 200px;
+  float: left;
+  margin-right: 1rem;
 }
 input,
 textarea {
