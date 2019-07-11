@@ -15,18 +15,20 @@
   - [Using CommonJS](#Using-CommonJS)
     - [Controllers](#Controllers)
     - [Recipe Model](#Recipe-Model)
-    - [Importing Data](#Importing-Data)
-    - [Model.DeleteMany()](#ModelDeleteMany)
-    - [Find By id](#Find-By-id)
-  - [Add a Recipe](#Add-a-Recipe)
-    - [Create a new Recipe in Postman](#Create-a-new-Recipe-in-Postman)
-    - [Delete](#Delete)
+  - [Importing with Mongoose Model.create](#Importing-with-Mongoose-Modelcreate)
+  - [Model.DeleteMany()](#ModelDeleteMany)
+  - [Add a Recipe: Model.create](#Add-a-Recipe-Modelcreate)
+  - [Delete: Model.remove](#Delete-Modelremove)
   - [Delete on the Front End](#Delete-on-the-Front-End)
   - [Find by ID](#Find-by-ID)
   - [Detail Page](#Detail-Page)
-  - [Update/Edit a Recipe](#UpdateEdit-a-Recipe)
+  - [Update/Edit: Model.findByIdAndUpdate](#UpdateEdit-ModelfindByIdAndUpdate)
   - [Notes](#Notes)
+    - [Find By id](#Find-By-id)
+    - [Create a new Recipe in Postman](#Create-a-new-Recipe-in-Postman)
 
+
+Today we will be building the back and front end for a simple recipes app.
 
 ## Homework
 Midterm assignment.
@@ -102,6 +104,17 @@ CommonJS uses a `require()` function to fetch dependencies and an `exports` vari
 [Express](https://expressjs.com/) is a server-side or "back-end" framework for building web applications on Node.js. It simplifies the server creation process and uses JavaScript as the server-side language. 
 
 Common web-development tasks are not directly supported by Node. Express allows you to add specific handling for different HTTP verbs (e.g. GET, POST, DELETE, etc.), separately handle requests at different URL paths ("routes"), serve static files, and use templates to dynamically create the server's response to the browser.
+
+Express was an [application generator](https://expressjs.com/en/starter/generator.html) not unlike create-react-app, but we will not be using that today.
+
+Demo of the Express application generator:
+
+```sh
+npx express-generator --view=pug --css=sass expressGenerator
+cd expressGenerator
+npm install
+DEBUG=myapp:* npm start
+```
 
 Create `server.js` for express at the top level of the folder:
 
@@ -234,6 +247,10 @@ const dataBaseURL =
 ```
 
 Call mongoose's connect method, passing it the URL. 
+
+We connect to a Mongo DB through the Mongoose's connect method, `mongoose.connect(URL, { options });`, and pass any configuration options in using an object.
+
+Store the database URL in a variable:
 
 ```js
 mongoose
@@ -636,7 +653,7 @@ Once Mongoose looks up the data and returns a result set, we use `res.send()` to
 
 Check that the server is still running and then visit the API endpoint for all recipes [localhost:3000/api/recipes](localhost:3000/api/recipes). You'll get JSON data back from the database - possibly an empty array `[]`.
 
-### Importing Data
+## Importing with Mongoose Model.create
 
 Add a new api route - `app.get('/api/import', recipeControllers.import);` - to our list in `server.js`:
 
@@ -700,7 +717,7 @@ exports.import = function(req, res) {
 
 <!-- Now visit the [http://localhost:3001/api/recipes](http://localhost:3001/api/recipes) endpoint to view the new recipes data. You'll see an array of JSON objects, each in the defined schema, with an additional generated unique private `_id`. -->
 
-### Model.DeleteMany() 
+## Model.DeleteMany() 
 
 Review some of the [documentation](http://mongoosejs.com/docs/queries.html) for Mongoose and create a script to delete all recipes with [deleteMany](http://mongoosejs.com/docs/queries.html).
 
@@ -735,207 +752,7 @@ In this example we are deleting only those recipes where the title is Lasagna.
 
 Change the filter `{ title: 'Lasagna' }` to `{}` to remove them all and run the functions again.
 
-<!-- ## Introducing Postman
-
-Since modeling endpoints is a common task and few enjoy using curl (more on curl in a moment), most people use a utility such as [Postman](https://www.getpostman.com/).
-
-Download and install it [here](https://www.getpostman.com/). (You need not create an account to use it.)
-
-Test a GET in postman with [http://localhost:3001/api/recipes/](http://localhost:3001/api/recipes/) and then delete all the recipes: [http://localhost:3001/api/killall/](http://localhost:3001/api/killall/) -->
-
-
-<!-- ### Test the Model
-
-Try removing date from `recipe.model`:
-
-```js
-const RecipeSchema = new Schema({
-  name: String,
-  title: String,
-  description: String,
-  image: String
-});
-```
-
-Run import again. The date property will be missing from the imported items.
-
-Add it back to the schema, this time using a default `created` value of type Date:
-
-```js
-const RecipeSchema = new Schema({
-  name: String,
-  title: String,
-  created: { 
-    type: Date,
-    default: Date.now
-  },
-  description: String,
-  image: String
-});
-```
-
-Test Mongoose by adding new properties to our recipes.
-
-Edit the `import` function to include ingredients and preparation arrays:
-
-```js
-exports.import = function(req, res) {
-  Recipe.create(
-    {
-      "title": "Lasagna",
-      "description": "Lasagna noodles piled high and layered full of three kinds of cheese to go along with the perfect blend of meaty and zesty, tomato pasta sauce all loaded with herbs.",
-      "image": "lasagna.png",
-      "ingredients": [
-        "salt", "honey", "sugar", "rice", "walnuts", "lime juice"
-      ],
-      "preparation": [
-        {"step": "Boil water"}, {"step": "Fry the eggs"}, {"step": "Serve hot"}
-      ]
-    },
-    {
-      "title": "Pho-Chicken Noodle Soup",
-      "description": "Pho (pronounced \"fuh\") is the most popular food in Vietnam, often eaten for breakfast, lunch and dinner. It is made from a special broth that simmers for several hours infused with exotic spices and served over rice noodles with fresh herbs.",
-      "image": "pho.png",
-      "ingredients": [
-        "salt", "honey", "sugar", "rice", "walnuts", "lime juice"
-      ],
-      "preparation": [
-        {"step": "Boil water"}, {"step": "Fry the eggs"}, {"step": "Serve hot"}
-      ]
-    },
-    {
-      "title": "Guacamole",
-      "description": "Guacamole is definitely a staple of Mexican cuisine. Even though Guacamole is pretty simple, it can be tough to get the perfect flavor - with this authentic Mexican guacamole recipe, though, you will be an expert in no time.",
-      "image": "guacamole.png",
-      "ingredients": [
-        "salt", "honey", "sugar", "rice", "walnuts", "lime juice"
-      ],
-      "preparation": [
-        {"step": "Boil water"}, {"step": "Fry the eggs"}, {"step": "Serve hot"}
-      ]
-    },
-    {
-      "title": "Hamburger",
-      "description": "A Hamburger (often called a burger) is a type of sandwich in the form of  rounded bread sliced in half with its center filled with a patty which is usually ground beef, then topped with vegetables such as lettuce, tomatoes and onions.",
-      "image": "hamburger.png",
-      "ingredients": [
-        "salt", "honey", "sugar", "rice", "walnuts", "lime juice"
-      ],
-      "preparation": [
-        {"step": "Boil water"}, {"step": "Fry the eggs"}, {"step": "Serve hot"}
-      ]
-    },
-    function(err) {
-      if (err) return console.log(err);
-      return res.sendStatus(202);
-    }
-  );
-};
-```
-
-If you delete with `killall` and reload the sample data, it will not include the arrays.
-
-Add new properties to our Recipe schema.
-
-```js
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-
-const RecipeSchema = new Schema({
-  title: String,
-  created: { 
-    type: Date,
-    default: Date.now
-  },
-  description: String,
-  image: String,
-  ingredients: Array,
-  preparation: Array
-});
-
-module.exports = mongoose.model('Recipe', RecipeSchema);
-```
-
-Kill and reimport the data using Postman. The data may be in a different order than in the schema. 
-
-There are eight data types supported by Mongoose:
-
-1. String
-2. Number
-3. Date
-4. Buffer
-5. Boolean
-6. Mixed
-7. ObjectId
-8. Array
-
-Each data type allows you to specify:
-
-* a default value
-* a custom validation function
-* indicate a field is required
-* a get function that allows you to manipulate the data before it is returned as an object
-* a set function that allows you to manipulate the data before it is saved to the database
-* create indexes to allow data to be fetched faster
-
-Certain data types allow you to customize how the data is stored and retrieved from the database. A String data type also allows you to specify the following additional options:
-
-* convert it to lowercase
-* convert it to uppercase
-* trim data prior to saving
-* a regular expression that can limit data allowed to be saved during the validation process
-* an enum that can define a list of strings that are valid
-
-The Number and Date properties both support specifying a minimum and maximum value that is allowed for that field.
-
-Most of the eight allowed data types should be quite familiar to you. However, there are several exceptions that may jump out to you, such as Buffer, Mixed, ObjectId, and Array.
-
-The Buffer data type allows you to save binary data. A common example of binary data would be an image or an encoded file, such as a PDF document.
-
-The Mixed data type turns the property into an "anything goes" field. This field resembles how many developers may use MongoDB because there is no defined structure. Be wary of using this data type as it loses many of the great features that Mongoose provides, such as data validation and detecting entity changes to automatically know to update the property when saving.
-
-The ObjectId data type commonly specifies a link to another document in your database. For example, if you had a collection of books and authors, the book document might contain an ObjectId property that refers to the specific author of the document.
-
-The Array data type allows you to store JavaScript-like arrays. With an Array data type, you can perform common JavaScript array operations on them, such as push, pop, shift, slice, etc.
-
-### Find By id
-
-Recall our route for getting an entry by id: `app.get('/recipes/:id', recipes.findById)`.
-
-Add the handler method to `recipe.controllers.js`:
-
-```js
-exports.findById = (req, res) => {
-  const id = req.params.id;
-  Recipe.findOne({ _id: id }, (err, json) => {
-    if (err) return console.log(err);
-    return res.send(json);
-  });
-};
-```
-
-This route's path uses a parameter pattern for id `/recipes/:id` which we can refer to in `req` to look up and return just one document.
-
-At your findAll endpoint `http://localhost:3001/api/recipes`, copy one of the ids, paste it in at the end of the current url in the browser and refresh. You'll get a single JSON object for that one recipe's document.
-
-e.g. `http://localhost:3001/api/recipes/< id goes here >`
-
-
-
-
- -->
-
-
-
-
-
-
-
-
-
-
-
-## Add a Recipe
+## Add a Recipe: Model.create
 
 We used `create()` in our import function in order to add multiple documents to our Recipes  collection. Our POST handler uses the same method to add a single Recipe to the collection. Once added, the response is the full new Recipe's JSON object.
 
@@ -949,25 +766,6 @@ exports.add = function(req, res) {
   });
 };
 ```
-
-<!-- In a new terminal tab - use cURL to POST to the add endpoint with the full Recipe JSON as the request body (making sure to check the URL port and path).
-
-```sh
-curl -i -X POST -H 'Content-Type: application/json' -d '{"title": "Toast", "image": "toast.png", "description":"Tasty!"}' http://localhost:3001/api/recipes
-```
-
-### Create a new Recipe in Postman
-
-1. Set Postman to POST, set the URL in Postman to `http://localhost:3001/api/recipes/`
-2. Choose `raw` in `Body` and set the text type to `JSON(application/json)`
-3. Set Body to `{"title": "Toast", "image": "toast.jpg", "description":"Postman? Tasty!"}`
-4. Hit `Send`
-
-Refresh `http://localhost:3001/recipes` or use Postman's history to see the new entry at the end.
-
-Save your query in Postman to a new Postman collection. -->
-
-
 
 Add a form to index.html:
 
@@ -1025,7 +823,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 Test the form using the information from Pho.
 
-### Delete
+## Delete: Model.remove
 
 Our next REST endpoint, delete, reuses what we've done above. Add this to `recipe.controllers.js`.
 
@@ -1255,7 +1053,7 @@ const detail = () => {
 };
 ```
 
-## Update/Edit a Recipe
+## Update/Edit: Model.findByIdAndUpdate
 
 Update recipe.controllers:
 
@@ -1393,3 +1191,213 @@ xhr.onload = () => {
 };
 xhr.send();
 ```
+
+<!-- ## Introducing Postman
+
+Since modeling endpoints is a common task and few enjoy using curl (more on curl in a moment), most people use a utility such as [Postman](https://www.getpostman.com/).
+
+Download and install it [here](https://www.getpostman.com/). (You need not create an account to use it.)
+
+Test a GET in postman with [http://localhost:3001/api/recipes/](http://localhost:3001/api/recipes/) and then delete all the recipes: [http://localhost:3001/api/killall/](http://localhost:3001/api/killall/) -->
+
+
+<!-- ### Test the Model
+
+Try removing date from `recipe.model`:
+
+```js
+const RecipeSchema = new Schema({
+  name: String,
+  title: String,
+  description: String,
+  image: String
+});
+```
+
+Run import again. The date property will be missing from the imported items.
+
+Add it back to the schema, this time using a default `created` value of type Date:
+
+```js
+const RecipeSchema = new Schema({
+  name: String,
+  title: String,
+  created: { 
+    type: Date,
+    default: Date.now
+  },
+  description: String,
+  image: String
+});
+```
+
+Test Mongoose by adding new properties to our recipes.
+
+Edit the `import` function to include ingredients and preparation arrays:
+
+```js
+exports.import = function(req, res) {
+  Recipe.create(
+    {
+      "title": "Lasagna",
+      "description": "Lasagna noodles piled high and layered full of three kinds of cheese to go along with the perfect blend of meaty and zesty, tomato pasta sauce all loaded with herbs.",
+      "image": "lasagna.png",
+      "ingredients": [
+        "salt", "honey", "sugar", "rice", "walnuts", "lime juice"
+      ],
+      "preparation": [
+        {"step": "Boil water"}, {"step": "Fry the eggs"}, {"step": "Serve hot"}
+      ]
+    },
+    {
+      "title": "Pho-Chicken Noodle Soup",
+      "description": "Pho (pronounced \"fuh\") is the most popular food in Vietnam, often eaten for breakfast, lunch and dinner. It is made from a special broth that simmers for several hours infused with exotic spices and served over rice noodles with fresh herbs.",
+      "image": "pho.png",
+      "ingredients": [
+        "salt", "honey", "sugar", "rice", "walnuts", "lime juice"
+      ],
+      "preparation": [
+        {"step": "Boil water"}, {"step": "Fry the eggs"}, {"step": "Serve hot"}
+      ]
+    },
+    {
+      "title": "Guacamole",
+      "description": "Guacamole is definitely a staple of Mexican cuisine. Even though Guacamole is pretty simple, it can be tough to get the perfect flavor - with this authentic Mexican guacamole recipe, though, you will be an expert in no time.",
+      "image": "guacamole.png",
+      "ingredients": [
+        "salt", "honey", "sugar", "rice", "walnuts", "lime juice"
+      ],
+      "preparation": [
+        {"step": "Boil water"}, {"step": "Fry the eggs"}, {"step": "Serve hot"}
+      ]
+    },
+    {
+      "title": "Hamburger",
+      "description": "A Hamburger (often called a burger) is a type of sandwich in the form of  rounded bread sliced in half with its center filled with a patty which is usually ground beef, then topped with vegetables such as lettuce, tomatoes and onions.",
+      "image": "hamburger.png",
+      "ingredients": [
+        "salt", "honey", "sugar", "rice", "walnuts", "lime juice"
+      ],
+      "preparation": [
+        {"step": "Boil water"}, {"step": "Fry the eggs"}, {"step": "Serve hot"}
+      ]
+    },
+    function(err) {
+      if (err) return console.log(err);
+      return res.sendStatus(202);
+    }
+  );
+};
+```
+
+If you delete with `killall` and reload the sample data, it will not include the arrays.
+
+Add new properties to our Recipe schema.
+
+```js
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
+const RecipeSchema = new Schema({
+  title: String,
+  created: { 
+    type: Date,
+    default: Date.now
+  },
+  description: String,
+  image: String,
+  ingredients: Array,
+  preparation: Array
+});
+
+module.exports = mongoose.model('Recipe', RecipeSchema);
+```
+
+Kill and reimport the data using Postman. The data may be in a different order than in the schema. 
+
+There are eight data types supported by Mongoose:
+
+1. String
+2. Number
+3. Date
+4. Buffer
+5. Boolean
+6. Mixed
+7. ObjectId
+8. Array
+
+Each data type allows you to specify:
+
+* a default value
+* a custom validation function
+* indicate a field is required
+* a get function that allows you to manipulate the data before it is returned as an object
+* a set function that allows you to manipulate the data before it is saved to the database
+* create indexes to allow data to be fetched faster
+
+Certain data types allow you to customize how the data is stored and retrieved from the database. A String data type also allows you to specify the following additional options:
+
+* convert it to lowercase
+* convert it to uppercase
+* trim data prior to saving
+* a regular expression that can limit data allowed to be saved during the validation process
+* an enum that can define a list of strings that are valid
+
+The Number and Date properties both support specifying a minimum and maximum value that is allowed for that field.
+
+Most of the eight allowed data types should be quite familiar to you. However, there are several exceptions that may jump out to you, such as Buffer, Mixed, ObjectId, and Array.
+
+The Buffer data type allows you to save binary data. A common example of binary data would be an image or an encoded file, such as a PDF document.
+
+The Mixed data type turns the property into an "anything goes" field. This field resembles how many developers may use MongoDB because there is no defined structure. Be wary of using this data type as it loses many of the great features that Mongoose provides, such as data validation and detecting entity changes to automatically know to update the property when saving.
+
+The ObjectId data type commonly specifies a link to another document in your database. For example, if you had a collection of books and authors, the book document might contain an ObjectId property that refers to the specific author of the document.
+
+The Array data type allows you to store JavaScript-like arrays. With an Array data type, you can perform common JavaScript array operations on them, such as push, pop, shift, slice, etc.
+
+### Find By id
+
+Recall our route for getting an entry by id: `app.get('/recipes/:id', recipes.findById)`.
+
+Add the handler method to `recipe.controllers.js`:
+
+```js
+exports.findById = (req, res) => {
+  const id = req.params.id;
+  Recipe.findOne({ _id: id }, (err, json) => {
+    if (err) return console.log(err);
+    return res.send(json);
+  });
+};
+```
+
+This route's path uses a parameter pattern for id `/recipes/:id` which we can refer to in `req` to look up and return just one document.
+
+At your findAll endpoint `http://localhost:3001/api/recipes`, copy one of the ids, paste it in at the end of the current url in the browser and refresh. You'll get a single JSON object for that one recipe's document.
+
+e.g. `http://localhost:3001/api/recipes/< id goes here >`
+
+
+
+
+ -->
+
+
+
+
+ <!-- In a new terminal tab - use cURL to POST to the add endpoint with the full Recipe JSON as the request body (making sure to check the URL port and path).
+
+```sh
+curl -i -X POST -H 'Content-Type: application/json' -d '{"title": "Toast", "image": "toast.png", "description":"Tasty!"}' http://localhost:3001/api/recipes
+```
+
+### Create a new Recipe in Postman
+
+1. Set Postman to POST, set the URL in Postman to `http://localhost:3001/api/recipes/`
+2. Choose `raw` in `Body` and set the text type to `JSON(application/json)`
+3. Set Body to `{"title": "Toast", "image": "toast.jpg", "description":"Postman? Tasty!"}`
+4. Hit `Send`
+
+Refresh `http://localhost:3001/recipes` or use Postman's history to see the new entry at the end.
+
+Save your query in Postman to a new Postman collection. -->
