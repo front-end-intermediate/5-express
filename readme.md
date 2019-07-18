@@ -1,6 +1,7 @@
 # Server Side with ExpressJS
 - [Server Side with ExpressJS](#Server-Side-with-ExpressJS)
   - [Homework](#Homework)
+  - [Resources](#Resources)
   - [Reading](#Reading)
   - [NodeJS](#NodeJS)
   - [Scaffolding Our Server](#Scaffolding-Our-Server)
@@ -27,14 +28,17 @@
   - [Detail Page](#Detail-Page)
   - [Mongoose Model.findByIdAndUpdate](#Mongoose-ModelfindByIdAndUpdate)
   - [Deployment](#Deployment)
-  - [Notes](#Notes)
-    - [Update the Model](#Update-the-Model)
+  - [Adding File Upload](#Adding-File-Upload)
+  - [Update the Recipe Model](#Update-the-Recipe-Model)
 
 
 Today we will be building the back and front end for a [simple recipes app](https://morning-falls-57252.herokuapp.com). For a final version of this project see the `local` branch of this repo.
 
 ## Homework
 Midterm assignment: use the steps below to create your own REST API. Deploy the app to Heroku using a [Git branch](https://devcenter.heroku.com/categories/deploying-with-git).
+
+## Resources
+A [list of public apis](https://github.com/public-apis/public-apis) for use in practice.
 
 ## Reading
 * [Client-Server Overview](https://developer.mozilla.org/en-US/docs/Learn/Server-side/First_steps/Client-Server_overview) on MDN
@@ -726,27 +730,17 @@ button {
 }
 ```
 
-If we try to run the form now we get a new empty recipe. 
+If we try to run the form now we get a new empty recipe. Express has a built in decoder `express.urlencoded` that parses incoming requests with urlencoded payloads.
 
-We need to unpack the data on the server side. We will use [body-parser](https://github.com/expressjs/body-parser) to parse the incoming request body (req.body)
-
-Install `body-parser`:
-
-```sh
-npm i -S body-parser
-```
-
-Require it in server.js:
-
-```js
-const bodyParser = require('body-parser');
-```
+<!-- new -->
 
 Add to server.js with options:
 
 ```js
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 ```
+
+The HTML form element has an attribute named enctype, if not specified, its value defaults to "application/x-www-form-urlencoded" (URL encoded form). The express.urlencoded middleware can handle URL encoded forms only.
 
 Test the form using the information from Pho.
 
@@ -760,16 +754,34 @@ Test a GET in postman with [http://localhost:3000/api/recipes/](http://localhost
 
 In a new terminal tab - use cURL to POST to the add endpoint with the full Recipe JSON as the request body (making sure to check the URL port and path).
 
+Here are two possibilities:
+
 ```sh
 curl -i -X POST -H 'Content-Type: application/json' -d '{"title": "Toast", "image": "toast.png", "description":"Tasty!"}' http://localhost:3000/api/recipes
 ```
 
+```sh
+curl -i -X POST -H 'Content-Type: application/x-www-form-urlencoded' -d 'title=Toast&image=toast.png&description=Tasty!' http://localhost:3000/api/recipes
+```
+
+Note that we specify the content type and the payload differently.
+
+Express needs to be able to handle these payloads:
+
+```js
+app.use(express.json({ extended: false }));
+app.use(express.urlencoded({ extended: false }));
+```
+
+You will see content-type again in advanced uses of the fetch api.
+
 Create a new Recipe in Postman
 
 1. Set Postman to POST, set the URL in Postman to `http://localhost:3000/api/recipes/`
-2. Choose `raw` in `Body` and set the text type to `JSON(application/json)`
-3. Set Body to `{"title": "Toast", "image": "toast.jpg", "description":"Postman? Tasty!"}`
-4. Hit `Send`
+2. Set Headers to `Content-Type: application/x-www-form-urlencoded`
+3. Choose `x-www-form-urlencoded` in `Body` 
+4. Set the keys and values as per the curl test above
+5. Hit `Send`
 
 Refresh `http://localhost:3000/recipes` or use Postman's history to see the new entry at the end.
 
@@ -788,17 +800,11 @@ exports.delete = function(req, res) {
 };
 ```
 
-Check it out with curl (replacing the id at the end of the URL with a known id from the `api/recipes` endpoint):
+Check it out with curl (replacing the id at the end of the URL with a known id from the GET `api/recipes` endpoint):
 
 ```sh
 curl -i -X DELETE http://localhost:3000/api/recipes/5d27783364d7acb966b2b9ac
 ```
-
-Or by a Delete action in Postman.
-
-1. Set the action to Delete
-2. Append an id from the recipes endpoint to the /api/recipes endpoint
-3. Hit Send (e.g.: `http://localhost:3000/api/recipes/58c39048b3ddce0348706837`)
 
 It probably doesn't make much sense to send the results back from a delete function (since there are no results) so change it to use an [HTTP status code](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#2xx_Success).
 
@@ -811,9 +817,15 @@ exports.delete = function(req, res) {
 };
 ```
 
+Or by a Delete action in Postman.
+
+1. Set the action to Delete
+2. Append an id from the recipes endpoint to the /api/recipes endpoint
+3. Hit Send (e.g.: `http://localhost:3000/api/recipes/58c39048b3ddce0348706837`)
+
 Forms only support GET and POST and are inappropriate for deleting.
 
-Add a Delete link to the script:
+Add a Delete link to the DOM script:
 
 `<a class="del" data-id=${recipe._id} href="#">Delete</a>`
 
@@ -873,8 +885,6 @@ const renderStories = recipes => {
 };
 ```
 
-Note the use of `dataset` here.
-
 Note the `location.reload();`
 
 Instead on one button, many:
@@ -907,11 +917,17 @@ First, add a link to the page we will create:
 <h3><a href="detail.html?recipe=${recipe._id}">${recipe.title}</a></h3>
 ```
 
+Note that we are including the recipe id (`_id`) in the URL.
+
 ## Detail Page
 
 Before creating the detail page let's create an external JavaScript file in `public/js/scripts.js`.
 
 Link it to `index.html`:
+
+```html
+ <script src="js/scripts.js"></script>
+```
  
 And call a new `homepage();` function:
 
@@ -987,7 +1003,7 @@ const detail = () => {
 
 Note the use of [URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams).
 
-Now we should be able to navigate tot he detail page and see the recipe in the console.
+Now we should be able to navigate to the detail page and see the recipe in the console.
 
 Render a single recipe to the page:
 
@@ -1081,12 +1097,11 @@ const detail = () => {
 };
 ```
 
-In order to make this work we need to add json parsing to server.js
+In order to make this work we need to ensure we had json parsing available in server.js
 
 ```js
-app.use(bodyParser.urlencoded({ extended: true }));
-// parse application/json
-app.use(bodyParser.json());
+app.use(express.json({ extended: false }));
+app.use(express.urlencoded({ extended: false }));
 ```
 
 Test using Fetch with static content and an options object.
@@ -1106,7 +1121,7 @@ const updateRecipe = () => {
     headers: { 'Content-Type': 'application/json' },
   };
   console.log(options.body);
-  fetch(`api/recipes/5d222a54334b1112c44a6066`, options).then(response =>
+  fetch(`api/recipes/5d2cf24949462333cc0f5604`, options).then(response =>
     console.log('response'),
   );
   event.preventDefault();
@@ -1120,17 +1135,19 @@ const updateRecipe = () => {
   const editForm = document.querySelector('form');
   const urlParams = new URLSearchParams(window.location.search);
   const recipeId = urlParams.get('recipe');
+
   const updatedRecipe = {
     title: editForm.title.value,
     image: editForm.image.value,
     description: editForm.description.value,
   };
+
   const options = {
     method: 'PUT',
     body: JSON.stringify(updatedRecipe),
     headers: { 'Content-Type': 'application/json' },
   };
-  console.log(options.body);
+
   fetch(`api/recipes/${recipeId}`, options)
     .then(response => console.log(response))
     .then(() => location.reload()),
@@ -1140,32 +1157,118 @@ const updateRecipe = () => {
 
 ## Deployment
 
-To prepare for deployment create a `.env` file in the root of the project:
+Its never too early to deploy a practice project! We will deploy to [Heroku](https://devcenter.heroku.com/articles/git).
+
+To remove sensitive information from our project create a `.env` file in the root:
 
 `.env`:
 
 ```sh
 NODE_ENV=development
-DATABASE=mongodb+srv://daniel:dd2345@recipes-3k4ea.mongodb.net/recipes?retryWrites=true&w=majority
-PORT=5000
+DATABASE=mongodb+srv://daniel:dd2345@recipes-3k4ea.mongodb.net/test?retryWrites=true&w=majority
+PORT=3000
 ```
-Note: you should use your own database. You should also not push this file to Github by using `.gitignore`.
+
+Install a helper [dotenv](https://www.npmjs.com/package/dotenv):
+
+`$ npm install dotenv`
+
+Require it in `server.js`:
+
+```js
+require('dotenv').config();
+```
+
+Note: you should use your own database. You should also not push this file to Github by adding it to `.gitignore`.
+
+Test it in `server.js`:
+
+```
+const dataBaseURL = process.env.DATABASE;
+```
 
 Ensure that `server.js` specifies `process.env`:
 
 ```js
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running at port ${PORT}`));
 ```
 
+In this scenario the server should still run on port 3000.
+
 Ensure that your package json includes `server.js` as the `main` file and that you have a start script defined: ` "start": "node server.js"`.
 
-Your homework is to recreate the back end and the front end as above with your own database, your own data, and to deploy the result to Heroku following the instructions of Heroku's site.
+Create a git repo and deploy to Github.
 
-## Notes
+1. Create an account and login to Heroku
+2. Install the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli#download-and-install)
+3. Test the install with `$ heroku --version`
+4. Log in to Heroku in the terminal `$ heroku login`
+5. Create a project `$ heroku create`
+6. Check the remotes on your branch `$ git remote -v`
+7. Push the desired branch to Heroku `$ git push heroku <branch name goes here>`
 
+On Heroku set the production environment variables.
 
-### Update the Model
+In Deploy, choose Github for the deployment method. Connect to the desired repo and enable automatic deploys from the desired branch and deploy. Be sure to monitor the build.
+
+## Adding File Upload
+
+To review our api we will add file uploading to it. We will use the [File Upload](https://www.npmjs.com/package/express-fileupload) npm package for ExpressJS.
+
+We will use the File Upload npm package for Expressjs.
+
+Install it:
+
+`npm i express-fileupload -S`
+
+Require, register and create a route for it in `app.js`:
+
+```js
+...
+const fileUpload = require('express-fileupload'); 
+...
+app.use(fileUpload());
+...
+app.post('/api/upload', recipeControllers.upload);
+```
+
+Here is a working function for the api endpoint:
+
+```js
+exports.upload = function(req, res) {
+  console.log(req.files);
+  if (Object.keys(req.files).length == 0) {
+    return res.status(400).send('No files were uploaded.');
+  }
+  let file = req.files.file;
+  file.mv(`./public/img/${req.body.filename}`, err => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.json({ file: `public/img/${req.body.filename}` });
+    console.log(res.json);
+  });
+};
+```
+
+Looking at the [example project](https://github.com/richardgirges/express-fileupload/tree/master/example) we find a form to use as a starting point.
+
+```html
+<form action='/api/upload' method='post' encType="multipart/form-data" >
+  <input type="file" name="file" />
+  <input type="text" placeholder="File name" name="filename" />
+  <button type='submit'>Submit</button>
+</form>
+```
+
+Note the encType attribute on the form. We haven't been using encTypes and this is for illustrative purposes only.
+
+Upload an image and create a recipe that uses it.
+
+If successful, set the return value to `return res.sendStatus(200);`.
+
+## Update the Recipe Model
 
 Try removing title from `recipe.model`:
 
@@ -1183,7 +1286,7 @@ Add it back to the schema, this time including a default `created` value of type
 ```js
 const RecipeSchema = new Schema({
   title: String,
-  created: { 
+  created: {
     type: Date,
     default: Date.now
   },
@@ -1200,47 +1303,51 @@ Edit the `import` function to include ingredients and preparation arrays:
 exports.import = function(req, res) {
   Recipe.create(
     {
-      "title": "Lasagna",
-      "description": "Lasagna noodles piled high and layered full of three kinds of cheese to go along with the perfect blend of meaty and zesty, tomato pasta sauce all loaded with herbs.",
-      "image": "lasagna.png",
-      "ingredients": [
-        "salt", "honey", "sugar", "rice", "walnuts", "lime juice"
-      ],
-      "preparation": [
-        {"step": "Boil water"}, {"step": "Fry the eggs"}, {"step": "Serve hot"}
+      title: 'Lasagna',
+      description:
+        'Lasagna noodles piled high and layered full of three kinds of cheese to go along with the perfect blend of meaty and zesty, tomato pasta sauce all loaded with herbs.',
+      image: 'lasagna.png',
+      ingredients: ['salt', 'honey', 'sugar', 'rice', 'walnuts', 'lime juice'],
+      preparation: [
+        { step: 'Boil water' },
+        { step: 'Fry the eggs' },
+        { step: 'Serve hot' }
       ]
     },
     {
-      "title": "Pho-Chicken Noodle Soup",
-      "description": "Pho (pronounced \"fuh\") is the most popular food in Vietnam, often eaten for breakfast, lunch and dinner. It is made from a special broth that simmers for several hours infused with exotic spices and served over rice noodles with fresh herbs.",
-      "image": "pho.png",
-      "ingredients": [
-        "salt", "honey", "sugar", "rice", "walnuts", "lime juice"
-      ],
-      "preparation": [
-        {"step": "Boil water"}, {"step": "Fry the eggs"}, {"step": "Serve hot"}
+      title: 'Pho-Chicken Noodle Soup',
+      description:
+        'Pho (pronounced "fuh") is the most popular food in Vietnam, often eaten for breakfast, lunch and dinner. It is made from a special broth that simmers for several hours infused with exotic spices and served over rice noodles with fresh herbs.',
+      image: 'pho.png',
+      ingredients: ['salt', 'honey', 'sugar', 'rice', 'walnuts', 'lime juice'],
+      preparation: [
+        { step: 'Boil water' },
+        { step: 'Fry the eggs' },
+        { step: 'Serve hot' }
       ]
     },
     {
-      "title": "Guacamole",
-      "description": "Guacamole is definitely a staple of Mexican cuisine. Even though Guacamole is pretty simple, it can be tough to get the perfect flavor - with this authentic Mexican guacamole recipe, though, you will be an expert in no time.",
-      "image": "guacamole.png",
-      "ingredients": [
-        "salt", "honey", "sugar", "rice", "walnuts", "lime juice"
-      ],
-      "preparation": [
-        {"step": "Boil water"}, {"step": "Fry the eggs"}, {"step": "Serve hot"}
+      title: 'Guacamole',
+      description:
+        'Guacamole is definitely a staple of Mexican cuisine. Even though Guacamole is pretty simple, it can be tough to get the perfect flavor - with this authentic Mexican guacamole recipe, though, you will be an expert in no time.',
+      image: 'guacamole.png',
+      ingredients: ['salt', 'honey', 'sugar', 'rice', 'walnuts', 'lime juice'],
+      preparation: [
+        { step: 'Boil water' },
+        { step: 'Fry the eggs' },
+        { step: 'Serve hot' }
       ]
     },
     {
-      "title": "Hamburger",
-      "description": "A Hamburger (often called a burger) is a type of sandwich in the form of  rounded bread sliced in half with its center filled with a patty which is usually ground beef, then topped with vegetables such as lettuce, tomatoes and onions.",
-      "image": "hamburger.png",
-      "ingredients": [
-        "salt", "honey", "sugar", "rice", "walnuts", "lime juice"
-      ],
-      "preparation": [
-        {"step": "Boil water"}, {"step": "Fry the eggs"}, {"step": "Serve hot"}
+      title: 'Hamburger',
+      description:
+        'A Hamburger (often called a burger) is a type of sandwich in the form of  rounded bread sliced in half with its center filled with a patty which is usually ground beef, then topped with vegetables such as lettuce, tomatoes and onions.',
+      image: 'hamburger.png',
+      ingredients: ['salt', 'honey', 'sugar', 'rice', 'walnuts', 'lime juice'],
+      preparation: [
+        { step: 'Boil water' },
+        { step: 'Fry the eggs' },
+        { step: 'Serve hot' }
       ]
     },
     function(err) {
@@ -1251,7 +1358,7 @@ exports.import = function(req, res) {
 };
 ```
 
-If you delete with `killall` and reload the sample data, it will not include the arrays.
+If you delete with the `killall` endpoint and reload the sample data, it will not include the arrays.
 
 Add new properties to our Recipe schema.
 
@@ -1304,15 +1411,24 @@ Certain data types allow you to customize how the data is stored and retrieved f
 * a regular expression that can limit data allowed to be saved during the validation process
 * an enum that can define a list of strings that are valid
 
-The Number and Date properties both support specifying a minimum and maximum value that is allowed for that field.
-
-Most of the eight allowed data types should be quite familiar to you. However, there are several exceptions that may jump out to you, such as Buffer, Mixed, ObjectId, and Array.
-
-The Buffer data type allows you to save binary data. A common example of binary data would be an image or an encoded file, such as a PDF document.
-
-The Mixed data type turns the property into an "anything goes" field. This field resembles how many developers may use MongoDB because there is no defined structure. Be wary of using this data type as it loses many of the great features that Mongoose provides, such as data validation and detecting entity changes to automatically know to update the property when saving.
-
-The ObjectId data type commonly specifies a link to another document in your database. For example, if you had a collection of books and authors, the book document might contain an ObjectId property that refers to the specific author of the document.
+```js
+recipeEl.innerHTML = `
+  <img src="img/${recipe.image}" />
+  <h3>${recipe.title}</h3>
+  <p>${recipe.description}</p>
+  <h4>Ingredients</h4>
+  <ul>
+    ${recipe.ingredients
+      .map(ingredient => `<li>${ingredient}</li>`)
+      .join('')}
+  </ul>
+  <h4>Preparation</h4>
+  <ul>
+    ${recipe.preparation.map(prep => `<li>${prep.step}</li>`).join('')}
+  </ul>
+  <a href="/">Back</a>
+  `;
+```
 
 The Array data type allows you to store JavaScript-like arrays. With an Array data type, you can perform common JavaScript array operations on them, such as push, pop, shift, slice, etc.
 
