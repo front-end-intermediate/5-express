@@ -31,6 +31,7 @@
   - [Adding File Upload](#Adding-File-Upload)
   - [Update the Recipe Model](#Update-the-Recipe-Model)
 
+v 2.0
 
 Today we will be building the back and front end for a [simple recipes app](https://morning-falls-57252.herokuapp.com). For a final version of this project see the `local` branch of this repo.
 
@@ -1201,16 +1202,11 @@ Ensure that your package json includes `server.js` as the `main` file and that y
 Create a git repo and deploy to Github.
 
 1. Create an account and login to Heroku
-2. Install the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli#download-and-install)
-3. Test the install with `$ heroku --version`
-4. Log in to Heroku in the terminal `$ heroku login`
-5. Create a project `$ heroku create`
-6. Check the remotes on your branch `$ git remote -v`
-7. Push the desired branch to Heroku `$ git push heroku <branch name goes here>`
+2. Create a project 
+3. Go to the deployment tab and specify with Github repo and branch you are deploying from and enable automatic deploys. Be sure to monitor the build.
+4. Push the desired branch to Github
 
-On Heroku set the production environment variables.
-
-In Deploy, choose Github for the deployment method. Connect to the desired repo and enable automatic deploys from the desired branch and deploy. Be sure to monitor the build.
+<!-- On Heroku set the production environment variables. -->
 
 ## Adding File Upload
 
