@@ -22,7 +22,7 @@
   - [Mongoose Model.create](#mongoose-modelcreate)
   - [Mongoose Model.DeleteMany()](#mongoose-modeldeletemany)
   - [Mongoose Model.create](#mongoose-modelcreate-1)
-    - [Demo: Posting via Postman](#demo-posting-via-postman)
+    - [Demo: Get via Postman](#demo-get-via-postman)
   - [Mongoose Model.remove](#mongoose-modelremove)
   - [Deleting on the Front End](#deleting-on-the-front-end)
   - [Find by ID](#find-by-id)
@@ -43,6 +43,7 @@ Midterm assignment: use the steps below to create your own REST API. Deploy the 
 ## Resources
 
 A [list of public apis](https://github.com/public-apis/public-apis) for use in practice.
+A short post on [form handling](https://www.hacksparrow.com/webdev/express/handling-processing-forms.html) with ExpressJS
 
 ## Reading
 
@@ -743,7 +744,7 @@ The HTML form element has an attribute named enctype, if not specified, its valu
 
 Test the form using the information from Pho.
 
-### Demo: Posting via Postman
+### Demo: Get via Postman
 
 Since modeling endpoints is a common task and few enjoy using curl (more on curl in a moment), most people use a utility such as [Postman](https://www.getpostman.com/).
 
@@ -884,7 +885,7 @@ const renderStories = recipes => {
 };
 ```
 
-Note the `location.reload();`
+Note the `location.reload();` and the console.
 
 Instead on one button, many:
 
@@ -1014,7 +1015,7 @@ const detail = () => {
   fetch(`api/recipes/${recipeId}`)
     .then(response => response.json())
     .then(recipe => renderStory(recipe));
-
+  // NEW
   const renderStory = recipe => {
     console.log(recipe);
     recipeEl = document.createElement('div');
@@ -1026,6 +1027,7 @@ const detail = () => {
       `;
     document.querySelector('#root').append(recipeEl);
   };
+  // END NEW
 };
 ```
 
@@ -1048,7 +1050,7 @@ exports.update = (req, res) => {
 
 We will use `findByIdAndUpdate`
 
-Edit the form:
+Edit the form in `detail.html`:
 
 ```html
 <h3>Edit Recipe</h3>
@@ -1082,17 +1084,18 @@ const detail = () => {
       <a href="/">Back</a>
       `;
     document.querySelector('#root').append(recipeEl);
-
+  // NEW
     const editForm = document.querySelector('form');
     editForm.title.value = recipe.title;
     editForm.image.value = recipe.image;
     editForm.description.value = recipe.description;
     // console.log(editForm.description);
+    // END NEW
   };
 };
 ```
 
-In order to make this work we need to ensure we had json parsing available in server.js
+In order to make this work we need to ensure we have json parsing available in server.js
 
 ```js
 app.use(express.json({ extended: false }));
@@ -1101,7 +1104,9 @@ app.use(express.urlencoded({ extended: false }));
 
 Test using Fetch with static content and an options object.
 
-Be sure to replace the hard coded id (`api/recipes/5d222a54334b1112c44a6066`) with the one in the browser location bar:
+Be sure to replace the hard coded id (`api/recipes/5d222a54334b1112c44a6066`) with the one in the browser location bar. 
+
+Note: this script needs to be outside the `detail()` scope for now:
 
 ```js
 const updateRecipe = () => {
@@ -1116,7 +1121,7 @@ const updateRecipe = () => {
     headers: { 'Content-Type': 'application/json' }
   };
   console.log(options.body);
-  fetch(`api/recipes/5d2cf24949462333cc0f5604`, options).then(response =>
+  fetch(`api/recipes/5d39eafb686a99ed6e11629f`, options).then(response =>
     console.log('response')
   );
   event.preventDefault();
@@ -1204,9 +1209,7 @@ Create a git repo and deploy to Github.
 
 ## Adding File Upload
 
-To review our api we will add file uploading to it. We will use the [File Upload](https://www.npmjs.com/package/express-fileupload) npm package for ExpressJS.
-
-We will use the File Upload npm package for Expressjs.
+We will add file uploading to our API using the [File Upload](https://www.npmjs.com/package/express-fileupload) npm package for ExpressJS.
 
 Install it:
 
@@ -1269,7 +1272,7 @@ const RecipeSchema = new Schema({
 });
 ```
 
-Run import again. The title property will be missing from the imported items.
+Run killall and import again. The title property will be missing from the imported items.
 
 Add it back to the schema, this time including a default `created` value of type Date:
 
@@ -1284,6 +1287,8 @@ const RecipeSchema = new Schema({
   image: String
 });
 ```
+
+`Created ${recipe.created}`
 
 Test Mongoose by adding new properties to our recipes.
 
