@@ -1,46 +1,59 @@
 # Server Side with ExpressJS
-- [Server Side with ExpressJS](#Server-Side-with-ExpressJS)
-  - [Homework](#Homework)
-  - [Reading](#Reading)
-  - [NodeJS](#NodeJS)
-  - [Scaffolding Our Server](#Scaffolding-Our-Server)
-  - [ExpressJS](#ExpressJS)
-    - [Aside: Express generator](#Aside-Express-generator)
-    - [Express Routes](#Express-Routes)
-  - [MongoDB](#MongoDB)
-  - [Mongoose](#Mongoose)
-    - [Mongoose Schema](#Mongoose-Schema)
-- [<<<<<<< HEAD](#HEAD)
-    - [Import Data](#Import-Data)
-    - [Aside - Status Codes](#Aside---Status-Codes)
-  - [Front End](#Front-End)
-  - [Express Static Files](#Express-Static-Files)
-  - [Using CommonJS](#Using-CommonJS)
-    - [Controllers](#Controllers)
-    - [Recipe Model](#Recipe-Model)
-  - [Mongoose Model.create](#Mongoose-Modelcreate)
-  - [Mongoose Model.DeleteMany()](#Mongoose-ModelDeleteMany)
-  - [Mongoose Model.create](#Mongoose-Modelcreate-1)
-    - [Demo: Posting via Postman](#Demo-Posting-via-Postman)
-  - [Mongoose Model.remove](#Mongoose-Modelremove)
-  - [Deleting on the Front End](#Deleting-on-the-Front-End)
-  - [Find by ID](#Find-by-ID)
-  - [Detail Page](#Detail-Page)
-  - [Mongoose Model.findByIdAndUpdate](#Mongoose-ModelfindByIdAndUpdate)
-  - [Deployment](#Deployment)
-  - [Notes](#Notes)
-    - [Update the Model](#Update-the-Model)
 
+- [Server Side with ExpressJS](#server-side-with-expressjs)
+  - [Homework](#homework)
+  - [Resources](#resources)
+  - [Reading](#reading)
+  - [NodeJS](#nodejs)
+  - [Scaffolding Our Server](#scaffolding-our-server)
+  - [ExpressJS](#expressjs)
+    - [Aside: Express generator](#aside-express-generator)
+    - [Express Routes](#express-routes)
+  - [MongoDB](#mongodb)
+  - [Mongoose](#mongoose)
+    - [Mongoose Schema](#mongoose-schema)
+- [<<<<<<< HEAD](#head)
+- [=======](#)
+    - [Import Data](#import-data)
+    - [Aside - Status Codes](#aside---status-codes)
+  - [Front End](#front-end)
+  - [Express Static Files](#express-static-files)
+  - [Using CommonJS](#using-commonjs)
+    - [Controllers](#controllers)
+    - [Recipe Model](#recipe-model)
+  - [Mongoose Model.create](#mongoose-modelcreate)
+  - [Mongoose Model.DeleteMany()](#mongoose-modeldeletemany)
+  - [Mongoose Model.create](#mongoose-modelcreate-1)
+    - [Demo: Get via Postman](#demo-get-via-postman)
+  - [Mongoose Model.remove](#mongoose-modelremove)
+  - [Deleting on the Front End](#deleting-on-the-front-end)
+  - [Find by ID](#find-by-id)
+  - [Detail Page](#detail-page)
+  - [Mongoose Model.findByIdAndUpdate](#mongoose-modelfindbyidandupdate)
+  - [Deployment](#deployment)
+  - [Adding File Upload](#adding-file-upload)
+  - [Update the Recipe Model](#update-the-recipe-model)
+
+v 2.0
 
 Today we will be building the back and front end for a [simple recipes app](https://morning-falls-57252.herokuapp.com). For a final version of this project see the `local` branch of this repo.
 
 ## Homework
+
 Midterm assignment: use the steps below to create your own REST API. Deploy the app to Heroku using a [Git branch](https://devcenter.heroku.com/categories/deploying-with-git).
 
+Read the [Mozilla Guide to ExpressJS](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs).
+
+## Resources
+
+A [list of public apis](https://github.com/public-apis/public-apis) for use in practice.
+A short post on [form handling](https://www.hacksparrow.com/webdev/express/handling-processing-forms.html) with ExpressJS
+
 ## Reading
-* [Client-Server Overview](https://developer.mozilla.org/en-US/docs/Learn/Server-side/First_steps/Client-Server_overview) on MDN
-* Watch Traversey's [Express JS Crash Course](https://youtu.be/L72fhGm1tfE)
-* The MDN [Express web framework](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs) tutorial uses the Express application generator and pug as a templating language
+
+- [Client-Server Overview](https://developer.mozilla.org/en-US/docs/Learn/Server-side/First_steps/Client-Server_overview) on MDN
+- Watch Traversey's [Express JS Crash Course](https://youtu.be/L72fhGm1tfE)
+- The MDN [Express web framework](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs) tutorial uses the Express application generator and pug as a templating language
 
 ## NodeJS
 
@@ -51,17 +64,17 @@ A simple demo:
 `server.js`:
 
 ```js
-var addItems = function (num1, num2) {
-  console.log( num1 + num2 )
-}
+var addItems = function(num1, num2) {
+  console.log(num1 + num2);
+};
 
-addItems(1,2)
+addItems(1, 2);
 ```
 
 In the terminal:
 
 ```sh
-node script.js 
+node script.js
 ```
 
 Here's the canonical example:
@@ -85,7 +98,7 @@ server.listen(port, hostname, () => {
 
 Note:
 
-Node uses the CommonJS module system. `const http = require('http');` is the syntax for importing in node applications. It is different from the ES6 module system we have been using in React, e.g. `import Header from './Header'`. 
+Node uses the CommonJS module system. `const http = require('http');` is the syntax for importing in node applications. It is different from the ES6 module system we have been using in React, e.g. `import Header from './Header'`.
 
 CommonJS uses a `require()` function to fetch dependencies and an `exports` or `module.exports` variable to export module contents. CommonJS was not really designed for browsers where ES6 modules are used instead.
 
@@ -105,7 +118,7 @@ CommonJS uses a `require()` function to fetch dependencies and an `exports` or `
 
 ## ExpressJS
 
-[Express](https://expressjs.com/) is a [popular](https://2018.stateofjs.com/back-end-frameworks/overview/) server-side or "back-end" framework for building web applications on Node.js. It simplifies the server creation process and uses JavaScript as the server-side language. 
+[Express](https://expressjs.com/) is a [popular](https://2018.stateofjs.com/back-end-frameworks/overview/) server-side or "back-end" framework for building web applications on Node.js. It simplifies the server creation process and uses JavaScript as the server-side language.
 
 Common web-development tasks are not directly supported by Node. Express allows you to add specific handling for different HTTP verbs (e.g. GET, POST, DELETE), separately handle requests at different URL paths ("routes"), serve static files, and dynamically create the server's response to the browser.
 
@@ -140,10 +153,9 @@ app.get('/', function(req, res) {
 const PORT = 3000;
 
 app.listen(PORT, () => console.log(`Server running at port ${PORT}`));
-
 ```
 
-We can run this using `node server.js` but since we added commands to our package.json file we will use `npm start`. 
+We can run this using `node server.js` but since we added commands to our package.json file we will use `npm start`.
 
 You should be able to view the [output](http://localhost:3000) at `http://localhost:3000`.
 
@@ -151,13 +163,13 @@ You should be able to view the [output](http://localhost:3000) at `http://localh
 
 `app.get('/')` is a route. The URL '/' is the root of the site. The callback function is an anonymous function that takes incoming (`req`) and outgoing (`res`) parameters. The `res` object has a `send` method that returns plain text for now.
 
-* [ExpressJS 4.x Response reference](https://expressjs.com/en/4x/api.html#res)
+- [ExpressJS 4.x Response reference](https://expressjs.com/en/4x/api.html#res)
 
 Add a second route and test:
 
 ```js
 // our second route
-app.get('/music', function(req, res) { 
+app.get('/music', function(req, res) {
   res.send(`
     <h1>music</h1>
     <p>Commentary on music will go here.</p>
@@ -211,7 +223,7 @@ Instead of using `res.send` we are using `res.sendFile`. `__dirname` is a specia
 
 ## MongoDB
 
-Express apps can use [any database supported by Node](https://expressjs.com/en/guide/database-integration.html) including PostgreSQL, MySQL, MongoDB, etc. 
+Express apps can use [any database supported by Node](https://expressjs.com/en/guide/database-integration.html) including PostgreSQL, MySQL, MongoDB, etc.
 
 Rather than installing a database on our local computer we will be using [MongoDB's](https://www.mongodb.com) cloud service Atlas for our database.
 
@@ -229,7 +241,7 @@ Rather than installing a database on our local computer we will be using [MongoD
 
 There are a variety of ways to connect to the database from Express applications. Since we want to use Mongo, we installed [Mongoose](https://mongoosejs.com), a driver for MongoDB, using npm. It is easier to use than the standard [MongoClient](https://expressjs.com/en/guide/database-integration.html#mongodb) and works with models or schemas.
 
-Note: Mongoose is not the MongoDB database, just the driver needed to work with it. 
+Note: Mongoose is not the MongoDB database, just the driver needed to work with it.
 
 First, import mongoose in server.js:
 
@@ -248,7 +260,7 @@ const dataBaseURL =
 
 To use a different database, simply drop a different connection string into the `dataBaseURL` variable.
 
-Call mongoose's connect method, passing it the URL. 
+Call mongoose's connect method, passing it the URL.
 
 We connect to a Mongo DB through the Mongoose's connect method, `mongoose.connect(URL, { options });`, and pass any configuration options in using an object.
 
@@ -269,16 +281,20 @@ Mongoose uses [schemas](https://mongoosejs.com/docs/guide.html#definition) to de
 
 Create an instance of a Mongoose schema, RecipeSchema:
 
+<<<<<<< HEAD
 Add to `server.js`: 
 <<<<<<< HEAD
 =======
+=======
+Add to `server.js`:
+>>>>>>> 745b31d64800c2846b5605355c954c9c03938fa4
 
 >>>>>>> a830b52781a64763f6f424b9bb04d3c72e609e98
 ```js
 const RecipeSchema = new mongoose.Schema({
   title: String,
   description: String,
-  image: String,
+  image: String
 });
 
 const Recipe = mongoose.model('Recipe', RecipeSchema);
@@ -306,9 +322,7 @@ We will create a new endpoint that populates our database with a starter data se
 
 ```js
 app.get('/api/import', (req, res) => {
-  Recipe.create(
-
-  )
+  Recipe.create();
 });
 ```
 
@@ -321,26 +335,26 @@ app.get('/api/import', (req, res) => {
       title: 'Lasagna',
       description:
         'Lasagna noodles piled high and layered full of three kinds of cheese to go along with the perfect blend of meaty and zesty, tomato pasta sauce all loaded with herbs.',
-      image: 'lasagna.png',
+      image: 'lasagna.png'
     },
     {
       title: 'Pho-Chicken Noodle Soup',
       description:
         'Pho (pronounced "fuh") is the most popular food in Vietnam, often eaten for breakfast, lunch and dinner. It is made from a special broth that simmers for several hours infused with exotic spices and served over rice noodles with fresh herbs.',
-      image: 'pho.png',
+      image: 'pho.png'
     },
     {
       title: 'Guacamole',
       description:
         'Guacamole is definitely a staple of Mexican cuisine. Even though Guacamole is pretty simple, it can be tough to get the perfect flavor - with this authentic Mexican guacamole recipe, though, you will be an expert in no time.',
-      image: 'guacamole.png',
+      image: 'guacamole.png'
     },
     {
       title: 'Hamburger',
       description:
         'A Hamburger (often called a burger) is a type of sandwich in the form of  rounded bread sliced in half with its center filled with a patty which is usually ground beef, then topped with vegetables such as lettuce, tomatoes and onions.',
-      image: 'hamburger.png',
-    },
+      image: 'hamburger.png'
+    }
   );
 });
 ```
@@ -372,7 +386,7 @@ Let's return an HTTP status:
     },
 ```
 
-Travelling to `http://localhost:3000/api/import` will import the data again but, this time, since we return something to the browser it will not be stuck on loading. 
+Travelling to `http://localhost:3000/api/import` will import the data again but, this time, since we return something to the browser it will not be stuck on loading.
 
 ### Aside - Status Codes
 
@@ -391,9 +405,7 @@ In the body tag of `public/index.html`:
   <h1>Recipes!</h1>
 </div>
 
-<script>
-
-</script>
+<script></script>
 ```
 
 And in the head:
@@ -406,9 +418,9 @@ Use the browser's fetch API to call our api endpoint:
 
 ```html
 <script>
-fetch(`api/recipes`)
-  .then(response => response.json())
-  .then(recipes => console.log(recipes));
+  fetch(`api/recipes`)
+    .then(response => response.json())
+    .then(recipes => console.log(recipes));
 </script>
 ```
 
@@ -433,7 +445,6 @@ const renderStories = recipes => {
     document.querySelector('#root').append(recipeEl);
   });
 };
-
 ```
 
 Note that neither the CSS nor the images are working.
@@ -445,13 +456,13 @@ To serve [static files](https://expressjs.com/en/starter/static-files.html) such
 Add the following to server.js:
 
 ```js
-app.use(express.static('static'))
+app.use(express.static('static'));
 ```
 
 This works but images and CSS are really the domain of the front end. Move the `css` and `img` folders into `public` and edit the static declaration to read:
 
 ```js
-app.use(express.static('public'))
+app.use(express.static('public'));
 ```
 
 ## Using CommonJS
@@ -497,9 +508,9 @@ app.delete('/api/recipes/:id', recipeControllers.delete);
 
 Each route consists of three parts:
 
-* A specific HTTP Action (`get, put, post, delete`)
-* A specific URL path (`/api/recipes/:id`)
-* A handler method (`findAll`) that corresponds to the exported function in our recipe controllers file
+- A specific HTTP Action (`get, put, post, delete`)
+- A specific URL path (`/api/recipes/:id`)
+- A handler method (`findAll`) that corresponds to the exported function in our recipe controllers file
 
 We've modeled our URL routes off of REST API conventions, and named our handling methods clearly - prefixing them with `api/` in order to differentiate them from any routes we create to serve the front end.
 
@@ -537,14 +548,13 @@ const Schema = mongoose.Schema;
 const RecipeSchema = new Schema({
   title: String,
   description: String,
-  image: String,
+  image: String
 });
 
 module.exports = mongoose.model('Recipe', RecipeSchema);
-
 ```
 
-We require mongoose and create and export an instance of a mongoose Schema to make sure we're getting and setting well-formed data to and from the Mongo collection. 
+We require mongoose and create and export an instance of a mongoose Schema to make sure we're getting and setting well-formed data to and from the Mongo collection.
 
 The last line exports the RecipeShema together with Mongoose's built in MongoDb interfacing methods. We'll refer to this Recipe object in other files.
 
@@ -594,7 +604,7 @@ Check that the server is still running and then visit the API endpoint for all r
 
 ## Mongoose Model.create
 
-We will again use the Mongoose method `Model.create` to import data into our application. 
+We will again use the Mongoose method `Model.create` to import data into our application.
 
 Add a new api route - `app.get('/api/import', recipeControllers.import);` - to our list in `server.js`:
 
@@ -648,7 +658,7 @@ exports.import = function(req, res) {
 
 `Recipe` refers to the mongoose Recipe model we imported. `Model.create()` is a mongoose method
 
-## Mongoose Model.DeleteMany() 
+## Mongoose Model.DeleteMany()
 
 Review some of the [documentation](http://mongoosejs.com/docs/queries.html) for Mongoose and create a script to delete all recipes with [deleteMany](http://mongoosejs.com/docs/queries.html).
 
@@ -670,22 +680,22 @@ Add the corresponding function to the controllers file:
 
 ```js
 exports.killall = function(req, res) {
-  Recipe.deleteMany( { title: 'Lasagna' }, (err) => {
+  Recipe.deleteMany({ title: 'Lasagna' }, err => {
     if (err) return console.log(err);
     return res.sendStatus(202);
-  })
+  });
 };
 ```
 
 Run the function by visiting the killall endpoint and then returning to the recipes endpoint to examine the results.
 
-In this example we are deleting only those recipes where the title is Lasagna. 
+In this example we are deleting only those recipes where the title is Lasagna.
 
 Change the filter `{ title: 'Lasagna' }` to `{}` to remove them all and run the functions again.
 
 ## Mongoose Model.create
 
-We used `create()` in our import function in order to add multiple documents to our Recipes  collection. Our POST handler uses the same method to add a single Recipe to the collection. Once added, the response is the full new Recipe's JSON object.
+We used `create()` in our import function in order to add multiple documents to our Recipes collection. Our POST handler uses the same method to add a single Recipe to the collection. Once added, the response is the full new Recipe's JSON object.
 
 Edit `recipe-controllers.js`:
 
@@ -702,8 +712,8 @@ Add a form to index.html:
 
 ```html
 <form action="/api/recipes" method="POST">
-  <input type="text" placeholder="Recipe Title" name="title">
-  <input type="text" placeholder="Image" name="image">
+  <input type="text" placeholder="Recipe Title" name="title" />
+  <input type="text" placeholder="Image" name="image" />
   <textarea type="text" placeholder="Description" name="description"></textarea>
   <button type="submit">Submit</button>
 </form>
@@ -714,7 +724,8 @@ Note the action and method attributes.
 Add supporting CSS:
 
 ```css
-input, textarea {
+input,
+textarea {
   font-size: 1rem;
   display: block;
   margin: 1rem;
@@ -730,31 +741,21 @@ button {
 }
 ```
 
-If we try to run the form now we get a new empty recipe. 
+If we try to run the form now we get a new empty recipe. Express has a built in decoder `express.urlencoded` that parses incoming requests with urlencoded payloads.
 
-We need to unpack the data on the server side. We will use [body-parser](https://github.com/expressjs/body-parser) to parse the incoming request body (req.body)
-
-Install `body-parser`:
-
-```sh
-npm i -S body-parser
-```
-
-Require it in server.js:
-
-```js
-const bodyParser = require('body-parser');
-```
+<!-- new -->
 
 Add to server.js with options:
 
 ```js
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 ```
+
+The HTML form element has an attribute named enctype, if not specified, its value defaults to "application/x-www-form-urlencoded" (URL encoded form). The express.urlencoded middleware can handle URL encoded forms only.
 
 Test the form using the information from Pho.
 
-### Demo: Posting via Postman
+### Demo: Get via Postman
 
 Since modeling endpoints is a common task and few enjoy using curl (more on curl in a moment), most people use a utility such as [Postman](https://www.getpostman.com/).
 
@@ -764,16 +765,34 @@ Test a GET in postman with [http://localhost:3000/api/recipes/](http://localhost
 
 In a new terminal tab - use cURL to POST to the add endpoint with the full Recipe JSON as the request body (making sure to check the URL port and path).
 
+Here are two possibilities:
+
 ```sh
 curl -i -X POST -H 'Content-Type: application/json' -d '{"title": "Toast", "image": "toast.png", "description":"Tasty!"}' http://localhost:3000/api/recipes
 ```
 
+```sh
+curl -i -X POST -H 'Content-Type: application/x-www-form-urlencoded' -d 'title=Toast&image=toast.png&description=Tasty!' http://localhost:3000/api/recipes
+```
+
+Note that we specify the content type and the payload differently.
+
+Express needs to be able to handle these payloads:
+
+```js
+app.use(express.json({ extended: false }));
+app.use(express.urlencoded({ extended: false }));
+```
+
+You will see content-type again in advanced uses of the fetch api.
+
 Create a new Recipe in Postman
 
 1. Set Postman to POST, set the URL in Postman to `http://localhost:3000/api/recipes/`
-2. Choose `raw` in `Body` and set the text type to `JSON(application/json)`
-3. Set Body to `{"title": "Toast", "image": "toast.jpg", "description":"Postman? Tasty!"}`
-4. Hit `Send`
+2. Set Headers to `Content-Type: application/x-www-form-urlencoded`
+3. Choose `x-www-form-urlencoded` in `Body`
+4. Set the keys and values as per the curl test above
+5. Hit `Send`
 
 Refresh `http://localhost:3000/recipes` or use Postman's history to see the new entry at the end.
 
@@ -786,16 +805,27 @@ Our next REST endpoint, delete, reuses what we've done above. Add this to `recip
 ```js
 exports.delete = function(req, res) {
   let id = req.params.id;
-  Recipe.remove({ _id: id }, (result) => {
+  Recipe.remove({ _id: id }, result => {
     return res.send(result);
   });
 };
 ```
 
-Check it out with curl (replacing the id at the end of the URL with a known id from the `api/recipes` endpoint):
+Check it out with curl (replacing the id at the end of the URL with a known id from the GET `api/recipes` endpoint):
 
 ```sh
 curl -i -X DELETE http://localhost:3000/api/recipes/5d27783364d7acb966b2b9ac
+```
+
+It probably doesn't make much sense to send the results back from a delete function (since there are no results) so change it to use an [HTTP status code](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#2xx_Success).
+
+```js
+exports.delete = function(req, res) {
+  let id = req.params.id;
+  Recipe.remove({ _id: id }, result => {
+    return res.sendStatus(200);
+  });
+};
 ```
 
 Or by a Delete action in Postman.
@@ -804,20 +834,9 @@ Or by a Delete action in Postman.
 2. Append an id from the recipes endpoint to the /api/recipes endpoint
 3. Hit Send (e.g.: `http://localhost:3000/api/recipes/58c39048b3ddce0348706837`)
 
-It probably doesn't make much sense to send the results back from a delete function (since there are no results) so change it to use an [HTTP status code](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#2xx_Success).
-
-```js
-exports.delete = function(req, res) {
-  let id = req.params.id;
-  Recipe.remove({ _id: id }, (result) => {
-    return res.sendStatus(200);
-  });
-};
-```
-
 Forms only support GET and POST and are inappropriate for deleting.
 
-Add a Delete link to the script:
+Add a Delete link to the DOM script:
 
 `<a class="del" data-id=${recipe._id} href="#">Delete</a>`
 
@@ -829,13 +848,13 @@ Run a single link first:
 
 ```js
 const deleteBtns = document.querySelector('.del');
-  console.log(deleteBtns.dataset.id);
-  deleteBtns.addEventListener('click', e => {
-    fetch(`api/recipes/${deleteBtns.dataset.id}`, {
-      method: 'DELETE'
-    });
-    e.preventDefault();
+console.log(deleteBtns.dataset.id);
+deleteBtns.addEventListener('click', e => {
+  fetch(`api/recipes/${deleteBtns.dataset.id}`, {
+    method: 'DELETE'
   });
+  e.preventDefault();
+});
 ```
 
 Note the method option passed to fetch.
@@ -877,9 +896,7 @@ const renderStories = recipes => {
 };
 ```
 
-Note the use of `dataset` here.
-
-Note the `location.reload();`
+Note the `location.reload();` and the console.
 
 Instead on one button, many:
 
@@ -889,13 +906,13 @@ console.log(deleteBtns);
 const delBtns = Array.from(deleteBtns);
 console.log(delBtns);
 delBtns.forEach(btn => {
- btn.addEventListener('click', e => {
-   fetch(`api/recipes/${btn.dataset.id}`, {
-     method: 'DELETE'
-   });
-   e.preventDefault();
-   location.reload();
- });
+  btn.addEventListener('click', e => {
+    fetch(`api/recipes/${btn.dataset.id}`, {
+      method: 'DELETE'
+    });
+    e.preventDefault();
+    location.reload();
+  });
 });
 ```
 
@@ -911,16 +928,22 @@ First, add a link to the page we will create:
 <h3><a href="detail.html?recipe=${recipe._id}">${recipe.title}</a></h3>
 ```
 
+Note that we are including the recipe id (`_id`) in the URL.
+
 ## Detail Page
 
 Before creating the detail page let's create an external JavaScript file in `public/js/scripts.js`.
 
 Link it to `index.html`:
- 
+
+```html
+<script src="js/scripts.js"></script>
+```
+
 And call a new `homepage();` function:
 
- ```js
- const homepage = () => {
+```js
+const homepage = () => {
   fetch(`api/recipes`)
     .then(response => response.json())
     .then(recipes => renderStories(recipes));
@@ -930,11 +953,11 @@ And call a new `homepage();` function:
     recipes.forEach(recipe => {
       recipeEl = document.createElement('div');
       recipeEl.innerHTML = `
-         <img src="img/${recipe.image}" />
-         <h3><a href="detail.html?recipe=${recipe._id}">${recipe.title}</a></h3>
-         <p>${recipe.description}</p>
-         <a class="del" data-id=${recipe._id} href="#0">Delete</a>
-         `;
+        <img src="img/${recipe.image}" />
+        <h3><a href="detail.html?recipe=${recipe._id}">${recipe.title}</a></h3>
+        <p>${recipe.description}</p>
+        <a class="del" data-id=${recipe._id} href="#0">Delete</a>
+        `;
       document.querySelector('#root').append(recipeEl);
     });
 
@@ -958,11 +981,11 @@ And call a new `homepage();` function:
 Save index.html as detail.html and change the script:
 
 ```html
- <script src="js/scripts.js"></script>
- <script>
-   detail();
- </script>
- ```
+<script src="js/scripts.js"></script>
+<script>
+  detail();
+</script>
+```
 
 Start by filling out the findByID function to use Mongoose's `Model.findOne` in `recipe.controllers`:
 
@@ -991,7 +1014,7 @@ const detail = () => {
 
 Note the use of [URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams).
 
-Now we should be able to navigate tot he detail page and see the recipe in the console.
+Now we should be able to navigate to the detail page and see the recipe in the console.
 
 Render a single recipe to the page:
 
@@ -1003,7 +1026,7 @@ const detail = () => {
   fetch(`api/recipes/${recipeId}`)
     .then(response => response.json())
     .then(recipe => renderStory(recipe));
-
+  // NEW
   const renderStory = recipe => {
     console.log(recipe);
     recipeEl = document.createElement('div');
@@ -1015,12 +1038,13 @@ const detail = () => {
       `;
     document.querySelector('#root').append(recipeEl);
   };
+  // END NEW
 };
 ```
 
 ## Mongoose Model.findByIdAndUpdate
 
-We will use the form in `detail.html`  to update and edit the recipe. 
+We will use the form in `detail.html` to update and edit the recipe.
 
 Update `recipe.controllers`:
 
@@ -1037,23 +1061,19 @@ exports.update = (req, res) => {
 
 We will use `findByIdAndUpdate`
 
-Edit the form:
+Edit the form in `detail.html`:
 
 ```html
 <h3>Edit Recipe</h3>
 <form>
-   <input type="text" placeholder="Recipe Title" name="title" />
-   <input type="text" placeholder="Image" name="image" />
-   <textarea
-     type="text"
-     placeholder="Description"
-     name="description"
-   ></textarea>
-   <button onclick="updateRecipe()">Update</button>
+  <input type="text" placeholder="Recipe Title" name="title" />
+  <input type="text" placeholder="Image" name="image" />
+  <textarea type="text" placeholder="Description" name="description"></textarea>
+  <button onclick="updateRecipe()">Update</button>
 </form>
 ```
 
-Note the button action. 
+Note the button action.
 
 Populate the form fields using data from the recipe:
 
@@ -1075,43 +1095,45 @@ const detail = () => {
       <a href="/">Back</a>
       `;
     document.querySelector('#root').append(recipeEl);
-
+  // NEW
     const editForm = document.querySelector('form');
     editForm.title.value = recipe.title;
     editForm.image.value = recipe.image;
     editForm.description.value = recipe.description;
     // console.log(editForm.description);
+    // END NEW
   };
 };
 ```
 
-In order to make this work we need to add json parsing to server.js
+In order to make this work we need to ensure we have json parsing available in server.js
 
 ```js
-app.use(bodyParser.urlencoded({ extended: true }));
-// parse application/json
-app.use(bodyParser.json());
+app.use(express.json({ extended: false }));
+app.use(express.urlencoded({ extended: false }));
 ```
 
 Test using Fetch with static content and an options object.
 
-Be sure to replace the hard coded id (`api/recipes/5d222a54334b1112c44a6066`) with the one in the browser location bar:
+Be sure to replace the hard coded id (`api/recipes/5d222a54334b1112c44a6066`) with the one in the browser location bar. 
+
+Note: this script needs to be outside the `detail()` scope for now:
 
 ```js
 const updateRecipe = () => {
   const updatedRecipe = {
     title: 'New Title',
     image: 'lasagna.png',
-    description: 'Not too long.',
+    description: 'Not too long.'
   };
   const options = {
     method: 'PUT',
     body: JSON.stringify(updatedRecipe),
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json' }
   };
   console.log(options.body);
-  fetch(`api/recipes/5d222a54334b1112c44a6066`, options).then(response =>
-    console.log('response'),
+  fetch(`api/recipes/5d39eafb686a99ed6e11629f`, options).then(response =>
+    console.log('response')
   );
   event.preventDefault();
 };
@@ -1124,17 +1146,19 @@ const updateRecipe = () => {
   const editForm = document.querySelector('form');
   const urlParams = new URLSearchParams(window.location.search);
   const recipeId = urlParams.get('recipe');
+
   const updatedRecipe = {
     title: editForm.title.value,
     image: editForm.image.value,
-    description: editForm.description.value,
+    description: editForm.description.value
   };
+
   const options = {
     method: 'PUT',
     body: JSON.stringify(updatedRecipe),
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json' }
   };
-  console.log(options.body);
+
   fetch(`api/recipes/${recipeId}`, options)
     .then(response => console.log(response))
     .then(() => location.reload()),
@@ -1144,32 +1168,111 @@ const updateRecipe = () => {
 
 ## Deployment
 
-To prepare for deployment create a `.env` file in the root of the project:
+Its never too early to deploy a practice project! We will deploy to [Heroku](https://devcenter.heroku.com/articles/git).
+
+To remove sensitive information from our project create a `.env` file in the root:
 
 `.env`:
 
 ```sh
 NODE_ENV=development
-DATABASE=mongodb+srv://daniel:dd2345@recipes-3k4ea.mongodb.net/recipes?retryWrites=true&w=majority
-PORT=5000
+DATABASE=mongodb+srv://daniel:dd2345@recipes-3k4ea.mongodb.net/test?retryWrites=true&w=majority
+PORT=3000
 ```
-Note: you should use your own database. You should also not push this file to Github by using `.gitignore`.
+
+Install a helper [dotenv](https://www.npmjs.com/package/dotenv):
+
+`$ npm install dotenv`
+
+Require it in `server.js`:
+
+```js
+require('dotenv').config();
+```
+
+Note: you should use your own database. You should also not push this file to Github by adding it to `.gitignore`.
+
+Test it in `server.js`:
+
+```
+const dataBaseURL = process.env.DATABASE;
+```
 
 Ensure that `server.js` specifies `process.env`:
 
 ```js
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running at port ${PORT}`));
 ```
 
-Ensure that your package json includes `server.js` as the `main` file and that you have a start script defined: ` "start": "node server.js"`.
+In this scenario the server should still run on port 3000.
 
-Your homework is to recreate the back end and the front end as above with your own database, your own data, and to deploy the result to Heroku following the instructions of Heroku's site.
+Ensure that your package json includes `server.js` as the `main` file and that you have a start script defined: `"start": "node server.js"`.
 
-## Notes
+Create a git repo and deploy to Github.
 
+1. Create an account and login to Heroku
+2. Create a project
+3. Go to the deployment tab and specify with Github repo and branch you are deploying from and enable automatic deploys. Be sure to monitor the build.
+4. Push the desired branch to Github
 
-### Update the Model
+<!-- On Heroku set the production environment variables. -->
+
+## Adding File Upload
+
+We will add file uploading to our API using the [File Upload](https://www.npmjs.com/package/express-fileupload) npm package for ExpressJS.
+
+Install it:
+
+`npm i express-fileupload -S`
+
+Require, register and create a route for it in `app.js`:
+
+```js
+...
+const fileUpload = require('express-fileupload');
+...
+app.use(fileUpload());
+...
+app.post('/api/upload', recipeControllers.upload);
+```
+
+Here is a working function for the api endpoint:
+
+```js
+exports.upload = function(req, res) {
+  console.log(req.files);
+  if (Object.keys(req.files).length == 0) {
+    return res.status(400).send('No files were uploaded.');
+  }
+  let file = req.files.file;
+  file.mv(`./public/img/${req.body.filename}`, err => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.json({ file: `public/img/${req.body.filename}` });
+    console.log(res.json);
+  });
+};
+```
+
+Looking at the [example project](https://github.com/richardgirges/express-fileupload/tree/master/example) we find a form to use as a starting point.
+
+```html
+<form action="/api/upload" method="post" enctype="multipart/form-data">
+  <input type="file" name="file" />
+  <input type="text" placeholder="File name" name="filename" />
+  <button type="submit">Submit</button>
+</form>
+```
+
+Note the encType attribute on the form. We haven't been using encTypes and this is for illustrative purposes only.
+
+Upload an image and create a recipe that uses it.
+
+If successful, set the return value to `return res.sendStatus(200);`.
+
+## Update the Recipe Model
 
 Try removing title from `recipe.model`:
 
@@ -1180,14 +1283,14 @@ const RecipeSchema = new Schema({
 });
 ```
 
-Run import again. The title property will be missing from the imported items.
+Run killall and import again. The title property will be missing from the imported items.
 
 Add it back to the schema, this time including a default `created` value of type Date:
 
 ```js
 const RecipeSchema = new Schema({
   title: String,
-  created: { 
+  created: {
     type: Date,
     default: Date.now
   },
@@ -1195,6 +1298,8 @@ const RecipeSchema = new Schema({
   image: String
 });
 ```
+
+`Created ${recipe.created}`
 
 Test Mongoose by adding new properties to our recipes.
 
@@ -1204,47 +1309,51 @@ Edit the `import` function to include ingredients and preparation arrays:
 exports.import = function(req, res) {
   Recipe.create(
     {
-      "title": "Lasagna",
-      "description": "Lasagna noodles piled high and layered full of three kinds of cheese to go along with the perfect blend of meaty and zesty, tomato pasta sauce all loaded with herbs.",
-      "image": "lasagna.png",
-      "ingredients": [
-        "salt", "honey", "sugar", "rice", "walnuts", "lime juice"
-      ],
-      "preparation": [
-        {"step": "Boil water"}, {"step": "Fry the eggs"}, {"step": "Serve hot"}
+      title: 'Lasagna',
+      description:
+        'Lasagna noodles piled high and layered full of three kinds of cheese to go along with the perfect blend of meaty and zesty, tomato pasta sauce all loaded with herbs.',
+      image: 'lasagna.png',
+      ingredients: ['salt', 'honey', 'sugar', 'rice', 'walnuts', 'lime juice'],
+      preparation: [
+        { step: 'Boil water' },
+        { step: 'Fry the eggs' },
+        { step: 'Serve hot' }
       ]
     },
     {
-      "title": "Pho-Chicken Noodle Soup",
-      "description": "Pho (pronounced \"fuh\") is the most popular food in Vietnam, often eaten for breakfast, lunch and dinner. It is made from a special broth that simmers for several hours infused with exotic spices and served over rice noodles with fresh herbs.",
-      "image": "pho.png",
-      "ingredients": [
-        "salt", "honey", "sugar", "rice", "walnuts", "lime juice"
-      ],
-      "preparation": [
-        {"step": "Boil water"}, {"step": "Fry the eggs"}, {"step": "Serve hot"}
+      title: 'Pho-Chicken Noodle Soup',
+      description:
+        'Pho (pronounced "fuh") is the most popular food in Vietnam, often eaten for breakfast, lunch and dinner. It is made from a special broth that simmers for several hours infused with exotic spices and served over rice noodles with fresh herbs.',
+      image: 'pho.png',
+      ingredients: ['salt', 'honey', 'sugar', 'rice', 'walnuts', 'lime juice'],
+      preparation: [
+        { step: 'Boil water' },
+        { step: 'Fry the eggs' },
+        { step: 'Serve hot' }
       ]
     },
     {
-      "title": "Guacamole",
-      "description": "Guacamole is definitely a staple of Mexican cuisine. Even though Guacamole is pretty simple, it can be tough to get the perfect flavor - with this authentic Mexican guacamole recipe, though, you will be an expert in no time.",
-      "image": "guacamole.png",
-      "ingredients": [
-        "salt", "honey", "sugar", "rice", "walnuts", "lime juice"
-      ],
-      "preparation": [
-        {"step": "Boil water"}, {"step": "Fry the eggs"}, {"step": "Serve hot"}
+      title: 'Guacamole',
+      description:
+        'Guacamole is definitely a staple of Mexican cuisine. Even though Guacamole is pretty simple, it can be tough to get the perfect flavor - with this authentic Mexican guacamole recipe, though, you will be an expert in no time.',
+      image: 'guacamole.png',
+      ingredients: ['salt', 'honey', 'sugar', 'rice', 'walnuts', 'lime juice'],
+      preparation: [
+        { step: 'Boil water' },
+        { step: 'Fry the eggs' },
+        { step: 'Serve hot' }
       ]
     },
     {
-      "title": "Hamburger",
-      "description": "A Hamburger (often called a burger) is a type of sandwich in the form of  rounded bread sliced in half with its center filled with a patty which is usually ground beef, then topped with vegetables such as lettuce, tomatoes and onions.",
-      "image": "hamburger.png",
-      "ingredients": [
-        "salt", "honey", "sugar", "rice", "walnuts", "lime juice"
-      ],
-      "preparation": [
-        {"step": "Boil water"}, {"step": "Fry the eggs"}, {"step": "Serve hot"}
+      title: 'Hamburger',
+      description:
+        'A Hamburger (often called a burger) is a type of sandwich in the form of  rounded bread sliced in half with its center filled with a patty which is usually ground beef, then topped with vegetables such as lettuce, tomatoes and onions.',
+      image: 'hamburger.png',
+      ingredients: ['salt', 'honey', 'sugar', 'rice', 'walnuts', 'lime juice'],
+      preparation: [
+        { step: 'Boil water' },
+        { step: 'Fry the eggs' },
+        { step: 'Serve hot' }
       ]
     },
     function(err) {
@@ -1255,7 +1364,7 @@ exports.import = function(req, res) {
 };
 ```
 
-If you delete with `killall` and reload the sample data, it will not include the arrays.
+If you delete with the `killall` endpoint and reload the sample data, it will not include the arrays.
 
 Add new properties to our Recipe schema.
 
@@ -1265,7 +1374,7 @@ const Schema = mongoose.Schema;
 
 const RecipeSchema = new Schema({
   title: String,
-  created: { 
+  created: {
     type: Date,
     default: Date.now
   },
@@ -1278,7 +1387,7 @@ const RecipeSchema = new Schema({
 module.exports = mongoose.model('Recipe', RecipeSchema);
 ```
 
-Kill and reimport the data using Postman. The data may be in a different order than in the schema. 
+Kill and reimport the data using Postman. The data may be in a different order than in the schema.
 
 There are eight data types supported by Mongoose:
 
@@ -1293,31 +1402,36 @@ There are eight data types supported by Mongoose:
 
 Each data type allows you to specify:
 
-* a default value
-* a custom validation function
-* indicate a field is required
-* a get function that allows you to manipulate the data before it is returned as an object
-* a set function that allows you to manipulate the data before it is saved to the database
-* create indexes to allow data to be fetched faster
+- a default value
+- a custom validation function
+- indicate a field is required
+- a get function that allows you to manipulate the data before it is returned as an object
+- a set function that allows you to manipulate the data before it is saved to the database
+- create indexes to allow data to be fetched faster
 
 Certain data types allow you to customize how the data is stored and retrieved from the database. A String data type also allows you to specify the following additional options:
 
-* convert it to lowercase
-* convert it to uppercase
-* trim data prior to saving
-* a regular expression that can limit data allowed to be saved during the validation process
-* an enum that can define a list of strings that are valid
+- convert it to lowercase
+- convert it to uppercase
+- trim data prior to saving
+- a regular expression that can limit data allowed to be saved during the validation process
+- an enum that can define a list of strings that are valid
 
-The Number and Date properties both support specifying a minimum and maximum value that is allowed for that field.
-
-Most of the eight allowed data types should be quite familiar to you. However, there are several exceptions that may jump out to you, such as Buffer, Mixed, ObjectId, and Array.
-
-The Buffer data type allows you to save binary data. A common example of binary data would be an image or an encoded file, such as a PDF document.
-
-The Mixed data type turns the property into an "anything goes" field. This field resembles how many developers may use MongoDB because there is no defined structure. Be wary of using this data type as it loses many of the great features that Mongoose provides, such as data validation and detecting entity changes to automatically know to update the property when saving.
-
-The ObjectId data type commonly specifies a link to another document in your database. For example, if you had a collection of books and authors, the book document might contain an ObjectId property that refers to the specific author of the document.
+```js
+recipeEl.innerHTML = `
+  <img src="img/${recipe.image}" />
+  <h3>${recipe.title}</h3>
+  <p>${recipe.description}</p>
+  <h4>Ingredients</h4>
+  <ul>
+    ${recipe.ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}
+  </ul>
+  <h4>Preparation</h4>
+  <ul>
+    ${recipe.preparation.map(prep => `<li>${prep.step}</li>`).join('')}
+  </ul>
+  <a href="/">Back</a>
+  `;
+```
 
 The Array data type allows you to store JavaScript-like arrays. With an Array data type, you can perform common JavaScript array operations on them, such as push, pop, shift, slice, etc.
-
-
