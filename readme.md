@@ -40,6 +40,8 @@ Today we will be building the back and front end for a [simple recipes app](http
 
 Midterm assignment: use the steps below to create your own REST API. Deploy the app to Heroku using a [Git branch](https://devcenter.heroku.com/categories/deploying-with-git).
 
+Read the [Mozilla Guild to ExpressJS](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs).
+
 ## Resources
 
 A [list of public apis](https://github.com/public-apis/public-apis) for use in practice.
