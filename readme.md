@@ -1,6 +1,6 @@
 # Server Side with ExpressJS
 
-v 1.0
+v 1.1
 
 - [Server Side with ExpressJS](#server-side-with-expressjs)
   - [Homework](#homework)
@@ -34,8 +34,7 @@ v 1.0
   - [Deployment](#deployment)
   - [Adding File Upload](#adding-file-upload)
   - [Update the Recipe Model](#update-the-recipe-model)
-
-v 2.0
+  - [Notes](#notes)
 
 Today we will be building the back and front end for a [simple recipes app](https://morning-falls-57252.herokuapp.com). For a final version of this project see the `local` branch of this repo.
 
@@ -815,7 +814,7 @@ Our next REST endpoint, _delete_, reuses what we've done above. Add this to `rec
 ```js
 exports.delete = function(req, res) {
   let id = req.params.id;
-  Recipe.remove({ _id: id }, result => {
+  Recipe.remove({ _id: id }, res => {
     return res.send(result);
   });
 };
@@ -1231,7 +1230,7 @@ Create a git repo and deploy to Github.
 
 We will add file uploading to our API using the [File Upload](https://www.npmjs.com/package/express-fileupload) npm package for ExpressJS.
 
-Install it:
+Install File Upload:
 
 `npm i express-fileupload -S`
 
@@ -1246,7 +1245,7 @@ app.use(fileUpload());
 app.post('/api/upload', recipeControllers.upload);
 ```
 
-Here is a working function for the api endpoint:
+Here is a working function for the api endpoint. Add it to `recipe.controllers.js`:
 
 ```js
 exports.upload = function(req, res) {
@@ -1275,11 +1274,13 @@ Looking at the [example project](https://github.com/richardgirges/express-fileup
 </form>
 ```
 
-Note the encType attribute on the form. We haven't been using encTypes and this is for illustrative purposes only.
+Note the encType attribute on the form. 
 
-Upload an image and create a recipe that uses it.
+Upload an image (reuse one of the images in `/public/img/`) and give it a unique name.
 
-If successful, set the return value to `return res.sendStatus(200);`.
+Go to the home page and create a recipe that uses the new image.
+
+Once successful, set the return value in the controllers function to `return res.sendStatus(200);`.
 
 ## Update the Recipe Model
 
@@ -1444,3 +1445,76 @@ recipeEl.innerHTML = `
 ```
 
 The Array data type allows you to store JavaScript-like arrays. With an Array data type, you can perform common JavaScript array operations on them, such as push, pop, shift, slice, etc.
+
+
+## Notes
+
+aync await
+
+in main.js:
+
+```js
+const deleteWithFetch = async event => {
+  const response = await fetch(`api/recipes/${event.target.dataset.id}`, {
+    method: 'DELETE'
+  });
+  const reload = await location.reload();
+};
+
+const handleClicks = () => {
+  if (event.target.matches('[data-id]')) {
+    event.preventDefault();
+    deleteWithFetch(event);
+  }
+};
+```
+
+in controllers:
+
+```js
+exports.delete = function(req, res) {
+  let id = req.params.id;
+  Recipe.deleteOne({ _id: id }, err => {
+    if (err) return console.log(err);
+    res.redirect('/');
+  });
+};
+```
+
+===
+
+```js
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
+const RecipeSchema = new Schema({
+  title: {x
+    type: String,
+    required: [true, 'Must include a recipe title']
+  },
+  description: {
+    type: String,
+    required: [true, 'Must include a recipe description']
+  },
+  image: {
+    type: String,
+    required: [true, 'Must include an image url']
+  }
+});
+
+const AuthorSchema = new Schema({
+  name: String,
+  recipes: [{ type: Schema.Types.ObjectId, ref: 'Recipe' }]
+});
+
+module.exports = mongoose.model('Recipe', RecipeSchema);
+module.exports = mongoose.model('Author', AuthorSchema);
+```
+
+```
+    // return res.send(recipe);
+    res.redirect('/');
+  });
+
+```
+
