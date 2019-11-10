@@ -1,5 +1,7 @@
 # Server Side with ExpressJS
 
+v 1.0
+
 - [Server Side with ExpressJS](#server-side-with-expressjs)
   - [Homework](#homework)
   - [Resources](#resources)
@@ -25,6 +27,7 @@
   - [Mongoose Model.DeleteMany()](#mongoose-modeldeletemany)
   - [Mongoose Model.create](#mongoose-modelcreate-1)
     - [Demo: Get via Postman](#demo-get-via-postman)
+- [fall2019-start-here](#fall2019-start-here)
   - [Mongoose Model.remove](#mongoose-modelremove)
   - [Deleting on the Front End](#deleting-on-the-front-end)
   - [Find by ID](#find-by-id)
@@ -798,9 +801,24 @@ Refresh `http://localhost:3000/recipes` or use Postman's history to see the new 
 
 Save the query in Postman to a new Postman collection.
 
-## Mongoose Model.remove
+# fall2019-start-here
 
-Our next REST endpoint, delete, reuses what we've done above. Add this to `recipe.controllers.js`.
+Add a recipe using the form and note that the server returns json.
+
+Force the page to refresh using `res.redirect('/');`:
+
+```js
+exports.add = function(req, res) {
+  Recipe.create(req.body, function(err, recipe) {
+    if (err) return console.log(err);
+    res.redirect('/');
+  });
+};
+```
+
+## Mongoose [Model.remove](https://mongoosejs.com/docs/api/model.html#model_Model.remove)
+
+Our next REST endpoint, _delete_, reuses what we've done above. Add this to `recipe.controllers.js`.
 
 ```js
 exports.delete = function(req, res) {
@@ -811,7 +829,7 @@ exports.delete = function(req, res) {
 };
 ```
 
-Check it out with curl (replacing the id at the end of the URL with a known id from the GET `api/recipes` endpoint):
+Check it out with curl (replacing the id at the end of the URL with a *known id* from the GET (`api/recipes`) endpoint):
 
 ```sh
 curl -i -X DELETE http://localhost:3000/api/recipes/5d27783364d7acb966b2b9ac
@@ -823,7 +841,7 @@ It probably doesn't make much sense to send the results back from a delete funct
 exports.delete = function(req, res) {
   let id = req.params.id;
   Recipe.remove({ _id: id }, result => {
-    return res.sendStatus(200);
+    res.redirect('/');
   });
 };
 ```
@@ -840,30 +858,22 @@ Add a Delete link to the DOM script:
 
 `<a class="del" data-id=${recipe._id} href="#">Delete</a>`
 
-Note the use of data attributes here.
+Note the use of data attribute.
 
 ## Deleting on the Front End
 
-Run a single link first:
+We will select the delete links using querySelectorAll. 
+
+Make sure this code is inside the renderStories function. Why? (Ans: because the delete buttons don't exist until the innerHTML has been set.):
 
 ```js
-const deleteBtns = document.querySelector('.del');
+const deleteBtns = document.querySelectorAll('.del');
 console.log(deleteBtns.dataset.id);
-deleteBtns.addEventListener('click', e => {
-  fetch(`api/recipes/${deleteBtns.dataset.id}`, {
-    method: 'DELETE'
-  });
-  e.preventDefault();
-});
 ```
-
-Note the method option passed to fetch.
 
 Note the use of `dataset`.
 
-<!-- `(node:31390) DeprecationWarning: collection.remove is deprecated. Use deleteOne, deleteMany, or bulkWrite instead.` -->
-
-Make sure this code is inside the renderStories function.
+Use fetch with options:
 
 ```js
 fetch(`api/recipes`)
@@ -871,7 +881,6 @@ fetch(`api/recipes`)
   .then(recipes => renderStories(recipes));
 
 const renderStories = recipes => {
-  console.log(recipes);
   recipes.forEach(recipe => {
     recipeEl = document.createElement('div');
     recipeEl.innerHTML = `
@@ -884,36 +893,69 @@ const renderStories = recipes => {
     `;
     document.querySelector('#root').append(recipeEl);
   });
-  const deleteBtns = document.querySelector('.del');
-  console.log(deleteBtns.dataset.id);
-  deleteBtns.addEventListener('click', e => {
-    fetch(`api/recipes/${deleteBtns.dataset.id}`, {
-      method: 'DELETE'
-    });
-    e.preventDefault();
-    location.reload();
-  });
+
+  const deleteBtns = document.querySelectorAll('.del');
+
+   deleteBtns.forEach(btn => {
+     btn.addEventListener('click', e => {
+       fetch(`api/recipes/${btn.dataset.id}`, {
+         method: 'DELETE'
+       })
+       e.preventDefault();
+       location.reload();
+     });
+   });
+
 };
 ```
 
-Note the `location.reload();` and the console.
+Add after the form closing tag:
 
-Instead on one button, many:
+```html
+<div id="app"></div>
+```
+
+Restructure the client side scripts to use event delegation and map:
 
 ```js
-const deleteBtns = document.querySelectorAll('.del');
-console.log(deleteBtns);
-const delBtns = Array.from(deleteBtns);
-console.log(delBtns);
-delBtns.forEach(btn => {
-  btn.addEventListener('click', e => {
-    fetch(`api/recipes/${btn.dataset.id}`, {
+const getData = () => {
+  fetch(`api/recipes`)
+    .then(response => response.json())
+    .then(recipes => renderStories(recipes))
+    .catch(error => console.error(error));
+};
+
+const renderStories = recipes => {
+  const el = document.querySelector('#app');
+  el.innerHTML = recipes
+    .map(recipe => {
+      return `<div>
+      <img src="img/${recipe.image}" />
+      <h3>${recipe.title}</h3>
+      <p>${recipe.description}</p>
+      <a class="del" data-id=${recipe._id} href="#">Delete</a>
+    </div>`;
+    })
+    .join('');
+};
+
+const handleClicks = () => {
+  if (event.target.matches('.del')) {
+    fetch(`api/recipes/${event.target.dataset.id}`, {
       method: 'DELETE'
     });
-    e.preventDefault();
+    event.preventDefault();
     location.reload();
-  });
-});
+  }
+};
+
+document.addEventListener('click', handleClicks);
+
+if (document.readyState !== 'loading') {
+  getData();
+} else {
+  document.addEventListener('DOMContentLoaded', getData());
+}
 ```
 
 ## Find by ID
@@ -940,51 +982,10 @@ Link it to `index.html`:
 <script src="js/scripts.js"></script>
 ```
 
-And call a new `homepage();` function:
-
-```js
-const homepage = () => {
-  fetch(`api/recipes`)
-    .then(response => response.json())
-    .then(recipes => renderStories(recipes));
-
-  const renderStories = recipes => {
-    console.log(recipes);
-    recipes.forEach(recipe => {
-      recipeEl = document.createElement('div');
-      recipeEl.innerHTML = `
-        <img src="img/${recipe.image}" />
-        <h3><a href="detail.html?recipe=${recipe._id}">${recipe.title}</a></h3>
-        <p>${recipe.description}</p>
-        <a class="del" data-id=${recipe._id} href="#0">Delete</a>
-        `;
-      document.querySelector('#root').append(recipeEl);
-    });
-
-    const deleteBtns = document.querySelectorAll('.del');
-    console.log(deleteBtns);
-    const delBtns = Array.from(deleteBtns);
-    console.log(delBtns);
-    delBtns.forEach(btn => {
-      btn.addEventListener('click', e => {
-        fetch(`api/recipes/${btn.dataset.id}`, {
-          method: 'DELETE'
-        });
-        e.preventDefault();
-        location.reload();
-      });
-    });
-  };
-};
-```
-
 Save index.html as detail.html and change the script:
 
 ```html
-<script src="js/scripts.js"></script>
-<script>
-  detail();
-</script>
+<script src="js/details.js"></script>
 ```
 
 Start by filling out the findByID function to use Mongoose's `Model.findOne` in `recipe.controllers`:
@@ -1006,27 +1007,11 @@ const detail = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const recipeId = urlParams.get('recipe');
   console.log(recipeId);
-  fetch(`api/recipes/${recipeId}`)
-    .then(response => response.json())
-    .then(recipe => console.log(recipe));
-};
-```
 
-Note the use of [URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams).
-
-Now we should be able to navigate to the detail page and see the recipe in the console.
-
-Render a single recipe to the page:
-
-```js
-const detail = () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const recipeId = urlParams.get('recipe');
-  console.log(recipeId);
   fetch(`api/recipes/${recipeId}`)
     .then(response => response.json())
     .then(recipe => renderStory(recipe));
-  // NEW
+
   const renderStory = recipe => {
     console.log(recipe);
     recipeEl = document.createElement('div');
@@ -1038,13 +1023,19 @@ const detail = () => {
       `;
     document.querySelector('#root').append(recipeEl);
   };
-  // END NEW
 };
+
+detail();
+
 ```
+
+Note the use of [URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams).
+
+Now we should be able to navigate to the detail page and see the recipe in the console.
 
 ## Mongoose Model.findByIdAndUpdate
 
-We will use the form in `detail.html` to update and edit the recipe.
+We will use a form in `detail.html` to update and edit the recipe.
 
 Update `recipe.controllers`:
 
@@ -1165,6 +1156,8 @@ const updateRecipe = () => {
     event.preventDefault();
 };
 ```
+
+Editing the form should new change the entry.
 
 ## Deployment
 
