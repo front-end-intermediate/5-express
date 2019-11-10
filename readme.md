@@ -838,7 +838,7 @@ exports.delete = function(req, res) {
 };
 ```
 
-Or by a Delete action in Postman.
+A Delete action in Postman.
 
 1. Set the action to Delete
 2. Append an id from the recipes endpoint to the /api/recipes endpoint
@@ -856,16 +856,33 @@ Note the use of data attribute.
 
 We will select the delete links using querySelectorAll. 
 
-Make sure this code is inside the renderStories function. Why? (Ans: because the delete buttons don't exist until the innerHTML has been set.):
-
 ```js
 const deleteBtns = document.querySelectorAll('.del');
-console.log(deleteBtns.dataset.id);
+console.log(deleteBtns);
 ```
 
-Note the use of `dataset`.
+Make sure this code is inside the renderStories function. Why? (Ans: because the delete buttons don't exist until the recipeEls have been appended.):
 
-Use fetch with options:
+```js
+const renderStories = recipes => {
+  recipes.forEach(recipe => {
+    recipeEl = document.createElement('div');
+    recipeEl.innerHTML = `
+    <img src="img/${recipe.image}" />
+    <h3>${recipe.title}</h3>
+    <p>${recipe.description}</p>
+    <a class="del" data-id=${recipe._id} href="#">Delete</a>
+    `;
+    document.querySelector('#root').append(recipeEl);
+  });
+  const deleteBtns = document.querySelectorAll('.del');
+  console.log(deleteBtns[0].dataset.id);
+};
+```
+
+Note the use of `dataset` above.
+
+Use fetch passing it a second parameter - options:
 
 ```js
 fetch(`api/recipes`)
@@ -897,7 +914,6 @@ const renderStories = recipes => {
        location.reload();
      });
    });
-
 };
 ```
 
@@ -925,16 +941,16 @@ const renderStories = recipes => {
       <img src="img/${recipe.image}" />
       <h3>${recipe.title}</h3>
       <p>${recipe.description}</p>
-      <a class="del" data-id=${recipe._id} href="#">Delete</a>
+      <a data-id=${recipe._id} href="#">Delete</a>
     </div>`;
     })
     .join('');
 };
 
 const handleClicks = () => {
-  if (event.target.matches('.del')) {
+  if (event.target.matches('[data-id]')) {
     fetch(`api/recipes/${event.target.dataset.id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
     });
     event.preventDefault();
     location.reload();
@@ -966,14 +982,6 @@ Note that we are including the recipe id (`_id`) in the URL.
 
 ## Detail Page
 
-Before creating the detail page let's create an external JavaScript file in `public/js/scripts.js`.
-
-Link it to `index.html`:
-
-```html
-<script src="js/scripts.js"></script>
-```
-
 Save index.html as detail.html and change the script:
 
 ```html
@@ -992,7 +1000,7 @@ exports.findById = (req, res) => {
 };
 ```
 
-And create a new function for the detail page:
+And create a new function in details.js:
 
 ```js
 const detail = () => {
@@ -1029,7 +1037,7 @@ Now we should be able to navigate to the detail page and see the recipe in the c
 
 We will use a form in `detail.html` to update and edit the recipe.
 
-Update `recipe.controllers`:
+Update `recipe.controllers` to use `findByIdAndUpdate`:
 
 ```js
 exports.update = (req, res) => {
@@ -1041,8 +1049,6 @@ exports.update = (req, res) => {
   });
 };
 ```
-
-We will use `findByIdAndUpdate`
 
 Edit the form in `detail.html`:
 
@@ -1078,27 +1084,27 @@ const detail = () => {
       <a href="/">Back</a>
       `;
     document.querySelector('#root').append(recipeEl);
-  // NEW
+
+    // NEW
     const editForm = document.querySelector('form');
+    // console.log(editForm.description);
     editForm.title.value = recipe.title;
     editForm.image.value = recipe.image;
     editForm.description.value = recipe.description;
-    // console.log(editForm.description);
     // END NEW
+
   };
 };
 ```
 
-In order to make this work we need to ensure we have json parsing available in server.js
+<!-- In order to make this work we need to ensure we have json parsing available in server.js
 
 ```js
 app.use(express.json({ extended: false }));
 app.use(express.urlencoded({ extended: false }));
-```
+``` -->
 
-Test using Fetch with static content and an options object.
-
-Be sure to replace the hard coded id (`api/recipes/5d222a54334b1112c44a6066`) with the one in the browser location bar. 
+We will test our updating capabilities by creating a function for the form's `updateRecipe` call using static content and `fetch` and an options object.
 
 Note: this script needs to be outside the `detail()` scope for now:
 
@@ -1114,13 +1120,21 @@ const updateRecipe = () => {
     body: JSON.stringify(updatedRecipe),
     headers: { 'Content-Type': 'application/json' }
   };
-  console.log(options.body);
+  console.log('options.body ', options.body);
   fetch(`api/recipes/5d39eafb686a99ed6e11629f`, options).then(response =>
-    console.log('response')
+    console.log('response ', response),
   );
   event.preventDefault();
 };
 ```
+
+Be sure to replace the hard coded id (`api/recipes/5d222a54334b1112c44a6066`) with the one in the browser location bar. 
+
+Test by: 
+
+* clicking the submit button 
+* note the output of the two console logs in the browser's console
+* refresh the page
 
 Edit the script to harvest the form values as the updated recipe:
 
@@ -1149,13 +1163,15 @@ const updateRecipe = () => {
 };
 ```
 
-Editing the form should new change the entry.
+Editing the form should now change the entry.
 
 ## Deployment
 
 Its never too early to deploy a practice project! We will deploy to [Heroku](https://devcenter.heroku.com/articles/git).
 
-To remove sensitive information from our project create a `.env` file in the root:
+Before deployment we remove sensitive information and set environment variables for our project.
+
+Create a `.env` file in the root:
 
 `.env`:
 
@@ -1164,6 +1180,8 @@ NODE_ENV=development
 DATABASE=mongodb+srv://daniel:dd2345@recipes-3k4ea.mongodb.net/test?retryWrites=true&w=majority
 PORT=3000
 ```
+
+Be sure to replace the DATABASE with your own url.
 
 Install a helper [dotenv](https://www.npmjs.com/package/dotenv):
 
@@ -1175,24 +1193,30 @@ Require it in `server.js`:
 require('dotenv').config();
 ```
 
-Note: you should use your own database. You should also not push this file to Github by adding it to `.gitignore`.
+Note: you should use your own database. You should not push the .env file to Github by adding it to `.gitignore`.
 
-Test it in `server.js`:
+Test it in `server.js`. Replace the existing dataBaseURL variable with:
 
 ```
 const dataBaseURL = process.env.DATABASE;
 ```
 
-Ensure that `server.js` specifies `process.env`:
+Ensure that `server.js` specifies `process.env`. Replace the lines at the bottom with:
 
 ```js
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server running at port ${PORT}`));
 ```
 
-In this scenario the server should still run on port 3000.
+The server should still be running successfully on port 3000.
 
-Ensure that your package json includes `server.js` as the `main` file and that you have a start script defined: `"start": "node server.js"`.
+Ensure that your package json includes `server.js` as the `main` file:
+
+`"main": "server.js",`
+
+and that you have a node start script defined: 
+
+`"start": "node server.js"`
 
 Create a git repo and deploy to Github.
 
