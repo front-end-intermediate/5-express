@@ -1280,7 +1280,7 @@ Upload an image (reuse one of the images in `/public/img/`) and give it a unique
 
 Go to the home page and create a recipe that uses the new image.
 
-Once successful, set the return value in the controllers function to `return res.sendStatus(200);`.
+Once successful, set the return value in the corresponding controller's function to `return res.sendStatus(200);`.
 
 ## Update the Recipe Model
 
