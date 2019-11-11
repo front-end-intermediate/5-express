@@ -40,7 +40,22 @@ Today we will be building the back and front end for a [simple recipes app](http
 
 ## Homework
 
-Midterm assignment: use the steps below to create your own REST API. Deploy the app to Heroku using a [Git branch](https://devcenter.heroku.com/categories/deploying-with-git).
+Given this author model:
+
+```js
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
+const AuthorSchema = new Schema({
+  name: String,
+  recipes: [{ type: Schema.Types.ObjectId, ref: 'Recipe' }],
+});
+
+module.exports = mongoose.model('Author', AuthorSchema);
+```
+
+Add an author to the recipe and display it in the ui.
+
 
 Read the [Mozilla Guide to ExpressJS](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs).
 
@@ -1480,41 +1495,3 @@ exports.delete = function(req, res) {
   });
 };
 ```
-
-===
-
-```js
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-
-const RecipeSchema = new Schema({
-  title: {x
-    type: String,
-    required: [true, 'Must include a recipe title']
-  },
-  description: {
-    type: String,
-    required: [true, 'Must include a recipe description']
-  },
-  image: {
-    type: String,
-    required: [true, 'Must include an image url']
-  }
-});
-
-const AuthorSchema = new Schema({
-  name: String,
-  recipes: [{ type: Schema.Types.ObjectId, ref: 'Recipe' }]
-});
-
-module.exports = mongoose.model('Recipe', RecipeSchema);
-module.exports = mongoose.model('Author', AuthorSchema);
-```
-
-```
-    // return res.send(recipe);
-    res.redirect('/');
-  });
-
-```
-
