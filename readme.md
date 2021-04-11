@@ -1,41 +1,5 @@
 # Server Side with ExpressJS
 
-v 1.1
-
-- [Server Side with ExpressJS](#server-side-with-expressjs)
-  - [Homework](#homework)
-  - [Resources](#resources)
-  - [Reading](#reading)
-  - [NodeJS](#nodejs)
-  - [Scaffolding Our Server](#scaffolding-our-server)
-  - [ExpressJS](#expressjs)
-    - [Aside: Express generator](#aside-express-generator)
-    - [Express Routes](#express-routes)
-  - [MongoDB](#mongodb)
-  - [Mongoose](#mongoose)
-    - [Mongoose Schema](#mongoose-schema)
-    - [Import Data](#import-data)
-    - [Aside - Status Codes](#aside---status-codes)
-  - [Front End](#front-end)
-  - [Express Static Files](#express-static-files)
-  - [Using CommonJS](#using-commonjs)
-    - [Controllers](#controllers)
-    - [Recipe Model](#recipe-model)
-  - [Mongoose Model.create](#mongoose-modelcreate)
-  - [Mongoose Model.DeleteMany()](#mongoose-modeldeletemany)
-  - [Mongoose Model.create](#mongoose-modelcreate-1)
-    - [Demo: Get via Postman](#demo-get-via-postman)
-- [fall2019-start-here](#fall2019-start-here)
-  - [Mongoose Model.remove](#mongoose-modelremove)
-  - [Deleting on the Front End](#deleting-on-the-front-end)
-  - [Find by ID](#find-by-id)
-  - [Detail Page](#detail-page)
-  - [Mongoose Model.findByIdAndUpdate](#mongoose-modelfindbyidandupdate)
-  - [Deployment](#deployment)
-  - [Adding File Upload](#adding-file-upload)
-  - [Update the Recipe Model](#update-the-recipe-model)
-  - [Notes](#notes)
-
 <!-- Today we will be building the back and front end for a [simple recipes app](https://morning-falls-57252.herokuapp.com). --> For a final version of this project see the `local` branch of this repo.
 
 ## Homework
@@ -55,8 +19,6 @@ module.exports = mongoose.model("Author", AuthorSchema);
 ```
 
 Add an author to the recipe and display it in the ui.
-
-Read the [Mozilla Guide to ExpressJS](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs).
 
 ## Resources
 
@@ -940,11 +902,11 @@ Note the use of `data-id` above.
 Use fetch passing it a second parameter - options:
 
 ```js
-const deleteRecipe = (event) => {
+function deleteRecipe(event) {
   fetch(`api/recipes/${event.target.dataset.id}`, {
     method: "DELETE",
   }).then(location.reload());
-};
+}
 ```
 
 Here are the client side scripts with a bit of restructuring:
@@ -984,23 +946,28 @@ function renderRecipes(recipes) {
     <img src="img/${image}" />
     <h3><a href="detail.html?recipe=${_id}">${title}</a></h3>
     <p>${description}</p>
-    <p>${_id}</p>
     <a class="delete" data-id=${_id} href="#">Delete</a>
   `;
     return document.querySelector(".recipes").append(recipeEl);
   });
 }
 
-const deleteRecipe = (event) => {
+function deleteRecipe(event) {
   fetch(`api/recipes/${event.target.dataset.id}`, {
     method: "DELETE",
   }).then(getRecipes());
-};
+}
 
 function handleClicks(event) {
   if (event.target.matches("[data-id]")) {
     deleteRecipe(event);
+  } else if (event.target.matches("#seed")) {
+    seed();
   }
+}
+
+function seed() {
+  fetch("api/import").then(getRecipes);
 }
 
 document.addEventListener("click", handleClicks);
@@ -1009,6 +976,12 @@ const addForm = document.querySelector("#addForm");
 addForm.addEventListener("submit", addRecipe);
 
 getRecipes();
+```
+
+Add a button to index.html:
+
+```js
+<button id="seed">Load Seed Data</button>
 ```
 
 ## Detail Page / Find by ID
@@ -1197,9 +1170,9 @@ Looking at the [example project](https://github.com/richardgirges/express-fileup
 
 ```html
 <form action="/api/upload" method="post" enctype="multipart/form-data">
-  <input type="file" name="file" />
+  <input type="file" name="file" accept="image/png" />
   <input type="text" placeholder="File name" name="filename" />
-  <button type="submit">Submit</button>
+  <button type="submit">Upload</button>
 </form>
 ```
 
@@ -1437,36 +1410,4 @@ Create a git repo and deploy to Github.
 
 <!-- On Heroku set the production environment variables. -->
 
-## Notes
-
-aync await
-
-in main.js:
-
-```js
-const deleteWithFetch = async (event) => {
-  const response = await fetch(`api/recipes/${event.target.dataset.id}`, {
-    method: "DELETE",
-  });
-  const reload = await location.reload();
-};
-
-const handleClicks = () => {
-  if (event.target.matches("[data-id]")) {
-    event.preventDefault();
-    deleteWithFetch(event);
-  }
-};
-```
-
-in controllers:
-
-```js
-exports.delete = function (req, res) {
-  let id = req.params.id;
-  Recipe.deleteOne({ _id: id }, (err) => {
-    if (err) return console.log(err);
-    res.redirect("/");
-  });
-};
-```
+## Instructor Notes
