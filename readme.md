@@ -561,7 +561,7 @@ Each route consists of three parts:
 
 We've modeled our URL routes off of REST API conventions, and named our handling methods clearly - prefixing them with `api/` in order to differentiate them from any routes we create to serve the front end.
 
-Delete the find route from server.js.
+<!-- Delete the find route from server.js. -->
 
 Update findAll's definition in `recipe.controllers.js` to send a json snippet:
 
