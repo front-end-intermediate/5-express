@@ -450,6 +450,7 @@ In the body tag of `public/index.html`:
 ```html
 <div id="root">
   <h1>Recipes!</h1>
+  <div class="recipes"></div>
 </div>
 
 <script></script>
@@ -476,22 +477,26 @@ Examine the browser's console.
 Render some HTML to the DOM:
 
 ```js
-fetch(`api/recipes`)
-  .then((response) => response.json())
-  .then((recipes) => renderStories(recipes));
+function getRecipes() {
+  document.querySelector(".recipes").innerHTML = ``;
+  fetch(`api/recipes`)
+    .then((response) => response.json())
+    .then((recipes) => renderRecipes(recipes));
 
-const renderStories = (recipes) => {
-  console.log(recipes);
-  recipes.forEach((recipe) => {
-    recipeEl = document.createElement("div");
-    recipeEl.innerHTML = `
-      <img src="img/${recipe.image}" />
-      <h3>${recipe.title}</h3>
-      <p>${recipe.description}</p>
-    `;
-    document.querySelector("#root").append(recipeEl);
-  });
-};
+  const renderRecipes = (recipes) => {
+    recipes.forEach((recipe) => {
+      recipeEl = document.createElement("div");
+      recipeEl.innerHTML = `
+        <img src="img/${recipe.image}" />
+        <h3>${recipe.title}</h3>
+        <p>${recipe.description}</p>
+      `;
+      document.querySelector(".recipes").append(recipeEl);
+    });
+  };
+}
+
+getRecipes();
 ```
 
 Note that neither the CSS nor the images are working.
@@ -758,15 +763,15 @@ exports.add = function (req, res) {
 Add a form to index.html:
 
 ```html
-<form action="/api/recipes" method="POST">
-  <input type="text" placeholder="Recipe Title" name="title" />
-  <input type="text" placeholder="Image" name="image" />
-  <textarea type="text" placeholder="Description" name="description"></textarea>
+<form id="addForm">
+  <input type="text" placeholder="Recipe Title" name="title" value="Lasagna" />
+  <input type="text" placeholder="Image" name="image" value="lasagna.png" />
+  <textarea type="text" placeholder="Description" name="description">
+Lasagna noodles piled high and layered full of three kinds of cheese to go along with the perfect blend of meaty and zesty, tomato pasta sauce all loaded with herbs.</textarea
+  >
   <button type="submit">Submit</button>
 </form>
 ```
-
-Note the action and method attributes.
 
 Add supporting CSS:
 
@@ -788,41 +793,87 @@ button {
 }
 ```
 
-If we try to run the form now we get a new empty recipe. Express has a built in decoder `express.urlencoded` that parses incoming requests with urlencoded payloads.
-
-<!-- new -->
-
-Add to server.js with options:
+Express has built in decoders that parse incoming requests with urlencoded or json payloads. Add to server.js:
 
 ```js
+app.use(express.json({ extended: false }));
 app.use(express.urlencoded({ extended: false }));
 ```
 
 The HTML form element has an attribute named enctype, if not specified, its value defaults to "application/x-www-form-urlencoded" (URL encoded form). The express.urlencoded middleware can handle URL encoded forms only.
 
-Test the form using the information from Pho.
+Using promise chaining:
 
-### Demo: Get via Postman
+```js
+function addRecipe(event) {
+  event.preventDefault();
 
-Since modeling endpoints is a common task and few enjoy using curl (more on curl in a moment), most people use a utility such as [Postman](https://www.getpostman.com/).
+  const { title, image, description } = event.target;
 
-You can download and install it [here](https://www.getpostman.com/). (You need not create an account to use it.)
+  const recipe = {
+    title: title.value,
+    image: image.value,
+    description: description.value,
+  };
+
+  fetch("api/recipes", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(recipe),
+  })
+    .then((response) => response.json())
+    .then(getRecipes);
+}
+
+const addForm = document.querySelector("#addForm");
+addForm.addEventListener("submit", addRecipe);
+```
+
+Test the form.
+
+<!-- Using async/await:
+
+```js
+addForm.onsubmit = async (e) => {
+  e.preventDefault();
+
+  const { title, image, description } = event.target;
+
+  const recipe = {
+    title: title.value,
+    image: image.value,
+    description: description.value,
+  };
+
+  await fetch("api/recipes", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(recipe),
+  });
+
+  getRecipes();
+};
+``` -->
+
+### DEMO: Get via Postman
+
+Modeling an API is a common task and can become quite involved. There is a command line utility called `curl` which you will often find in API documentation.
+
+```sh
+$ curl -o example.html www.example.com
+
+$ curl www.example.com
+
+$ curl -i -X POST -H 'Content-Type: application/json' -d '{"title": "Toast", "image": "toast.png", "description":"Tasty!"}' http://localhost:3000/api/recipes
+```
+
+Although its good for a quick test, few enjoy using curl to create and examine complex APIs. Many people use a utility such as [Postman](https://www.getpostman.com/).
 
 Test a GET in postman with [http://localhost:3000/api/recipes/](http://localhost:3000/api/recipes/) and then delete all the recipes: [http://localhost:3000/api/killall/](http://localhost:3000/api/killall/)
-
-In a new terminal tab - use cURL to POST to the add endpoint with the full Recipe JSON as the request body (making sure to check the URL port and path).
-
-Here are two possibilities:
-
-```sh
-curl -i -X POST -H 'Content-Type: application/json' -d '{"title": "Toast", "image": "toast.png", "description":"Tasty!"}' http://localhost:3000/api/recipes
-```
-
-```sh
-curl -i -X POST -H 'Content-Type: application/x-www-form-urlencoded' -d 'title=Toast&image=toast.png&description=Tasty!' http://localhost:3000/api/recipes
-```
-
-Note that we specify the content type and the payload differently.
 
 Express needs to be able to handle these payloads:
 
@@ -845,30 +896,15 @@ Refresh `http://localhost:3000/recipes` or use Postman's history to see the new 
 
 Save the query in Postman to a new Postman collection.
 
-# fall2019-start-here
+## Deleting a Recipe
 
-Add a recipe using the form and note that the server returns json.
-
-Force the page to refresh using `res.redirect('/');`:
-
-```js
-exports.add = function (req, res) {
-  Recipe.create(req.body, function (err, recipe) {
-    if (err) return console.log(err);
-    res.redirect("/");
-  });
-};
-```
-
-## Mongoose [Model.remove](https://mongoosejs.com/docs/api/model.html#model_Model.remove)
-
-Our next REST endpoint, _delete_, reuses what we've done above. Add this to `recipe.controllers.js`.
+Our next REST endpoint, _delete_, uses [model.deleteOne](https://mongoosejs.com/docs/api/model.html#model_Model.remove). Add this to `recipe.controllers.js`.
 
 ```js
 exports.delete = function (req, res) {
   let id = req.params.id;
-  Recipe.remove({ _id: id }, (res) => {
-    return res.send(result);
+  Recipe.deleteOne({ _id: id }, () => {
+    return res.sendStatus(202);
   });
 };
 ```
@@ -876,167 +912,108 @@ exports.delete = function (req, res) {
 Check it out with curl (replacing the id at the end of the URL with a _known id_ from the GET (`api/recipes`) endpoint):
 
 ```sh
-curl -i -X DELETE http://localhost:3000/api/recipes/5d27783364d7acb966b2b9ac
+curl -i -X DELETE http://localhost:3000/api/recipes/<id>
 ```
-
-It probably doesn't make much sense to send the results back from a delete function (since there are no results) so change it to use an [HTTP status code](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#2xx_Success).
-
-```js
-exports.delete = function (req, res) {
-  let id = req.params.id;
-  Recipe.remove({ _id: id }, (result) => {
-    res.redirect("/");
-  });
-};
-```
-
-A Delete action in Postman.
-
-1. Set the action to Delete
-2. Append an id from the recipes endpoint to the /api/recipes endpoint
-3. Hit Send (e.g.: `http://localhost:3000/api/recipes/58c39048b3ddce0348706837`)
-
-Forms only support GET and POST and are inappropriate for deleting.
-
-Add a Delete link to the DOM script:
-
-`<a class="del" data-id=${recipe._id} href="#">Delete</a>`
-
-Note the use of data attribute.
 
 ## Deleting on the Front End
 
-We will select the delete links using querySelectorAll.
+- Add a delete link to the generated output
 
 ```js
-const deleteBtns = document.querySelectorAll(".del");
-console.log(deleteBtns);
-```
-
-Make sure this code is inside the renderStories function. Why? (Ans: because the delete buttons don't exist until the recipeEls have been appended.):
-
-```js
-const renderStories = (recipes) => {
+function renderRecipes(recipes) {
   recipes.forEach((recipe) => {
     recipeEl = document.createElement("div");
     recipeEl.innerHTML = `
-    <img src="img/${recipe.image}" />
-    <h3>${recipe.title}</h3>
-    <p>${recipe.description}</p>
-    <a class="del" data-id=${recipe._id} href="#">Delete</a>
+      <img src="img/${recipe.image}" />
+      <h3>${recipe.title}</h3>
+      <p>${recipe.description}</p>
+      <p>${recipe._id}</p>
+      <a class="delete" data-id=${recipe._id} href="#">Delete</a>
     `;
-    document.querySelector("#root").append(recipeEl);
+    document.querySelector(".recipes").append(recipeEl);
   });
-  const deleteBtns = document.querySelectorAll(".del");
-  console.log(deleteBtns[0].dataset.id);
-};
+}
 ```
 
-Note the use of `dataset` above.
+Note the use of `data-id` above.
 
 Use fetch passing it a second parameter - options:
 
 ```js
-fetch(`api/recipes`)
-  .then((response) => response.json())
-  .then((recipes) => renderStories(recipes));
-
-const renderStories = (recipes) => {
-  recipes.forEach((recipe) => {
-    recipeEl = document.createElement("div");
-    recipeEl.innerHTML = `
-      <img src="img/${recipe.image}" />
-      <h3>${recipe.title}</h3>
-      <p>${recipe.description}</p>
-      <a class="del" data-id=${recipe._id} href="api/recipe/${recipe._id}">Delete</a>
-    `;
-    document.querySelector("#root").append(recipeEl);
-  });
-
-  const deleteBtns = document.querySelectorAll(".del");
-
-  deleteBtns.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      fetch(`api/recipes/${btn.dataset.id}`, {
-        method: "DELETE",
-      });
-      e.preventDefault();
-      location.reload();
-    });
-  });
+const deleteRecipe = (event) => {
+  fetch(`api/recipes/${event.target.dataset.id}`, {
+    method: "DELETE",
+  }).then(location.reload());
 };
 ```
 
-Add after the form closing tag:
-
-```html
-<div id="app"></div>
-```
-
-Restructure the client side scripts to use event delegation and map:
+Here are the client side scripts with a bit of restructuring:
 
 ```js
-const getData = () => {
+function addRecipe(event) {
+  event.preventDefault();
+  const { title, image, description } = event.target;
+  const recipe = {
+    title: title.value,
+    image: image.value,
+    description: description.value,
+  };
+  fetch("api/recipes", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(recipe),
+  })
+    .then((response) => response.json())
+    .then(getRecipes);
+}
+
+function getRecipes() {
+  document.querySelector(".recipes").innerHTML = ``;
   fetch(`api/recipes`)
     .then((response) => response.json())
-    .then((recipes) => renderStories(recipes))
-    .catch((error) => console.error(error));
+    .then((recipes) => renderRecipes(recipes));
+}
+
+function renderRecipes(recipes) {
+  recipes.forEach((recipe) => {
+    const { _id, title, image, description } = recipe;
+    recipeEl = document.createElement("div");
+    recipeEl.innerHTML = `
+    <img src="img/${image}" />
+    <h3><a href="detail.html?recipe=${_id}">${title}</a></h3>
+    <p>${description}</p>
+    <p>${_id}</p>
+    <a class="delete" data-id=${_id} href="#">Delete</a>
+  `;
+    return document.querySelector(".recipes").append(recipeEl);
+  });
+}
+
+const deleteRecipe = (event) => {
+  fetch(`api/recipes/${event.target.dataset.id}`, {
+    method: "DELETE",
+  }).then(getRecipes());
 };
 
-const renderStories = (recipes) => {
-  const el = document.querySelector("#app");
-  el.innerHTML = recipes
-    .map((recipe) => {
-      return `<div>
-      <img src="img/${recipe.image}" />
-      <h3>${recipe.title}</h3>
-      <p>${recipe.description}</p>
-      <a data-id=${recipe._id} href="#">Delete</a>
-    </div>`;
-    })
-    .join("");
-};
-
-const handleClicks = () => {
+function handleClicks(event) {
   if (event.target.matches("[data-id]")) {
-    fetch(`api/recipes/${event.target.dataset.id}`, {
-      method: "DELETE",
-    });
-    event.preventDefault();
-    location.reload();
+    deleteRecipe(event);
   }
-};
+}
 
 document.addEventListener("click", handleClicks);
 
-if (document.readyState !== "loading") {
-  getData();
-} else {
-  document.addEventListener("DOMContentLoaded", getData());
-}
+const addForm = document.querySelector("#addForm");
+addForm.addEventListener("submit", addRecipe);
+
+getRecipes();
 ```
 
-## Find by ID
+## Detail Page / Find by ID
 
 Let's create a detail page for each recipe using findById function.
-
-First, add a link to the page we will create:
-
-<!-- ` <h3><a href="api/recipes/${recipe._id}">${recipe.title}</a></h3>` -->
-
-```html
-<h3><a href="detail.html?recipe=${recipe._id}">${recipe.title}</a></h3>
-```
-
-Note that we are including the recipe id (`_id`) in the URL.
-
-## Detail Page
-
-Save index.html as detail.html and change the script:
-
-```html
-<script src="js/details.js"></script>
-```
 
 Start by filling out the findByID function to use Mongoose's `Model.findOne` in `recipe.controllers`:
 
@@ -1050,30 +1027,46 @@ exports.findById = (req, res) => {
 };
 ```
 
-And create a new function in details.js:
+Then, add a link to the page we will create in scripts.js `renderRecipes`:
+
+```html
+<h3><a href="detail.html?recipe=${recipe._id}">${recipe.title}</a></h3>
+```
+
+Note that we are including the recipe id (`_id`) in the URL.
+
+- Save index.html as detail.html
+- Remove the form
+- change the script tag:
+
+```html
+<script src="js/details.js"></script>
+```
+
+Create a new function in details.js:
 
 ```js
-const detail = () => {
+function showDetail() {
   const urlParams = new URLSearchParams(window.location.search);
   const recipeId = urlParams.get("recipe");
-  console.log(recipeId);
 
-  fetch(`api/recipes/${recipeId}`)
+  fetch(`api/recipes/${recipeId}`, {
+    method: "GET",
+  })
     .then((response) => response.json())
-    .then((recipe) => renderStory(recipe));
+    .then((recipe) => renderRecipe(recipe));
+}
 
-  const renderStory = (recipe) => {
-    console.log(recipe);
-    recipeEl = document.createElement("div");
-    recipeEl.innerHTML = `
-      <img src="img/${recipe.image}" />
-      <h3>${recipe.title}</h3>
-      <p>${recipe.description}</p>
-      <a href="/">Back</a>
-      `;
-    document.querySelector("#root").append(recipeEl);
-  };
-};
+function renderRecipe(recipe) {
+  recipeEl = document.createElement("div");
+  recipeEl.innerHTML = `
+    <img src="img/${recipe.image}" />
+    <h3>${recipe.title}</h3>
+    <p>${recipe.description}</p>
+    <a href="/">Back</a>
+    `;
+  document.querySelector(".recipe").append(recipeEl);
+}
 
 detail();
 ```
@@ -1103,11 +1096,11 @@ Edit the form in `detail.html`:
 
 ```html
 <h3>Edit Recipe</h3>
-<form>
+<form id="editForm">
   <input type="text" placeholder="Recipe Title" name="title" />
   <input type="text" placeholder="Image" name="image" />
   <textarea type="text" placeholder="Description" name="description"></textarea>
-  <button onclick="updateRecipe()">Update</button>
+  <button>Update</button>
 </form>
 ```
 
@@ -1116,164 +1109,51 @@ Note the button action.
 Populate the form fields using data from the recipe:
 
 ```js
-const detail = () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const recipeId = urlParams.get("recipe");
-  console.log(recipeId);
-  fetch(`api/recipes/${recipeId}`)
-    .then((response) => response.json())
-    .then((recipe) => renderStory(recipe));
+function renderRecipe(recipe) {
+  const { image, title, description } = recipe;
+  recipeEl = document.createElement("div");
+  recipeEl.innerHTML = `
+    <img src="img/${image}" />
+    <h3>${title}</h3>
+    <p>${description}</p>
+    <a href="/">Back</a>
+    `;
 
-  const renderStory = (recipe) => {
-    recipeEl = document.createElement("div");
-    recipeEl.innerHTML = `
-      <img src="img/${recipe.image}" />
-      <h3>${recipe.title}</h3>
-      <p>${recipe.description}</p>
-      <a href="/">Back</a>
-      `;
-    document.querySelector("#root").append(recipeEl);
-
-    // NEW
-    const editForm = document.querySelector("form");
-    // console.log(editForm.description);
-    editForm.title.value = recipe.title;
-    editForm.image.value = recipe.image;
-    editForm.description.value = recipe.description;
-    // END NEW
-  };
-};
+  editForm.title.value = title;
+  editForm.image.value = image;
+  editForm.description.value = description;
+  document.querySelector(".recipe").append(recipeEl);
+}
 ```
 
-<!-- In order to make this work we need to ensure we have json parsing available in server.js
+We will test our updating capabilities by creating a function for the form's `updateRecipe` call using `fetch` and an options object.
 
 ```js
-app.use(express.json({ extended: false }));
-app.use(express.urlencoded({ extended: false }));
-``` -->
-
-We will test our updating capabilities by creating a function for the form's `updateRecipe` call using static content and `fetch` and an options object.
-
-Note: this script needs to be outside the `detail()` scope for now:
-
-```js
-const updateRecipe = () => {
-  const updatedRecipe = {
-    title: "New Title",
-    image: "lasagna.png",
-    description: "Not too long.",
-  };
-  const options = {
-    method: "PUT",
-    body: JSON.stringify(updatedRecipe),
-    headers: { "Content-Type": "application/json" },
-  };
-  console.log("options.body ", options.body);
-  fetch(`api/recipes/5d39eafb686a99ed6e11629f`, options).then((response) =>
-    console.log("response ", response)
-  );
+const updateRecipe = (event) => {
   event.preventDefault();
-};
-```
-
-Be sure to replace the hard coded id (`api/recipes/5d222a54334b1112c44a6066`) with the one in the browser location bar.
-
-Test by:
-
-- clicking the submit button
-- note the output of the two console logs in the browser's console
-- refresh the page
-
-Edit the script to harvest the form values as the updated recipe:
-
-```js
-const updateRecipe = () => {
-  const editForm = document.querySelector("form");
   const urlParams = new URLSearchParams(window.location.search);
   const recipeId = urlParams.get("recipe");
-
+  const { title, image, description } = event.target;
   const updatedRecipe = {
-    title: editForm.title.value,
-    image: editForm.image.value,
-    description: editForm.description.value,
+    _id: recipeId,
+    title: title.value,
+    image: image.value,
+    description: description.value,
   };
-
-  const options = {
+  fetch(`api/recipes/${recipeId}`, {
     method: "PUT",
     body: JSON.stringify(updatedRecipe),
-    headers: { "Content-Type": "application/json" },
-  };
-
-  fetch(`api/recipes/${recipeId}`, options)
-    .then((response) => console.log(response))
-    .then(() => location.reload()),
-    event.preventDefault();
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then(showDetail);
 };
+
+const editForm = document.querySelector("#editForm");
+editForm.addEventListener("submit", updateRecipe);
 ```
 
 Editing the form should now change the entry.
-
-## Deployment
-
-Its never too early to deploy a practice project! We will deploy to [Heroku](https://devcenter.heroku.com/articles/git).
-
-Before deployment we remove sensitive information and set environment variables for our project.
-
-Create a `.env` file in the root:
-
-`.env`:
-
-```sh
-NODE_ENV=development
-DATABASE=mongodb+srv://daniel:dd2345@recipes-3k4ea.mongodb.net/test?retryWrites=true&w=majority
-PORT=3000
-```
-
-Be sure to replace the DATABASE with your own url.
-
-Install a helper [dotenv](https://www.npmjs.com/package/dotenv):
-
-`$ npm install dotenv`
-
-Require it in `server.js`:
-
-```js
-require("dotenv").config();
-```
-
-Note: you should use your own database. You should not push the .env file to Github by adding it to `.gitignore`.
-
-Test it in `server.js`. Replace the existing dataBaseURL variable with:
-
-```
-const dataBaseURL = process.env.DATABASE;
-```
-
-Ensure that `server.js` specifies `process.env`. Replace the lines at the bottom with:
-
-```js
-const PORT = process.env.PORT;
-app.listen(PORT, () => console.log(`Server running at port ${PORT}`));
-```
-
-The server should still be running successfully on port 3000.
-
-Ensure that your package json includes `server.js` as the `main` file:
-
-`"main": "server.js",`
-
-and that you have a node start script defined:
-
-`"start": "node server.js"`
-
-Create a git repo and deploy to Github.
-
-1. Create an account and login to Heroku
-2. Create a project
-3. Go to the deployment tab and specify with Github repo and branch you are deploying from and enable automatic deploys. Be sure to monitor the build.
-4. Push the desired branch to Github
-
-<!-- On Heroku set the production environment variables. -->
 
 ## Adding File Upload
 
@@ -1283,7 +1163,7 @@ Install File Upload:
 
 `npm i express-fileupload -S`
 
-Require, register and create a route for it in `app.js`:
+Require, register and create a route for it in `server.js`:
 
 ```js
 ...
@@ -1494,6 +1374,68 @@ recipeEl.innerHTML = `
 ```
 
 The Array data type allows you to store JavaScript-like arrays. With an Array data type, you can perform common JavaScript array operations on them, such as push, pop, shift, slice, etc.
+
+## Deployment
+
+We will deploy to [Heroku](https://devcenter.heroku.com/articles/git).
+
+Before deployment we remove sensitive information and set environment variables for our project.
+
+Create a `.env` file in the root:
+
+`.env`:
+
+```sh
+NODE_ENV=development
+DATABASE=mongodb+srv://daniel:dd2345@recipes-3k4ea.mongodb.net/test?retryWrites=true&w=majority
+PORT=3000
+```
+
+Be sure to replace the DATABASE with your own url.
+
+Install a helper [dotenv](https://www.npmjs.com/package/dotenv):
+
+`$ npm install dotenv`
+
+Require it in `server.js`:
+
+```js
+require("dotenv").config();
+```
+
+Note: you should use your own database. You should not push the .env file to Github by adding it to `.gitignore`.
+
+Test it in `server.js`. Replace the existing dataBaseURL variable with:
+
+```
+const dataBaseURL = process.env.DATABASE;
+```
+
+Ensure that `server.js` specifies `process.env`. Replace the lines at the bottom with:
+
+```js
+const PORT = process.env.PORT;
+app.listen(PORT, () => console.log(`Server running at port ${PORT}`));
+```
+
+The server should still be running successfully on port 3000.
+
+Ensure that your package json includes `server.js` as the `main` file:
+
+`"main": "server.js",`
+
+and that you have a node start script defined:
+
+`"start": "node server.js"`
+
+Create a git repo and deploy to Github.
+
+1. Create an account and login to Heroku
+2. Create a project
+3. Go to the deployment tab and specify with Github repo and branch you are deploying from and enable automatic deploys. Be sure to monitor the build.
+4. Push the desired branch to Github
+
+<!-- On Heroku set the production environment variables. -->
 
 ## Notes
 
