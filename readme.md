@@ -274,21 +274,22 @@ At this point you should be dropped into an interactive MongoDB shell.
 
 Inside your MongoDB console run show dbs. This will allow you to see all the existing databases. In order to start using one, you do `use <database name>`. Let's make our own. Run `use recipesApp`. If you run `db` now it'll show you're using the recipes database.
 
-Let's make a collection. Run `db.recipes.insertOne({name: "Tuna", type: "sandwich", difficuly: "Easy"})`.
+Let's make a collection. Run
 
-`db.recipes.count()`
-`db.recipes.findOne()`
-`db.recipes.findOne({ type: "sandwich" })`
-`db.recipes.updateOne( {name: "Tuna", type: "sandwich", difficuly: "Easy"}, { $set: { author: "Daniel" } } );`
-
-: `const connection = process.env.DB_URL || "mongodb://localhost:27017";`
+```sh
+> db.recipes.insertOne({name: "Tuna", type: "sandwich", difficuly: "Easy"}).
+> db.recipes.count()
+> db.recipes.findOne()
+> db.recipes.findOne({ type: "sandwich" })
+> db.recipes.updateOne( {name: "Tuna", type: "sandwich", difficuly: "Easy"}, { $set: { author: "Daniel" } } );
+```
 
 <!-- mongodb+srv://daniel:dd2345@recipes-1c9td.mongodb.net/test?retryWrites=true&w=majority -->
 <!-- mongodb+srv://daniel:dd2345@recipes-3k4ea.mongodb.net/test?retryWrites=true&w=majority -->
 
 ## Mongoose
 
-There are a variety of ways to connect to the database from Express applications. Since we want to use Mongo, we installed [Mongoose](https://mongoosejs.com), a driver for MongoDB, using npm. It is easier to use than the standard [MongoClient](https://expressjs.com/en/guide/database-integration.html#mongodb) and works with models or schemas.
+There are a variety of ways to connect to the database from Express applications. Since we want to use Mongo, we installed [Mongoose](https://mongoosejs.com), a driver for MongoDB, using npm. It is easier to use than the standard [MongoClient](https://expressjs.com/en/guide/database-integration.html#mongodb) and allows us to create models or schemas.
 
 Note: Mongoose is not the MongoDB database, just the driver needed to work with it.
 
@@ -303,9 +304,13 @@ We connect to a Mongo DB through the Mongoose's connect method, `mongoose.connec
 Store the database URL in a variable:
 
 ```js
+const dataBaseURL = process.env.DB_URL || "mongodb://localhost:27017";
+```
+
+<!-- ```js
 const dataBaseURL =
   "mongodb+srv://daniel:dd2345@recipes-3k4ea.mongodb.net/test?retryWrites=true&w=majority";
-```
+``` -->
 
 To use a different database, simply drop a different connection string into the `dataBaseURL` variable.
 
@@ -405,7 +410,7 @@ Now go to the import endpoint (note that the page loads indefinitely) and then r
 
 The page loads indefinitely because the endpoint never actually returns anything to the browser.
 
-In the documentation for `model.create()` they note that you can pass a callback function after the objects:
+In the documentation for `model.create()` they note that you can pass a callback function after the objects, i.e.:
 
 ```js
 Candy.create({ type: 'jelly bean' }, { type: 'snickers' }, function (err, jellybean, snickers) {
@@ -428,7 +433,7 @@ Let's return an HTTP status:
     },
 ```
 
-Travelling to `http://localhost:3000/api/import` will import the data again but, this time, since we return something to the browser it will not be stuck on loading.
+Travelling to `http://localhost:3000/api/import` will import the data again but, this time, since we return something to the browser it will not be stuck loading.
 
 ### Aside - Status Codes
 
