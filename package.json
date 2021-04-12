@@ -1,29 +1,30 @@
 {
-  "name": "expressjs",
+  "name": "express-recipes",
   "version": "1.0.0",
-  "description": "expressjs",
+  "description": "",
   "main": "server.js",
-  "dependencies": {
-    "body-parser": "^1.19.0",
-    "express": "^4.17.1",
-    "mongoose": "^5.6.4"
-  },
-  "devDependencies": {
-    "nodemon": "^1.19.1"
-  },
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/front-end-summer19/ExpressJS.git"
+    "url": "git+https://github.com/front-end-intermediate/ExpressJS.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/front-end-summer19/ExpressJS/issues"
+    "url": "https://github.com/front-end-intermediate/ExpressJS/issues"
   },
-  "homepage": "https://github.com/front-end-summer19/ExpressJS#readme"
+  "homepage": "https://github.com/front-end-intermediate/ExpressJS#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.2.1",
+    "mongoose": "^5.12.3"
+  }
 }
