@@ -8,13 +8,14 @@ function getRecipes() {
 
 function renderRecipes(recipes) {
   recipes.forEach((recipe) => {
+    const { _id, title, image, description } = recipe;
     recipeEl = document.createElement("div");
     recipeEl.innerHTML = `
-      <img src="img/${recipe.image}" />
-      <h3>${recipe.title}</h3>
-      <p>${recipe.description}</p>
-      <button class="delete" data-id=${recipe._id} href="#">Delete</button>
-    `;
+    <img src="img/${image}" />
+    <h3><a href="detail.html?recipe=${_id}">${title}</a></h3>
+    <p>${description}</p>
+    <button class="delete" data-id=${recipe._id} href="#">Delete</button>
+  `;
     document.querySelector(".recipes").append(recipeEl);
   });
 }
@@ -46,6 +47,20 @@ function deleteRecipe(event) {
     method: "DELETE",
   }).then(location.reload());
 }
+
+function seed() {
+  fetch("api/import").then(getRecipes);
+}
+
+function handleClicks(event) {
+  if (event.target.matches("[data-id]")) {
+    deleteRecipe(event);
+  } else if (event.target.matches("#seed")) {
+    seed();
+  }
+}
+
+document.addEventListener("click", handleClicks);
 
 const addForm = document.querySelector("#addForm");
 addForm.addEventListener("submit", addRecipe);
