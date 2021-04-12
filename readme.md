@@ -1,6 +1,6 @@
 # Server Side with ExpressJS
 
-<!-- Today we will be building the back and front end for a [simple recipes app](https://morning-falls-57252.herokuapp.com). -->
+Today we will be building the back and front end for a [simple recipes app](https://recipes-spring.herokuapp.com).
 
 <!-- For a final version of this project see the `local` branch of this repo. -->
 
