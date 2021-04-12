@@ -206,14 +206,7 @@ With a relational database, you have to define the shape of your data upfront. Y
 
 With a document-based database, you just start writing objects to the database and it will accomodate them. Some documents can have some fields and others can other ones.
 
-Rather than installing a database on our local computer we could use [MongoDB's](https://www.mongodb.com) cloud service Atlas.
-
-1. Create an account and sign in
-2. Create a project called NYU
-3. Create a cluster naming it `recipes`
-4. Create a database user (this is different from the login username and password) with Read/Write access
-5. Whitelist access from anywhere
-6. Select a connection method (select Connect your Application) and copy the connection string
+## Docker
 
 For today we will download a container that runs MongoDB locally. This will not allow us to deploy the app since the database will only be running locally.
 
@@ -898,7 +891,7 @@ Add a button to index.html:
 <button id="seed">Load Seed Data</button>
 ```
 
-## Detail Page / Find by ID
+## Find by ID
 
 Let's create a detail page for each recipe using findById function.
 
@@ -924,15 +917,34 @@ In the `renderRecipes` funtion in scripts.js:
 
 Note that we are including the recipe id (`_id`) in the URL.
 
+## Detail Page
+
 - Save index.html as detail.html
 - Remove the form
-- change the script tag:
+- change the html:
 
 ```html
-<script src="js/details.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <title>Recipes!</title>
+  </head>
+  <body>
+    <div id="root">
+      <h1>Recipes!</h1>
+
+      <div class="recipe"></div>
+    </div>
+    <script src="js/details.js"></script>
+  </body>
+</html>
 ```
 
-Create a new function in details.js:
+Create `details.js` and within a new function:
 
 ```js
 function showDetail() {
@@ -957,7 +969,7 @@ function renderRecipe(recipe) {
   document.querySelector(".recipe").append(recipeEl);
 }
 
-detail();
+showDetail();
 ```
 
 Note the use of [URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams).
@@ -971,7 +983,7 @@ We will use a form in `detail.html` to update and edit the recipe.
 Update `recipe.controllers` to use `findByIdAndUpdate`:
 
 ```js
-exports.update = (req, res) => {
+exports.update = function (req, res) {
   console.log(req.body);
   const id = req.params.id;
   Recipe.findByIdAndUpdate(id, req.body, { new: true }, (err, response) => {
@@ -1094,26 +1106,13 @@ Looking at the [example project](https://github.com/richardgirges/express-fileup
 
 Note the encType attribute on the form.
 
-Upload an image (reuse one of the images in `/public/img/`) and give it a unique name.
-
-Go to the home page and create a recipe that uses the new image.
+Upload an image (reuse one of the images in `/public/img/`) and give it a unique name and create a recipe that uses the new image.
 
 Once successful, set the return value in the corresponding controller's function to `return res.sendStatus(200);`.
 
 ## Update the Recipe Model
 
-Try removing title from `recipe.model`:
-
-```js
-const RecipeSchema = new Schema({
-  description: String,
-  image: String,
-});
-```
-
-Run killall and import again. The title property will be missing from the imported items.
-
-Add it back to the schema, this time including a default `created` value of type Date:
+Add a default `created` value of type Date to `recipe.model`:
 
 ```js
 const RecipeSchema = new Schema({
@@ -1127,7 +1126,7 @@ const RecipeSchema = new Schema({
 });
 ```
 
-`Created ${recipe.created}`
+`<p>Created ${recipe.created}<p>`
 
 Test Mongoose by adding new properties to our recipes.
 
@@ -1192,7 +1191,7 @@ exports.import = function (req, res) {
 };
 ```
 
-If you delete with the `killall` endpoint and reload the sample data, it will not include the arrays.
+If you delete with the `killall` endpoint and reload the recipes endpoint, it will not include the arrays.
 
 Add new properties to our Recipe schema.
 
@@ -1246,23 +1245,44 @@ Certain data types allow you to customize how the data is stored and retrieved f
 - an enum that can define a list of strings that are valid
 
 ```js
-recipeEl.innerHTML = `
-  <img src="img/${recipe.image}" />
-  <h3>${recipe.title}</h3>
-  <p>${recipe.description}</p>
+  const {
+    created,
+    image,
+    title,
+    description,
+    ingredients,
+    preparation,
+  } = recipe;
+  ...
+  recipeEl.innerHTML = `
+  <img src="img/${image}" />
+  <h3>${title}</h3>
+  <p>${description}</p>
   <h4>Ingredients</h4>
   <ul>
-    ${recipe.ingredients.map((ingredient) => `<li>${ingredient}</li>`).join("")}
+    ${ingredients[0]}
   </ul>
   <h4>Preparation</h4>
   <ul>
-    ${recipe.preparation.map((prep) => `<li>${prep.step}</li>`).join("")}
+    ${preparation.map((prep) => `<li>${prep.step}</li>`).join("")}
   </ul>
+  <p>Created ${created}<p>
   <a href="/">Back</a>
   `;
 ```
 
 The Array data type allows you to store JavaScript-like arrays. With an Array data type, you can perform common JavaScript array operations on them, such as push, pop, shift, slice, etc.
+
+## Atlas
+
+Rather than installing a database on our local computer we could use [MongoDB's](https://www.mongodb.com) cloud service Atlas.
+
+1. Create an account and sign in
+2. Create a project called NYU
+3. Create a cluster naming it `recipes`
+4. Create a database user (this is different from the login username and password) with Read/Write access
+5. Whitelist access from anywhere
+6. Select a connection method (select Connect your Application) and copy the connection string
 
 ## Deployment
 
