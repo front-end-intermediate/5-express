@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-const mongoose = require('mongoose');
-const Recipe = mongoose.model('Recipe');
-
-exports.findAll = (req, res) => {
-  Recipe.find({}, (err, json) => {
-    if (err) return console.log(err);
-    res.send(json);
-=======
 const mongoose = require("mongoose");
 const Recipe = mongoose.model("Recipe");
 
 exports.findAll = function (req, res) {
   Recipe.find({}, function (err, results) {
     return res.send(results);
->>>>>>> 0e3e708a82f54eaa6b9e2263b9bea85e9361abe3
   });
 };
 
@@ -25,23 +15,14 @@ exports.findById = (req, res) => {
   });
 };
 
-<<<<<<< HEAD
-exports.add = function(req, res) {
-  Recipe.create(req.body, function(err, recipe) {
-=======
 exports.add = function (req, res) {
   Recipe.create(req.body, function (err, recipe) {
->>>>>>> 0e3e708a82f54eaa6b9e2263b9bea85e9361abe3
     if (err) return console.log(err);
     return res.send(recipe);
   });
 };
 
-<<<<<<< HEAD
-exports.update = (req, res) => {
-=======
 exports.update = function (req, res) {
->>>>>>> 0e3e708a82f54eaa6b9e2263b9bea85e9361abe3
   console.log(req.body);
   const id = req.params.id;
   Recipe.findByIdAndUpdate(id, req.body, { new: true }, (err, response) => {
