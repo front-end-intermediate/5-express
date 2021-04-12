@@ -43,3 +43,12 @@ button {
   border: none;
   border-radius: 3px;
 }
+
+.delete {
+  background: unset;
+  margin: unset;
+  border: none;
+  padding: 0;
+  color: #007eb6;
+  cursor: pointer;
+}
