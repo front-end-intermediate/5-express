@@ -17,6 +17,10 @@ Today we will be building the back and front end for a [simple recipes app](http
 
 - [Client-Server Overview](https://developer.mozilla.org/en-US/docs/Learn/Server-side/First_steps/Client-Server_overview) on MDN
 
+## Docker
+
+(see below)
+
 ## NodeJS
 
 An implementation of Chrome's JavaScript engine _outside the browser_.
@@ -195,7 +199,7 @@ With a document-based database, you just start writing objects to the database a
 
 ## Docker
 
-For today we will download a container that runs MongoDB locally. This will not allow us to deploy the app since the database will only be running locally.
+Today we will download a container that runs MongoDB locally. (This will not allow us to deploy the app since the database will only be running locally.)
 
 Don't worry if Docker and containers aren't familiar to you, if you install Docker and follow the commands everything should just work.
 
