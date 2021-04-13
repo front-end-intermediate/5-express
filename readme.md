@@ -6,21 +6,8 @@ Today we will be building the back and front end for a [simple recipes app](http
 
 ## Homework
 
-Given this author model:
-
-```js
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-
-const AuthorSchema = new Schema({
-  name: String,
-  recipes: [{ type: Schema.Types.ObjectId, ref: "Recipe" }],
-});
-
-module.exports = mongoose.model("Author", AuthorSchema);
-```
-
-Add an author to the recipe and display it in the ui.
+- Add an author to the recipe schema, allow the user to enter it and display it in the ui.
+- Allow the user to enter ingredients and preparations steps.
 
 ## Resources
 
@@ -1348,7 +1335,7 @@ Create a git repo and deploy to Github.
 
 ## Instructor Notes
 
-<!-- Using async/await:
+Using async/await:
 
 ```js
 addForm.onsubmit = async (e) => {
@@ -1372,4 +1359,4 @@ addForm.onsubmit = async (e) => {
 
   getRecipes();
 };
-``` -->
+```
