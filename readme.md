@@ -7,7 +7,8 @@ Today we will be building the back and front end for a [simple recipes app](http
 ## Homework
 
 - Add an author to the recipe schema, allow the user to enter it and display it in the ui.
-- Allow the user to enter ingredients and preparations steps.
+- Allow the user to enter ingredients and preparation steps.
+- `.map()` over the ingredients
 
 ## Resources
 
