@@ -1,0 +1,28 @@
+{
+  "name": "5-expressjs",
+  "version": "1.0.0",
+  "description": "Today we will be building the back and front end for a [simple recipes app](https://recipes-spring.herokuapp.com).",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/front-end-intermediate/ExpressJS.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/front-end-intermediate/ExpressJS/issues"
+  },
+  "homepage": "https://github.com/front-end-intermediate/ExpressJS#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^6.0.13"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
