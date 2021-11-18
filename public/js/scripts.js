@@ -5,31 +5,14 @@ function getRecipes() {
     .then((recipes) => renderRecipes(recipes));
 }
 
-function renderRecipes(recipes) {
-  recipes.forEach((recipe) => {
-    recipeEl = document.createElement("div");
-    recipeEl.innerHTML = `
-      <img src="img/${recipe.image}" />
-      <h3>${recipe.title}</h3>
-      <p>${recipe.description}</p>
-    `;
-    document.querySelector(".recipes").append(recipeEl);
-  });
-}
-
-getRecipes();
-
 function addRecipe(event) {
   event.preventDefault();
-
   const { title, image, description } = event.target;
-
   const recipe = {
     title: title.value,
     image: image.value,
     description: description.value,
   };
-
   fetch("api/recipes", {
     method: "POST",
     headers: {
@@ -41,5 +24,43 @@ function addRecipe(event) {
     .then(getRecipes);
 }
 
+function renderRecipes(recipes) {
+  recipes.forEach((recipe) => {
+    // destructure
+    const { _id, title, image, description } = recipe;
+    recipeEl = document.createElement("div");
+    recipeEl.innerHTML = `
+    <img src="img/${image}" />
+    <h3><a href="detail.html?recipe=${recipe._id}">${recipe.title}</a></h3>
+    <p>${description}</p>
+    <button class="delete" data-id=${recipe._id} href="#">Delete</button>
+  `;
+    return document.querySelector(".recipes").append(recipeEl);
+  });
+}
+
+function deleteRecipe(event) {
+  fetch(`api/recipes/${event.target.dataset.id}`, {
+    method: "DELETE",
+  }).then(getRecipes());
+}
+
+// new
+function seed() {
+  fetch("api/import").then(getRecipes);
+}
+
+function handleClicks(event) {
+  if (event.target.matches("[data-id]")) {
+    deleteRecipe(event);
+  } else if (event.target.matches("#seed")) {
+    seed();
+  }
+}
+
+document.addEventListener("click", handleClicks);
+
 const addForm = document.querySelector("#addForm");
 addForm.addEventListener("submit", addRecipe);
+
+getRecipes();

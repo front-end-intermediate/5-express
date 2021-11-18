@@ -14,12 +14,14 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/front-end-intermediate/ExpressJS/issues"
   },
   "homepage": "https://github.com/front-end-intermediate/ExpressJS#readme",
   "dependencies": {
     "express": "^4.17.1",
+    "express-fileupload": "^1.2.1",
     "mongoose": "^6.0.13"
   },
   "devDependencies": {

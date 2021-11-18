@@ -1,8 +1,18 @@
-const express = require("express");
+import express from "express";
 const app = express();
-const mongoose = require("mongoose");
-const recipeModel = require("./api/recipe.model");
-const recipeControllers = require("./api/recipe.controllers");
+import mongoose from "mongoose";
+import fileUpload from "express-fileupload";
+import recipeModel from "./api/recipe.model.js";
+import {
+  findAll,
+  findById,
+  add,
+  update,
+  del,
+  seed,
+  killall,
+  upload,
+} from "./api/recipe.controllers.js";
 
 const dataBaseURL = process.env.DB_URL || "mongodb://localhost:27017";
 
@@ -14,18 +24,20 @@ mongoose
 app.use(express.static("public"));
 app.use(express.json({ extended: false }));
 app.use(express.urlencoded({ extended: false }));
+app.use(fileUpload());
 
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/static/index.html");
 });
 
-app.get("/api/recipes", recipeControllers.findAll);
-app.get("/api/recipes/:id", recipeControllers.findById);
-app.post("/api/recipes", recipeControllers.add);
-app.put("/api/recipes/:id", recipeControllers.update);
-app.delete("/api/recipes/:id", recipeControllers.delete);
-app.get("/api/import", recipeControllers.import);
-app.get("/api/killall", recipeControllers.killall);
+app.get("/api/recipes", findAll);
+app.get("/api/recipes/:id", findById);
+app.post("/api/recipes", add);
+app.put("/api/recipes/:id", update);
+app.delete("/api/recipes/:id", del);
+app.get("/api/import", seed);
+app.get("/api/killall", killall);
+app.post("/api/upload", upload);
 
 const PORT = process.env.PORT || 3000;
 
