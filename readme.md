@@ -12,7 +12,9 @@ Today we will be building the back and front end for a [simple recipes app](http
 
 ## Homework II
 
-Delploy your app to Heroku using the following instructions: `https://www.mongodb.com/developer/how-to/use-atlas-on-heroku/#std-label-configure-heroku-ip-address-in-atlas`
+- create a database cluster on mongodb.com and use it with your server (with your own connection string)
+- deploy your app to Heroku refer to the following instructions: `https://www.mongodb.com/developer/how-to/use-atlas-on-heroku/#std-label-configure-heroku-ip-address-in-atlas`
+- add the ability to edit the year to the edit recipe page
 
 ## Resources
 
