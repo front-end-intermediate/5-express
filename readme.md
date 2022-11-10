@@ -26,7 +26,7 @@ Today we will be building the back and front end for a [simple recipes app](http
 
 ## Docker
 
-(see below)
+Install the Docker [Desktop App](https://www.docker.com/products/docker-desktop)
 
 ## NodeJS
 
@@ -907,7 +907,7 @@ exports.findById = (req, res) => {
 
 Then, add a link to the details page we are about to create.
 
-In the `renderRecipes` funtion in scripts.js:
+In the `renderRecipes` function in scripts.js:
 
 ```html
 <h3><a href="detail.html?recipe=${recipe._id}">${recipe.title}</a></h3>
@@ -918,7 +918,6 @@ Note that we are including the recipe id (`_id`) in the URL.
 ## Detail Page
 
 - Save index.html as detail.html
-- Remove the form
 - change the html:
 
 ```html
@@ -1060,7 +1059,7 @@ We will add file uploading to our API using the [File Upload](https://www.npmjs.
 
 Install File Upload:
 
-`npm i express-fileupload -S`
+`npm i express-fileupload`
 
 Require, register and create a route for it in `server.js`:
 
