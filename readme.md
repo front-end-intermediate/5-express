@@ -443,7 +443,7 @@ function getRecipes() {
 
 function renderRecipes(recipes) {
   recipes.forEach((recipe) => {
-    recipeEl = document.createElement("div");
+    let recipeEl = document.createElement("div");
     recipeEl.innerHTML = `
       <img src="img/${recipe.image}" />
       <h3>${recipe.title}</h3>
@@ -462,13 +462,12 @@ Before we get any further we are going to use CommonJS to organize our code.
 
 ### Controllers
 
-Create a new folder `api` and a file inside called `recipe.controllers.js`. We'll export each handler and create the functions in this file one by one. They are just empty functions for the moment.
+Create a new folder `api` and a file inside `api/recipe.controllers.js`. We'll export each handler and create the functions in this file one by one. They are just empty functions for the moment.
 
 Add the following to `recipe.controllers.js`:
 
 ```js
-const mongoose = require("mongoose");
-// const Recipe = mongoose.model('Recipe');
+// const Recipe = require("./recipe.model");
 
 exports.findAll = function () {};
 exports.findById = function () {};
@@ -495,7 +494,7 @@ app.get("/api/recipes/:id", recipeControllers.findById);
 app.post("/api/recipes", recipeControllers.add);
 app.put("/api/recipes/:id", recipeControllers.update);
 app.delete("/api/recipes/:id", recipeControllers.delete);
-app.get("/api/import", recipeControllers.import);
+// app.get("/api/import", recipeControllers.import);
 app.get("/api/killall", recipeControllers.killall);
 ```
 
@@ -530,7 +529,7 @@ You should see the recipe in the browser and, at the specified route `/api/recip
 
 ### Recipe Model
 
-Add a new file `recipe.model.js` to `api` for our Recipe Model.
+Add a new file `api/recipe.model.js` for our Recipe Model.
 
 Require Mongoose in this file, and create a new Schema object:
 
@@ -551,18 +550,19 @@ We require mongoose and create and export an instance of a mongoose Schema to ma
 
 The last line exports the RecipeShema together with Mongoose's built in MongoDb interfacing methods. We'll refer to this Recipe object in other files.
 
-Delete the model in server.js and import `recipe.model.js`. Order is important. In `server.js` we must require the model _before_ the controllers.
+Delete the model in server.js
+
+<!-- and import `recipe.model.js`. Order is important. In `server.js` we must require the model _before_ the controllers.
 
 ```js
 const recipeModel = require("./api/recipe.model");
 const recipeControllers = require("./api/recipe.controllers");
-```
+``` -->
 
 Update the `findAll()` function in `recipe.controllers` to query Mongo with the `find()` method.
 
 ```js
-const mongoose = require("mongoose");
-const Recipe = mongoose.model("Recipe");
+const Recipe = require("./recipe.model");
 
 exports.findAll = function (req, res) {
   Recipe.find({}, function (err, results) {
@@ -576,7 +576,7 @@ exports.update = function () {};
 exports.delete = function () {};
 ```
 
-Note that we need to reference the Mongoose schema `const Recipe = mongoose.model('Recipe')` as we are using it in `Recipe.find`.
+Note that we need to reference the Mongoose schema as we are using it in `Recipe.find`.
 
 `Model.find()` is a [Mongoose query](https://mongoosejs.com/docs/queries.html) that takes an object and an optional callback function. Passing `find({})` with an empty object means we are not filtering and so to return all of it.
 
@@ -774,7 +774,7 @@ curl -i -X DELETE http://localhost:3000/api/recipes/<id>
 ```js
 function renderRecipes(recipes) {
   recipes.forEach((recipe) => {
-    recipeEl = document.createElement("div");
+    let recipeEl = document.createElement("div");
     recipeEl.innerHTML = `
       <img src="img/${recipe.image}" />
       <h3>${recipe.title}</h3>
@@ -845,7 +845,7 @@ function renderRecipes(recipes) {
   recipes.forEach((recipe) => {
     // destructure
     const { _id, title, image, description } = recipe;
-    recipeEl = document.createElement("div");
+    let recipeEl = document.createElement("div");
     recipeEl.innerHTML = `
     <img src="img/${image}" />
     <h3><a href="detail.html?recipe=${_id}">${title}</a></h3>
@@ -1334,7 +1334,7 @@ Ensure that your package json includes `server.js` as the `main` file:
 
 and that you have a node start script defined:
 
-`"start": "node server.js"`
+`"start": "node server.js",`
 
 Create a git repo and deploy to Github.
 
