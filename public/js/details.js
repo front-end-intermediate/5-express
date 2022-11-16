@@ -10,14 +10,24 @@ function showDetail() {
 }
 
 function renderRecipe(recipe) {
-  const { image, title, description } = recipe;
-  recipeEl = document.createElement("div");
+  const { created, image, title, description, ingredients, preparation } =
+    recipe;
+  let recipeEl = document.createElement("div");
   recipeEl.innerHTML = `
-    <img src="img/${image}" />
-    <h3>${title}</h3>
-    <p>${description}</p>
-    <a href="/">Back</a>
-    `;
+  <img src="img/${image}" />
+  <h3>${title}</h3>
+  <p>${description}</p>
+  <h4>Ingredients</h4>
+  <ul>
+    ${ingredients[0]}
+  </ul>
+  <h4>Preparation</h4>
+  <ul>
+    ${preparation.map((prep) => `<li>${prep.step}</li>`).join("")}
+  </ul>
+  <p>Created ${created}<p>
+  <a href="/">Back</a>
+  `;
 
   editForm.title.value = title;
   editForm.image.value = image;

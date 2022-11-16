@@ -11,6 +11,12 @@
     <div id="root">
       <h1>Recipes!</h1>
 
+      <form action="/api/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/png" />
+        <input type="text" placeholder="File name" name="filename" />
+        <button type="submit">Upload</button>
+      </form>
+
       <form id="addForm">
         <input type="text" placeholder="Recipe Title" name="title" />
         <input type="text" placeholder="Image" name="image" />

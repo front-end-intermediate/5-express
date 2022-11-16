@@ -33,6 +33,7 @@ function renderRecipes(recipes) {
     <img src="img/${image}" />
     <h3><a href="detail.html?recipe=${_id}">${title}</a></h3>
     <p>${description}</p>
+
     <button class="delete" data-id=${recipe._id} href="#">Delete</button>
   `;
     return document.querySelector(".recipes").append(recipeEl);
