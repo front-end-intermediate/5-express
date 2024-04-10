@@ -1,20 +1,20 @@
 # Server Side with ExpressJS
 
-Today we will be building the back and front end for a [simple recipes app](https://recipes-spring.herokuapp.com).
+Today we will be building the back and front end for a simple recipes app.
 
 <!-- For a final version of this project see the `local` branch of this repo. -->
 
-## Homework
+<!-- ## Homework
 
 - Add an author to the recipe schema, allow the user to enter it and display it in the ui.
 - Prevent the double display when editing a recipe (toast)
-- When a new recipe is created, it should appear on top
+- When a new recipe is created, it should appear on top -->
 
-## Homework II
+<!-- ## Homework II
 
 - create a database cluster on mongodb.com and use it with your server (with your own connection string)
 - deploy your app to Heroku refer to the following instructions: `https://www.mongodb.com/developer/how-to/use-atlas-on-heroku/#std-label-configure-heroku-ip-address-in-atlas`
-- add the ability to edit the year to the edit recipe page
+- add the ability to edit the year to the edit recipe page -->
 
 ## Resources
 
@@ -50,7 +50,7 @@ In the terminal:
 node server.js
 ```
 
-Here's the canonical example:
+Here's the canonical server example:
 
 ```js
 const http = require("http");
@@ -69,6 +69,10 @@ server.listen(port, hostname, () => {
 });
 ```
 
+[418](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/418)
+
+[451](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/451)
+
 ## CommonJS module system
 
 Node uses the CommonJS module system.
@@ -79,7 +83,7 @@ Node uses the CommonJS module system.
 
 CommonJS uses a `require()` function to fetch dependencies and an `exports` or `module.exports` variable to export. CommonJS is an earlier system and was not intended for browsers where ES6 modules are used instead.
 
-An example. `fetch` is a browser API. If you want to use fetch in node you would have to npm install it and then import or require it using:
+For example: `fetch` is a browser API. If you want to use fetch in node you would have to npm install it and then import or require it using:
 
 `const fetch = require('node-fetch');`
 
