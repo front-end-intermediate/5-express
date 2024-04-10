@@ -69,9 +69,15 @@ server.listen(port, hostname, () => {
 });
 ```
 
+### Aside - Status Codes
+
+`sendStatus` communicates with the front end by returning a standard [http status code](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes). As the backend developer it is up to you to return appropriate status codes.
+
 [418](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/418)
 
 [451](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/451)
+
+451 - 'Unavailable For Legal Reasons', is used when resource access is denied for legal reasons, e.g. censorship or government-mandated blocked access. It is a reference to the novel Fahrenheit 451, where books are outlawed.
 
 ## CommonJS module system
 
@@ -89,25 +95,25 @@ For example: `fetch` is a browser API. If you want to use fetch in node you woul
 
 ## Scaffolding Our Server
 
-1. Run `$ npm init -y` and edit package.json to specify `"main": "server.js",` as the entry for main
+1. Run `$ npm init -y` and edit `package.json` to specify `"main": "server.js",` as the entry for main
 2. Install dependencies: `npm i -S express mongoose`
 3. Install developmental dependencies: `npm i -D nodemon`
-4. Create an npm script for nodemon in package.json:
+4. Create an npm script for nodemon in `package.json`:
 
 ```js
 "scripts": {
   "start": "node server.js",
-  "dev": "nodemon server.js"
+  "start:dev": "nodemon server.js"
 },
 ```
 
 ## ExpressJS
 
-[Express](https://expressjs.com/) is a very [popular](https://2020.stateofjs.com/en-US/technologies/back-end-frameworks/) server-side or "back-end" framework for building web applications on Node.js. It simplifies the server creation process and uses JavaScript as the server-side language.
+[Express](https://expressjs.com/) is a very [popular](https://2022.stateofjs.com/en-US/other-tools/) server-side or "back-end" framework for building web applications with Node.js. It simplifies the server creation process and uses JavaScript as the server-side language.
 
-Common web-development tasks are not directly supported by Node. Express allows you to
+Express allows you to:
 
-- add specific handling for different HTTP actions (e.g. GET, POST, DELETE),
+- add specific handling for different HTTP actions (e.g. GET, PUT, POST, DELETE),
 - separately handle requests at different URL paths ("routes"),
 - serve static files, and
 - dynamically create the server's response to the browser
@@ -156,7 +162,7 @@ app.get("/music", function (req, res) {
 
 [Test](http://localhost:3000/music) it at `http://localhost:3000/music`
 
-It didn't work. We need to restart the server with Control-c and `npm run start`.
+It didn't work. We need to restart the server with Control-c and `npm run start:dev`.
 
 Edit the second route to include a request variable and test in the browser:
 
@@ -196,26 +202,31 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running at port ${PORT}`));
 ```
 
-Instead of using `res.send` we are using `res.sendFile`. `__dirname` is a special Node global that gives us the current directory.
+<!--   "type": "module", -->
+<!-- // const express = require("express");
+import express from "express"; -->
+<!-- https://stackoverflow.com/questions/8817423/why-is-dirname-not-defined-in-node-repl -->
+
+Instead of using `res.send` we are using `res.sendFile`. `__dirname` is a special Node global that gives us the current directory as an absolute path.
 
 ## MongoDB
 
 Express apps can use [any database supported by Node](https://expressjs.com/en/guide/database-integration.html) including PostgreSQL, MySQL, MongoDB, etc.
 
-MongoDB is a no-sql document-based database. One of the key advantages is that your data is totally unstructured.
+MongoDB is a no-sql document-based database. One of the key advantages is that your data is unstructured which makes it easy to use.
 
-With a relational database, you have to define the shape of your data upfront. You'll say something like: this database table has two columns, name which is a string and age which is an integer.
+With a relational database, you have to define the shape of your data upfront. You'll say something like: this database table has two columns, a name which is a string and age which is an integer.
 
-With a document-based database, you just start writing objects to the database and it will accomodate them. Some documents can have some fields and others can other ones.
+With a document-based database, you just start writing objects to the database and it will accomodate them. Some documents can have the same fields and others can have different ones.
 
 ## Docker
 
-Today we will download a container that runs MongoDB locally. (This will not allow us to deploy the app since the database will only be running locally.)
+Today we will download a container that runs MongoDB locally.
 
 Don't worry if Docker and containers aren't familiar to you, if you install Docker and follow the commands everything should just work.
 
 1. Install the Docker [Desktop App](https://www.docker.com/products/docker-desktop)
-1. Run in a Docker container on localhost:
+2. Run in a Docker container on localhost:
 
 ```sh
 $ docker run --name recipes-mongo -dit -p 27017:27017 --rm mongo:4.4.1
@@ -223,7 +234,7 @@ $ docker exec -it recipes-mongo mongo
 $ show dbs
 ```
 
-This will run a new MongoDB container at version 4.4.1 and call it recipes-mongo so we can reference it by name. On the second command we run the command mongo inside of the recipes-mongo container. The mongo container (which is the official container put together by MongoDB Inc.) runs MongoDB automatically so we don't need to do anything. We just need to connect inside the container and run our commands from within the container.
+This will run a new MongoDB container at version 4.4.1 and call it `recipes-mongo` so we can reference it by name. The second command runs the command `mongo` inside of the `recipes-mongo` container. The mongo container (which is the official container put together by MongoDB Inc.) runs MongoDB automatically. We just need to connect inside the container and run our commands from within the container.
 
 At this point you should be dropped into an interactive MongoDB shell.
 
@@ -249,7 +260,7 @@ Make a collection and a databse within it. Run:
 
 Earlier we installed [Mongoose](https://mongoosejs.com), a schema builder for MongoDB, using npm. It is easier to use than the standard [MongoClient](https://expressjs.com/en/guide/database-integration.html#mongodb).
 
-Mongoose is not a database, just a tool to work with it.
+Mongoose is not a database, just a tool to work with it, sometimes called a ORM or Object Relational Mapper, software designed to translate between the data representations used internally by databases and those used in programming.
 
 First, import mongoose in server.js:
 
@@ -257,7 +268,7 @@ First, import mongoose in server.js:
 const mongoose = require("mongoose");
 ```
 
-We connect to a Mongo DB through the Mongoose's connect method, `mongoose.connect(URL, { options });`, and pass any configuration options in using an object.
+We connect to a Mongo DB through the Mongoose's connect method, `mongoose.connect(URL, { options });`. We pass any configuration options in using the second argument - an object.
 
 Store the database connection string in a variable:
 
@@ -275,12 +286,13 @@ Store the database URL in a variable:
 
 ```js
 mongoose
-  .connect(dataBaseURL, { useNewUrlParser: true })
+  // .connect(dataBaseURL, { useNewUrlParser: true })
+  .connect(dataBaseURL, {})
   .then(() => console.log("MongoDb connected"))
   .catch((err) => console.log(err));
 ```
 
-Note that, like `fetch()` Mongoose's connect method returns a promise which we are using to log to the console (the terminal) and show any errors.
+Note that, like `fetch()` Mongoose's connect method is promise-based.
 
 ### Mongoose Schema
 
@@ -302,7 +314,7 @@ const Recipe = mongoose.model("Recipe", RecipeSchema);
 
 Models are defined by passing a Schema instance to mongoose.model. Here we are saving the model to a variable `Recipe`.
 
-Once you have a model you can call methods on it. The actual interaction with the data happens with the Model. That's the object that you can call `.find()`, `.findOne()`, etc on. The documentation for [finding documents](https://mongoosejs.com/docs/api/model.html#model_Model.find) is a good example. There are quite a number of [useful methods](https://mongoosejs.com/docs/api/model.html) on Mongoose models.
+Once you have a model you can call methods on it. The actual interaction with the data happens with the Model. That's the object that you will call `.find()`, `.findOne()`, etc on. The documentation for [finding documents](https://mongoosejs.com/docs/api/model.html#model_Model.find) is a good example. There are quite a number of [useful methods](https://mongoosejs.com/docs/api/model.html) on Mongoose models.
 
 Create a route in `server.js` that displays recipes:
 
@@ -313,6 +325,8 @@ app.get("/api/recipes", function (req, res) {
   });
 });
 ```
+
+<!-- Recipe.find({}).then((data) => res.send(data)); -->
 
 Note the path: `/api/recipes`. Go to that endpoint in your browser to see the data.
 
@@ -357,7 +371,7 @@ Now go to the import endpoint (note that the page loads indefinitely) and then r
 
 The page loads indefinitely because the endpoint never actually returns anything to the browser.
 
-In the documentation for `model.create()` they note that you can pass a callback function after the objects, i.e.:
+According to the documentation for `model.create()` you can pass a callback function after the objects, i.e.:
 
 ```js
 Candy.create({ type: 'jelly bean' }, { type: 'snickers' }, function (err, jellybean, snickers) {
@@ -373,20 +387,14 @@ Let's return an HTTP status:
       description:
         'A Hamburger (often called a burger) is a type of sandwich in the form of  rounded bread sliced in half with its center filled with a patty which is usually ground beef, then topped with vegetables such as lettuce, tomatoes and onions.',
       image: 'hamburger.png',
-    },
-    function(err) {
-      if (err) return console.log(err);
-      return res.sendStatus(201);
-    },
+    }.then(res.sendStatus(201));
+    // function(err) {
+    //   if (err) return console.log(err);
+    //   return res.sendStatus(201);
+    // },
 ```
 
 Travelling to `http://localhost:3000/api/import` will import the data again but, this time, since we return something to the browser it will not be stuck loading.
-
-### Aside - Status Codes
-
-`sendStatus` communicates with the front end by returning a standard [http status code](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes). As the backend developer it is up to you to return appropriate status codes.
-
-451 - 'Unavailable For Legal Reasons', is used when resource access is denied for legal reasons, e.g. censorship or government-mandated blocked access. It is a reference to the novel Fahrenheit 451, where books are outlawed.
 
 ## Express Static Files
 
@@ -499,7 +507,7 @@ app.post("/api/recipes", recipeControllers.add);
 app.put("/api/recipes/:id", recipeControllers.update);
 app.delete("/api/recipes/:id", recipeControllers.delete);
 // app.get("/api/import", recipeControllers.import);
-app.get("/api/killall", recipeControllers.killall);
+// app.get("/api/killall", recipeControllers.killall);
 ```
 
 Each route consists of three parts:
@@ -508,7 +516,7 @@ Each route consists of three parts:
 - A specific URL path (`/api/recipes/:id`)
 - A handler method (`findAll`) that corresponds to the exported function in our recipe controllers file
 
-We've modeled our URL routes off of REST API conventions, and named our handling methods clearly - prefixing them with `api/` in order to differentiate them from any routes we create to serve the front end.
+We've modeled our URL routes off of REST API conventions, and named our handling methods clearly - prefixing them with `api/` in order to differentiate them from any other routes we create (i.e. to serve the front end).
 
 Delete the find route from server.js.
 
