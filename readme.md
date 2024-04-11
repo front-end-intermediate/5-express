@@ -382,6 +382,10 @@ Travelling to `http://localhost:3000/api/import` will import the data again but,
 
 `sendStatus` communicates with the front end by returning a standard [http status code](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes). As the backend developer it is up to you to return appropriate status codes.
 
+[418](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/418)
+
+[451](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/451)
+
 451 - 'Unavailable For Legal Reasons', is used when resource access is denied for legal reasons, e.g. censorship or government-mandated blocked access. It is a reference to the novel Fahrenheit 451, where books are outlawed.
 
 ## Express Static Files
@@ -394,11 +398,11 @@ Add the following to server.js:
 app.use(express.static("static"));
 ```
 
-This works but images and CSS are really the domain of the front end. Move the `css` and `img` folders into `public` and edit the static declaration to read:
+<!-- This works but images and CSS are really the domain of the front end. Move the `css` and `img` folders into `public` and edit the static declaration to read:
 
 ```js
 app.use(express.static("public"));
-```
+``` -->
 
 ## Front End
 
@@ -495,7 +499,7 @@ app.post("/api/recipes", recipeControllers.add);
 app.put("/api/recipes/:id", recipeControllers.update);
 app.delete("/api/recipes/:id", recipeControllers.delete);
 // app.get("/api/import", recipeControllers.import);
-app.get("/api/killall", recipeControllers.killall);
+// app.get("/api/killall", recipeControllers.killall);
 ```
 
 Each route consists of three parts:
@@ -531,7 +535,7 @@ You should see the recipe in the browser and, at the specified route `/api/recip
 
 Add a new file `api/recipe.model.js` for our Recipe Model.
 
-Require Mongoose in this file, and create a new Schema object:
+Require Mongoose in this file, and create the Schema object:
 
 ```js
 const mongoose = require("mongoose");
@@ -565,9 +569,7 @@ Update the `findAll()` function in `recipe.controllers` to query Mongo with the 
 const Recipe = require("./recipe.model");
 
 exports.findAll = function (req, res) {
-  Recipe.find({}, function (err, results) {
-    return res.send(results);
-  });
+  Recipe.find({}).then((data) => res.send(data));
 };
 
 exports.findById = function () {};
@@ -591,7 +593,7 @@ We will again use the Mongoose method `Model.create` to import data into our app
 Delete the import route in server.js and define it in `recipe.controllers.js`:
 
 ```js
-exports.import = function (req, res) {
+exports.import = function (res) {
   Recipe.create(
     {
       title: "Lasagna",
@@ -618,12 +620,8 @@ exports.import = function (req, res) {
       description:
         "A Hamburger (often called a burger) is a type of sandwich in the form of  rounded bread sliced in half with its center filled with a patty which is usually ground beef, then topped with vegetables such as lettuce, tomatoes and onions.",
       image: "hamburger.png",
-    },
-    function (err) {
-      if (err) return console.log(err);
-      return res.sendStatus(201);
     }
-  );
+  ).then(res.sendStatus(202));
 };
 ```
 
@@ -639,10 +637,7 @@ Add the corresponding function to the controllers file:
 
 ```js
 exports.killall = function (req, res) {
-  Recipe.deleteMany({ title: "Lasagna" }, (err) => {
-    if (err) return console.log(err);
-    return res.sendStatus(202);
-  });
+  Recipe.deleteMany({ title: "Lasagna" }).then(res.sendStatus(202));
 };
 ```
 
@@ -651,6 +646,12 @@ Run the function by visiting the killall endpoint and then returning to the reci
 In this example we are deleting only those recipes where the title is Lasagna.
 
 Change the filter `{ title: 'Lasagna' }` to `{}` to remove them all and run the functions again.
+
+```js
+exports.killall = function (req, res) {
+  Recipe.deleteMany({}).then(res.sendStatus(202));
+};
+```
 
 ## Mongoose Model.create
 
