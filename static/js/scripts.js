@@ -12,8 +12,7 @@ function renderRecipes(recipes) {
         <img src="img/${recipe.image}" />
         <h3>${recipe.title}</h3>
         <p>${recipe.description}</p>
-        <p>${recipe._id}</p>
-        <a class="delete" data-id=${recipe._id} href="#">Delete</a>
+        <button class="delete" data-id=${recipe._id}>Delete</button>
       `;
     document.querySelector(".recipes").append(recipeEl);
   });
@@ -40,6 +39,25 @@ function addRecipe(event) {
     .then((response) => response.json())
     .then(getRecipes);
 }
+
+function deleteRecipe(event) {
+  console.log("2: ", event.target);
+  event.preventDefault();
+  fetch(`api/recipes/${event.target.dataset.id}`, {
+    method: "DELETE",
+  }).then(location.reload());
+}
+
+function handleClicks(event) {
+  console.log("1: ", event.target);
+  if (event.target.matches("[data-id]")) {
+    deleteRecipe(event);
+  } else if (event.target.matches("#seed")) {
+    seed();
+  }
+}
+
+document.addEventListener("click", handleClicks);
 
 const addForm = document.querySelector("#addForm");
 addForm.addEventListener("submit", addRecipe);

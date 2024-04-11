@@ -11,10 +11,12 @@ exports.add = function (req, res) {
 };
 
 exports.update = function () {};
-exports.delete = function () {
+
+exports.delete = function (req, res) {
   let id = req.params.id;
   Recipe.deleteOne({ _id: id }).then(res.sendStatus(202));
 };
+
 exports.import = function (req, res) {
   Recipe.create(
     {

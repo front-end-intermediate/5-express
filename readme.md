@@ -754,9 +754,7 @@ Our next REST endpoint, _delete_, uses [model.deleteOne](https://mongoosejs.com/
 ```js
 exports.delete = function (req, res) {
   let id = req.params.id;
-  Recipe.deleteOne({ _id: id }, () => {
-    return res.sendStatus(202);
-  });
+  Recipe.deleteOne({ _id: id }).then(res.sendStatus(202));
 };
 ```
 
@@ -786,7 +784,13 @@ function renderRecipes(recipes) {
 }
 ```
 
-Note - the proper use of buttons vs links.
+Note - the proper use of buttons vs links. Convert the achor to a button:
+
+```js
+<button class="delete" data-id=${recipe._id}>Delete</button>
+```
+
+Style it to look like a link if desired:
 
 ```css
 .delete {
@@ -811,7 +815,21 @@ function deleteRecipe(event) {
 }
 ```
 
-Here are the client side scripts with a bit of restructuring and new funtionality near the bottom to support deletion and importing:
+Add an event listener for clicks and create a function that runs on the event:
+
+```js
+function handleClicks(event) {
+  if (event.target.matches("[data-id]")) {
+    deleteRecipe(event);
+  } else if (event.target.matches("#seed")) {
+    seed();
+  }
+}
+
+document.addEventListener("click", handleClicks);
+```
+
+<!-- Here are the client side scripts with a bit of restructuring and new funtionality near the bottom to support deletion and importing:
 
 ```js
 function getRecipes() {
@@ -880,13 +898,13 @@ const addForm = document.querySelector("#addForm");
 addForm.addEventListener("submit", addRecipe);
 
 getRecipes();
-```
+``` -->
 
-Add a button to index.html:
+<!-- Add a button to index.html: -->
 
-```js
+<!-- ```js
 <button id="seed">Load Seed Data</button>
-```
+``` -->
 
 ## Find by ID
 
