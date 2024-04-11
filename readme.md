@@ -1,4 +1,4 @@
-# Server Side with ExpressJS
+# Server Side with ExpressJS (vs24)
 
 Today we will be building the back and front end for a simple recipes app.
 
@@ -308,9 +308,7 @@ Create a route in `server.js` that displays recipes:
 
 ```js
 app.get("/api/recipes", function (req, res) {
-  Recipe.find({}, function (err, results) {
-    return res.send(results);
-  });
+  Recipe.find({}).then((data) => res.send(data));
 });
 ```
 
@@ -323,7 +321,7 @@ We will create a new endpoint that populates our database with a starter data se
 Pass some data to the database using [`model.create()`](https://mongoosejs.com/docs/api.html#model_Model.create), a shortcut for saving one or more documents to the database:
 
 ```js
-app.get("/api/import", (req, res) => {
+app.get("/api/import", function (req, res) {
   Recipe.create(
     {
       title: "Lasagna",
@@ -368,16 +366,15 @@ Candy.create({ type: 'jelly bean' }, { type: 'snickers' }, function (err, jellyb
 Let's return an HTTP status:
 
 ```js
-    {
-      title: 'Hamburger',
-      description:
-        'A Hamburger (often called a burger) is a type of sandwich in the form of  rounded bread sliced in half with its center filled with a patty which is usually ground beef, then topped with vegetables such as lettuce, tomatoes and onions.',
-      image: 'hamburger.png',
-    },
-    function(err) {
-      if (err) return console.log(err);
-      return res.sendStatus(201);
-    },
+      ...
+      {
+        title: "Hamburger",
+        description:
+          "A Hamburger (often called a burger) is a type of sandwich in the form of  rounded bread sliced in half with its center filled with a patty which is usually ground beef, then topped with vegetables such as lettuce, tomatoes and onions.",
+        image: "hamburger.png",
+      }
+    )
+    .then(res.sendStatus(201));
 ```
 
 Travelling to `http://localhost:3000/api/import` will import the data again but, this time, since we return something to the browser it will not be stuck loading.
@@ -386,7 +383,11 @@ Travelling to `http://localhost:3000/api/import` will import the data again but,
 
 `sendStatus` communicates with the front end by returning a standard [http status code](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes). As the backend developer it is up to you to return appropriate status codes.
 
+[451](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/451)
+
 451 - 'Unavailable For Legal Reasons', is used when resource access is denied for legal reasons, e.g. censorship or government-mandated blocked access. It is a reference to the novel Fahrenheit 451, where books are outlawed.
+
+[418](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/418)
 
 ## Express Static Files
 
@@ -398,11 +399,11 @@ Add the following to server.js:
 app.use(express.static("static"));
 ```
 
-This works but images and CSS are really the domain of the front end. Move the `css` and `img` folders into `public` and edit the static declaration to read:
+<!-- This works but images and CSS are really the domain of the front end. Move the `css` and `img` folders into `public` and edit the static declaration to read:
 
 ```js
 app.use(express.static("public"));
-```
+``` -->
 
 ## Front End
 
@@ -499,7 +500,7 @@ app.post("/api/recipes", recipeControllers.add);
 app.put("/api/recipes/:id", recipeControllers.update);
 app.delete("/api/recipes/:id", recipeControllers.delete);
 // app.get("/api/import", recipeControllers.import);
-app.get("/api/killall", recipeControllers.killall);
+// app.get("/api/killall", recipeControllers.killall);
 ```
 
 Each route consists of three parts:
@@ -535,7 +536,7 @@ You should see the recipe in the browser and, at the specified route `/api/recip
 
 Add a new file `api/recipe.model.js` for our Recipe Model.
 
-Require Mongoose in this file, and create a new Schema object:
+Require Mongoose in this file, and create the Schema object:
 
 ```js
 const mongoose = require("mongoose");
@@ -569,9 +570,7 @@ Update the `findAll()` function in `recipe.controllers` to query Mongo with the 
 const Recipe = require("./recipe.model");
 
 exports.findAll = function (req, res) {
-  Recipe.find({}, function (err, results) {
-    return res.send(results);
-  });
+  Recipe.find({}).then((data) => res.send(data));
 };
 
 exports.findById = function () {};
@@ -595,7 +594,7 @@ We will again use the Mongoose method `Model.create` to import data into our app
 Delete the import route in server.js and define it in `recipe.controllers.js`:
 
 ```js
-exports.import = function (req, res) {
+exports.import = function (res) {
   Recipe.create(
     {
       title: "Lasagna",
@@ -622,12 +621,8 @@ exports.import = function (req, res) {
       description:
         "A Hamburger (often called a burger) is a type of sandwich in the form of  rounded bread sliced in half with its center filled with a patty which is usually ground beef, then topped with vegetables such as lettuce, tomatoes and onions.",
       image: "hamburger.png",
-    },
-    function (err) {
-      if (err) return console.log(err);
-      return res.sendStatus(201);
     }
-  );
+  ).then(res.sendStatus(202));
 };
 ```
 
@@ -643,10 +638,7 @@ Add the corresponding function to the controllers file:
 
 ```js
 exports.killall = function (req, res) {
-  Recipe.deleteMany({ title: "Lasagna" }, (err) => {
-    if (err) return console.log(err);
-    return res.sendStatus(202);
-  });
+  Recipe.deleteMany({ title: "Lasagna" }).then(res.sendStatus(202));
 };
 ```
 
@@ -656,6 +648,12 @@ In this example we are deleting only those recipes where the title is Lasagna.
 
 Change the filter `{ title: 'Lasagna' }` to `{}` to remove them all and run the functions again.
 
+```js
+exports.killall = function (req, res) {
+  Recipe.deleteMany({}).then(res.sendStatus(202));
+};
+```
+
 ## Mongoose Model.create
 
 We used `create()` in our import function in order to add multiple documents to our Recipes collection. Our POST handler uses the same method to add a single Recipe to the collection. Once added, the response is the full new Recipe's JSON object.
@@ -664,22 +662,20 @@ Edit `recipe-controllers.js`:
 
 ```js
 exports.add = function (req, res) {
-  Recipe.create(req.body, function (err, recipe) {
-    if (err) return console.log(err);
-    return res.send(recipe);
-  });
+  Recipe.create(req.body).then((data) => res.send(data));
 };
 ```
 
 Add a form to index.html:
 
+<!-- prettier-ignore -->
 ```html
 <form id="addForm">
-  <input type="text" placeholder="Recipe Title" name="title" value="Lasagna" />
-  <input type="text" placeholder="Image" name="image" value="lasagna.png" />
+  <input type="text" placeholder="Recipe Title" name="title" value="Toast" />
+  <input type="text" placeholder="Image" name="image" value="toast.png" />
   <textarea type="text" placeholder="Description" name="description">
-Lasagna noodles piled high and layered full of three kinds of cheese to go along with the perfect blend of meaty and zesty, tomato pasta sauce all loaded with herbs.</textarea
-  >
+    Yummy!
+  </textarea>
   <button type="submit">Submit</button>
 </form>
 ```
@@ -759,9 +755,7 @@ Our next REST endpoint, _delete_, uses [model.deleteOne](https://mongoosejs.com/
 ```js
 exports.delete = function (req, res) {
   let id = req.params.id;
-  Recipe.deleteOne({ _id: id }, () => {
-    return res.sendStatus(202);
-  });
+  Recipe.deleteOne({ _id: id }).then(res.sendStatus(202));
 };
 ```
 
@@ -771,7 +765,7 @@ Check it out with curl (replacing the id at the end of the URL with a _known id_
 curl -i -X DELETE http://localhost:3000/api/recipes/<id>
 ```
 
-## Deleting on the Front End
+## Deleting From the Front End
 
 - Add a delete link to the generated output
 
@@ -791,7 +785,13 @@ function renderRecipes(recipes) {
 }
 ```
 
-Note - the proper use of buttons vs links.
+Note - the proper use of buttons vs links. Convert the achor to a button:
+
+```js
+<button class="delete" data-id=${recipe._id}>Delete</button>
+```
+
+Style it to look like a link if desired:
 
 ```css
 .delete {
@@ -816,7 +816,21 @@ function deleteRecipe(event) {
 }
 ```
 
-Here are the client side scripts with a bit of restructuring and new funtionality near the bottom to support deletion and importing:
+Add an event listener for clicks and create a function that runs on the event:
+
+```js
+function handleClicks(event) {
+  if (event.target.matches("[data-id]")) {
+    deleteRecipe(event);
+  } else if (event.target.matches("#seed")) {
+    seed();
+  }
+}
+
+document.addEventListener("click", handleClicks);
+```
+
+<!-- Here are the client side scripts with a bit of restructuring and new funtionality near the bottom to support deletion and importing:
 
 ```js
 function getRecipes() {
@@ -885,13 +899,13 @@ const addForm = document.querySelector("#addForm");
 addForm.addEventListener("submit", addRecipe);
 
 getRecipes();
-```
+``` -->
 
-Add a button to index.html:
+<!-- Add a button to index.html: -->
 
-```js
+<!-- ```js
 <button id="seed">Load Seed Data</button>
-```
+``` -->
 
 ## Find by ID
 
@@ -902,10 +916,7 @@ Start by filling out the findByID function to use Mongoose's `Model.findOne` in 
 ```js
 exports.findById = (req, res) => {
   const id = req.params.id;
-  Recipe.findOne({ _id: id }, (err, json) => {
-    if (err) return console.log(err);
-    return res.send(json);
-  });
+  Recipe.findOne({ _id: id }).then((data) => res.send(data));
 };
 ```
 
@@ -987,14 +998,13 @@ Update `recipe.controllers` to use `findByIdAndUpdate`:
 exports.update = function (req, res) {
   console.log(req.body);
   const id = req.params.id;
-  Recipe.findByIdAndUpdate(id, req.body, { new: true }, (err, response) => {
-    if (err) return console.log(err);
-    res.send(response);
-  });
+  Recipe.findByIdAndUpdate(id, req.body, { new: true }).then((data) =>
+    res.send(data)
+  );
 };
 ```
 
-Edit the form in `detail.html`:
+Add the form in `detail.html`:
 
 ```html
 <h3>Edit Recipe</h3>
@@ -1026,6 +1036,9 @@ function renderRecipe(recipe) {
   editForm.description.value = description;
   document.querySelector(".recipe").append(recipeEl);
 }
+
+const editForm = document.querySelector("#editForm");
+editForm.addEventListener("submit", updateRecipe);
 ```
 
 We will test our updating capabilities by creating a function for the form's `updateRecipe` call using `fetch` and an options object.
