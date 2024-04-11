@@ -5,9 +5,16 @@ exports.findAll = function (req, res) {
 };
 
 exports.findById = function () {};
-exports.add = function () {};
+
+exports.add = function (req, res) {
+  Recipe.create(req.body).then((data) => res.send(data));
+};
+
 exports.update = function () {};
-exports.delete = function () {};
+exports.delete = function () {
+  let id = req.params.id;
+  Recipe.deleteOne({ _id: id }).then(res.sendStatus(202));
+};
 exports.import = function (req, res) {
   Recipe.create(
     {

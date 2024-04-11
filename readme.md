@@ -661,22 +661,20 @@ Edit `recipe-controllers.js`:
 
 ```js
 exports.add = function (req, res) {
-  Recipe.create(req.body, function (err, recipe) {
-    if (err) return console.log(err);
-    return res.send(recipe);
-  });
+  Recipe.create(req.body).then((data) => res.send(data));
 };
 ```
 
 Add a form to index.html:
 
+<!-- prettier-ignore -->
 ```html
 <form id="addForm">
-  <input type="text" placeholder="Recipe Title" name="title" value="Lasagna" />
-  <input type="text" placeholder="Image" name="image" value="lasagna.png" />
+  <input type="text" placeholder="Recipe Title" name="title" value="Toast" />
+  <input type="text" placeholder="Image" name="image" value="toast.png" />
   <textarea type="text" placeholder="Description" name="description">
-Lasagna noodles piled high and layered full of three kinds of cheese to go along with the perfect blend of meaty and zesty, tomato pasta sauce all loaded with herbs.</textarea
-  >
+    Yummy!
+  </textarea>
   <button type="submit">Submit</button>
 </form>
 ```
@@ -768,7 +766,7 @@ Check it out with curl (replacing the id at the end of the URL with a _known id_
 curl -i -X DELETE http://localhost:3000/api/recipes/<id>
 ```
 
-## Deleting on the Front End
+## Deleting From the Front End
 
 - Add a delete link to the generated output
 

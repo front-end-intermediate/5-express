@@ -4,6 +4,8 @@ const recipeControllers = require("./api/recipe.controllers");
 const app = express();
 
 app.use(express.static("static"));
+app.use(express.json({ extended: false }));
+app.use(express.urlencoded({ extended: false }));
 
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/static/index.html");
