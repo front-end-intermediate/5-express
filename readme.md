@@ -308,9 +308,7 @@ Create a route in `server.js` that displays recipes:
 
 ```js
 app.get("/api/recipes", function (req, res) {
-  Recipe.find({}, function (err, results) {
-    return res.send(results);
-  });
+  Recipe.find({}).then((data) => res.send(data));
 });
 ```
 
@@ -323,7 +321,7 @@ We will create a new endpoint that populates our database with a starter data se
 Pass some data to the database using [`model.create()`](https://mongoosejs.com/docs/api.html#model_Model.create), a shortcut for saving one or more documents to the database:
 
 ```js
-app.get("/api/import", (req, res) => {
+app.get("/api/import", function (req, res) {
   Recipe.create(
     {
       title: "Lasagna",
@@ -368,16 +366,14 @@ Candy.create({ type: 'jelly bean' }, { type: 'snickers' }, function (err, jellyb
 Let's return an HTTP status:
 
 ```js
-    {
-      title: 'Hamburger',
-      description:
-        'A Hamburger (often called a burger) is a type of sandwich in the form of  rounded bread sliced in half with its center filled with a patty which is usually ground beef, then topped with vegetables such as lettuce, tomatoes and onions.',
-      image: 'hamburger.png',
-    },
-    function(err) {
-      if (err) return console.log(err);
-      return res.sendStatus(201);
-    },
+      {
+        title: "Hamburger",
+        description:
+          "A Hamburger (often called a burger) is a type of sandwich in the form of  rounded bread sliced in half with its center filled with a patty which is usually ground beef, then topped with vegetables such as lettuce, tomatoes and onions.",
+        image: "hamburger.png",
+      }
+    )
+    .then(res.sendStatus(201));
 ```
 
 Travelling to `http://localhost:3000/api/import` will import the data again but, this time, since we return something to the browser it will not be stuck loading.

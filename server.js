@@ -15,7 +15,7 @@ app.get("/", function (req, res) {
 });
 
 app.get("/api/recipes", function (req, res) {
-  Recipe.find({}).then((err, results) => res.send(results));
+  Recipe.find({}).then((data) => res.send(data));
 });
 
 app.get("/api/import", function (req, res) {
@@ -44,7 +44,7 @@ app.get("/api/import", function (req, res) {
         "A Hamburger (often called a burger) is a type of sandwich in the form of  rounded bread sliced in half with its center filled with a patty which is usually ground beef, then topped with vegetables such as lettuce, tomatoes and onions.",
       image: "hamburger.png",
     }
-  );
+  ).then(res.sendStatus(201));
 });
 
 const PORT = process.env.PORT || 3000;
