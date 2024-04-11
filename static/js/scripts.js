@@ -10,8 +10,9 @@ function renderRecipes(recipes) {
     let recipeEl = document.createElement("div");
     recipeEl.innerHTML = `
         <img src="img/${recipe.image}" />
-        <h3>${recipe.title}</h3>
+        <h3><a href="detail.html?recipe=${recipe._id}">${recipe.title}</a></h3>
         <p>${recipe.description}</p>
+        <p>${recipe._id}</p>
         <button class="delete" data-id=${recipe._id}>Delete</button>
       `;
     document.querySelector(".recipes").append(recipeEl);

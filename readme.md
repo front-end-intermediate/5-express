@@ -915,10 +915,7 @@ Start by filling out the findByID function to use Mongoose's `Model.findOne` in 
 ```js
 exports.findById = (req, res) => {
   const id = req.params.id;
-  Recipe.findOne({ _id: id }, (err, json) => {
-    if (err) return console.log(err);
-    return res.send(json);
-  });
+  Recipe.findOne({ _id: id }).then((data) => res.send(data));
 };
 ```
 
@@ -1000,14 +997,13 @@ Update `recipe.controllers` to use `findByIdAndUpdate`:
 exports.update = function (req, res) {
   console.log(req.body);
   const id = req.params.id;
-  Recipe.findByIdAndUpdate(id, req.body, { new: true }, (err, response) => {
-    if (err) return console.log(err);
-    res.send(response);
-  });
+  Recipe.findByIdAndUpdate(id, req.body, { new: true }).then((data) =>
+    res.send(data)
+  );
 };
 ```
 
-Edit the form in `detail.html`:
+Add the form in `detail.html`:
 
 ```html
 <h3>Edit Recipe</h3>
@@ -1039,6 +1035,9 @@ function renderRecipe(recipe) {
   editForm.description.value = description;
   document.querySelector(".recipe").append(recipeEl);
 }
+
+const editForm = document.querySelector("#editForm");
+editForm.addEventListener("submit", updateRecipe);
 ```
 
 We will test our updating capabilities by creating a function for the form's `updateRecipe` call using `fetch` and an options object.

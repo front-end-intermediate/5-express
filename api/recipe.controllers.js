@@ -4,17 +4,43 @@ exports.findAll = function (req, res) {
   Recipe.find({}).then((data) => res.send(data));
 };
 
-exports.findById = function () {};
+exports.findById = (req, res) => {
+  const id = req.params.id;
+  Recipe.findByIdAndUpdate(id, req.body, { new: true }).then((data) =>
+    res.send(data)
+  );
+};
 
 exports.add = function (req, res) {
   Recipe.create(req.body).then((data) => res.send(data));
 };
 
-exports.update = function () {};
+exports.update = function (req, res) {
+  console.log(req.body);
+  const id = req.params.id;
+  Recipe.findByIdAndUpdate(id, req.body, { new: true }).then((data) =>
+    res.send(data)
+  );
+};
 
 exports.delete = function (req, res) {
   let id = req.params.id;
   Recipe.deleteOne({ _id: id }).then(res.sendStatus(202));
+};
+
+exports.upload = function (req, res) {
+  console.log(req.files);
+  if (Object.keys(req.files).length == 0) {
+    return res.status(400).send("No files were uploaded.");
+  }
+  let file = req.files.file;
+  file.mv(`./public/img/${req.body.filename}`, (err) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.json({ file: `public/img/${req.body.filename}` });
+    console.log(res.json);
+  });
 };
 
 exports.import = function (req, res) {
