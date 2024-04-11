@@ -699,7 +699,7 @@ app.use(express.json({ extended: false }));
 app.use(express.urlencoded({ extended: false }));
 ```
 
-The HTML form elements have an attribute named enctype, if not specified, its value defaults to "application/x-www-form-urlencoded".
+The HTML form elements have an attribute named `enctype`, if not specified, its value defaults to "application/x-www-form-urlencoded".
 
 Use promise chaining in scripts.js:
 
