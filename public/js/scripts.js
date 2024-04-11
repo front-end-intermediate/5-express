@@ -52,3 +52,14 @@ const addForm = document.querySelector("#addForm");
 addForm.addEventListener("submit", addRecipe);
 
 getRecipes();
+
+function handleClicks(event) {
+  if (event.target.matches("[data-id]")) {
+    deleteRecipe(event);
+  }
+  // else if (event.target.matches("#seed")) {
+  //   seed();
+  // }
+}
+
+document.addEventListener("click", handleClicks);
