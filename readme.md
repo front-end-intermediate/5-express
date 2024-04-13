@@ -787,8 +787,8 @@ function renderRecipes(recipes) {
 
 Note - the proper use of buttons vs links. Convert the achor to a button:
 
-```js
-<button class="delete" data-id=${recipe._id}>Delete</button>
+```html
+<button class="delete" data-id="`${recipe._id}`">Delete</button>
 ```
 
 Style it to look like a link if desired:
