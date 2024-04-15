@@ -34,12 +34,14 @@ exports.upload = function (req, res) {
     return res.status(400).send("No files were uploaded.");
   }
   let file = req.files.file;
-  file.mv(`./public/img/${req.body.filename}`, (err) => {
+  file.mv(`./static/img/${req.body.filename}`, (err) => {
     if (err) {
       return res.status(500).send(err);
     }
-    res.json({ file: `public/img/${req.body.filename}` });
-    console.log(res.json);
+    res.json({ file: `static/img/${req.body.filename}` });
+    // console.log(res.json);
+    // return res.status(200);
+    return res.json;
   });
 };
 

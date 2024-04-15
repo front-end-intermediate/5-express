@@ -6,15 +6,16 @@ function getRecipes() {
 }
 
 function renderRecipes(recipes) {
+  console.log(recipes);
   recipes.forEach((recipe) => {
     let recipeEl = document.createElement("div");
     recipeEl.innerHTML = `
-        <img src="img/${recipe.image}" />
-        <h3><a href="detail.html?recipe=${recipe._id}">${recipe.title}</a></h3>
-        <p>${recipe.description}</p>
-        <p>${recipe._id}</p>
-        <button class="delete" data-id=${recipe._id}>Delete</button>
-      `;
+      <img src="img/${recipe.image}" />
+      <h3><a href="detail.html?recipe=${recipe._id}">${recipe.title}</a></h3>
+      <p>${recipe.description}</p>
+      <p>${recipe._id}</p>
+      <a class="delete" data-id=${recipe._id} href="#">Delete</a>
+    `;
     document.querySelector(".recipes").append(recipeEl);
   });
 }
@@ -50,13 +51,15 @@ function deleteRecipe(event) {
 }
 
 function handleClicks(event) {
-  console.log("1: ", event.target);
   if (event.target.matches("[data-id]")) {
     deleteRecipe(event);
-  } else if (event.target.matches("#seed")) {
-    seed();
   }
+  // else if (event.target.matches("#seed")) {
+  //   seed();
+  // }
 }
+
+document.addEventListener("click", handleClicks);
 
 document.addEventListener("click", handleClicks);
 
