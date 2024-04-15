@@ -39,9 +39,7 @@ exports.upload = function (req, res) {
       return res.status(500).send(err);
     }
     res.json({ file: `static/img/${req.body.filename}` });
-    // console.log(res.json);
-    // return res.status(200);
-    return res.json;
+    console.log(res.json);
   });
 };
 
