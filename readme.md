@@ -275,7 +275,7 @@ Store the database URL in a variable:
 
 ```js
 mongoose
-  .connect(dataBaseURL, { useNewUrlParser: true })
+  .connect(dataBaseURL, {})
   .then(() => console.log("MongoDb connected"))
   .catch((err) => console.log(err));
 ```
@@ -322,7 +322,7 @@ Pass some data to the database using [`model.create()`](https://mongoosejs.com/d
 
 ```js
 app.get("/api/import", function (req, res) {
-  Recipe.create(
+  Recipe.create([
     {
       title: "Lasagna",
       description:
@@ -346,8 +346,8 @@ app.get("/api/import", function (req, res) {
       description:
         "A Hamburger (often called a burger) is a type of sandwich in the form of  rounded bread sliced in half with its center filled with a patty which is usually ground beef, then topped with vegetables such as lettuce, tomatoes and onions.",
       image: "hamburger.png",
-    }
-  );
+    },
+  ]);
 });
 ```
 
@@ -594,8 +594,8 @@ We will again use the Mongoose method `Model.create` to import data into our app
 Delete the import route in server.js and define it in `recipe.controllers.js`:
 
 ```js
-exports.import = function (res) {
-  Recipe.create(
+exports.import = function (req, res) {
+  Recipe.create([
     {
       title: "Lasagna",
       description:
@@ -621,8 +621,8 @@ exports.import = function (res) {
       description:
         "A Hamburger (often called a burger) is a type of sandwich in the form of  rounded bread sliced in half with its center filled with a patty which is usually ground beef, then topped with vegetables such as lettuce, tomatoes and onions.",
       image: "hamburger.png",
-    }
-  ).then(res.sendStatus(202));
+    },
+  ]).then(res.sendStatus(202));
 };
 ```
 
@@ -788,7 +788,7 @@ function renderRecipes(recipes) {
 Note - the proper use of buttons vs links. Convert the achor to a button:
 
 ```html
-<button class="delete" data-id="`${recipe._id}`">Delete</button>
+<button class="delete" data-id="${recipe._id}">Delete</button>
 ```
 
 Style it to look like a link if desired:
@@ -822,90 +822,11 @@ Add an event listener for clicks and create a function that runs on the event:
 function handleClicks(event) {
   if (event.target.matches("[data-id]")) {
     deleteRecipe(event);
-  } else if (event.target.matches("#seed")) {
-    seed();
   }
 }
 
 document.addEventListener("click", handleClicks);
 ```
-
-<!-- Here are the client side scripts with a bit of restructuring and new funtionality near the bottom to support deletion and importing:
-
-```js
-function getRecipes() {
-  document.querySelector(".recipes").innerHTML = ``;
-  fetch(`api/recipes`)
-    .then((response) => response.json())
-    .then((recipes) => renderRecipes(recipes));
-}
-
-function addRecipe(event) {
-  event.preventDefault();
-  const { title, image, description } = event.target;
-  const recipe = {
-    title: title.value,
-    image: image.value,
-    description: description.value,
-  };
-  fetch("api/recipes", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(recipe),
-  })
-    .then((response) => response.json())
-    .then(getRecipes);
-}
-
-function renderRecipes(recipes) {
-  recipes.forEach((recipe) => {
-    // destructure
-    const { _id, title, image, description } = recipe;
-    let recipeEl = document.createElement("div");
-    recipeEl.innerHTML = `
-    <img src="img/${image}" />
-    <h3><a href="detail.html?recipe=${_id}">${title}</a></h3>
-    <p>${description}</p>
-    <button class="delete" data-id=${recipe._id} href="#">Delete</button>
-  `;
-    return document.querySelector(".recipes").append(recipeEl);
-  });
-}
-
-function deleteRecipe(event) {
-  fetch(`api/recipes/${event.target.dataset.id}`, {
-    method: "DELETE",
-  }).then(getRecipes());
-}
-
-// new
-function seed() {
-  fetch("api/import").then(getRecipes);
-}
-
-function handleClicks(event) {
-  if (event.target.matches("[data-id]")) {
-    deleteRecipe(event);
-  } else if (event.target.matches("#seed")) {
-    seed();
-  }
-}
-
-document.addEventListener("click", handleClicks);
-
-const addForm = document.querySelector("#addForm");
-addForm.addEventListener("submit", addRecipe);
-
-getRecipes();
-``` -->
-
-<!-- Add a button to index.html: -->
-
-<!-- ```js
-<button id="seed">Load Seed Data</button>
-``` -->
 
 ## Find by ID
 
@@ -1122,7 +1043,33 @@ Note the encType attribute on the form.
 
 Upload an image (reuse one of the images in `/public/img/`) and give it a unique name and create a recipe that uses the new image.
 
-Once successful, set the return value in the corresponding controller's function to `return res.sendStatus(200);`.
+Once successful, set the return value in the corresponding controller's function to `return res.sendStatus(200);` and simplfy the form in preparation for handling the upload process in `details.js`:
+
+```html
+<form id="imageForm">
+  <input type="file" name="file" accept="image/png" />
+  <input type="text" placeholder="File name" name="filename" />
+  <button type="submit">Upload</button>
+</form>
+```
+
+Note the use of `new FormData()` in the fetch call:
+
+```js
+function uploadImage(event) {
+  event.preventDefault();
+  const data = new FormData();
+  data.append("file", imageForm.file.files[0]);
+  data.append("filename", imageForm.filename.value);
+  fetch("/api/upload", {
+    method: "POST",
+    body: data,
+  });
+}
+
+const imageForm = document.querySelector("#imageForm");
+imageForm.addEventListener("submit", uploadImage);
+```
 
 ## Update the Recipe Model
 
@@ -1140,15 +1087,15 @@ const RecipeSchema = new Schema({
 });
 ```
 
-`<p>Created ${recipe.created}<p>`
+Display it in the home page:
 
-Test Mongoose by adding new properties to our recipes.
+`<p>Created ${recipe.created}<p>`
 
 Edit the `import` function to include ingredients and preparation arrays:
 
 ```js
 exports.import = function (req, res) {
-  Recipe.create(
+  Recipe.create([
     {
       title: "Lasagna",
       description:
@@ -1197,22 +1144,15 @@ exports.import = function (req, res) {
         { step: "Serve hot" },
       ],
     },
-    function (err) {
-      if (err) return console.log(err);
-      return res.sendStatus(202);
-    }
-  );
+  ]).then(res.sendStatus(202));
 };
 ```
 
-If you delete with the `killall` endpoint and reload the recipes endpoint, it will not include the arrays.
+If you delete with the `killall` endpoint and reload the recipes endpoint, it will not include the new recipe properties as they are not part of the schema.
 
-Add new properties to our Recipe schema.
+Add the new properties to our Recipe schema.
 
 ```js
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-
 const RecipeSchema = new Schema({
   title: String,
   created: {
@@ -1224,11 +1164,9 @@ const RecipeSchema = new Schema({
   ingredients: Array,
   preparation: Array,
 });
-
-module.exports = mongoose.model("Recipe", RecipeSchema);
 ```
 
-Kill and reimport the data using Postman. The data may be in a different order than in the schema.
+Kill and reimport the data using Postman. The data may be in a different order than in the schema. Unlike arrays, the order of the properties in an object is not guaranteed.
 
 There are eight data types supported by Mongoose:
 
@@ -1258,7 +1196,7 @@ Certain data types allow you to customize how the data is stored and retrieved f
 - a regular expression that can limit data allowed to be saved during the validation process
 - an enum that can define a list of strings that are valid
 
-```js
+<!-- ```js
   const {
     created,
     image,
@@ -1283,42 +1221,22 @@ Certain data types allow you to customize how the data is stored and retrieved f
   <p>Created ${created}<p>
   <a href="/">Back</a>
   `;
-```
+``` -->
 
 The Array data type allows you to store JavaScript-like arrays. With an Array data type, you can perform common JavaScript array operations on them, such as push, pop, shift, slice, etc.
 
-## Atlas
-
-Rather than installing a database on our local computer we could use [MongoDB's](https://www.mongodb.com) cloud service Atlas.
-
-1. Create an account and sign in
-2. Create a project called NYU
-3. Create a cluster naming it `recipes`
-4. Create a database user (this is different from the login username and password) with Read/Write access
-5. Whitelist access from anywhere (n the 'Network Access' section of the MongoDB UI)
-6. Select a connection method (select Connect your Application) and copy the connection string
-
-[Here](https://www.mongodb.com/developer/how-to/use-atlas-on-heroku/#std-label-configure-heroku-ip-address-in-atlas) is a full set of instructions for integrating MongoDB Atlas and Heroku.
-
-## Deployment
-
-We will deploy to [Heroku](https://devcenter.heroku.com/articles/git).
-
-Before deployment we remove sensitive information and set environment variables for our project.
+## Environment Variables
 
 Create a `.env` file in the root:
 
 `.env`:
 
 ```sh
-NODE_ENV=development
-DATABASE=mongodb+srv://daniel:dd2345@recipes-3k4ea.mongodb.net/test?retryWrites=true&w=majority
+DATABASE=mongodb://localhost:27017
 PORT=3000
 ```
 
-Be sure to replace the DATABASE with your own url!!!
-
-Install a helper [dotenv](https://www.npmjs.com/package/dotenv):
+Install a helper package [dotenv](https://www.npmjs.com/package/dotenv):
 
 `$ npm install dotenv`
 
@@ -1328,7 +1246,7 @@ Require it in `server.js`:
 require("dotenv").config();
 ```
 
-Note: you should use your own database. You should not push the .env file to Github by adding it to `.gitignore`.
+The `dotenv` package allows you to store sensitive information in a `.env` file and access it in your application using `process.env`. Normally, you should not push the .env file to Github. You should add it to `.gitignore`.
 
 Test it in `server.js`. Replace the existing dataBaseURL variable with:
 
@@ -1336,60 +1254,24 @@ Test it in `server.js`. Replace the existing dataBaseURL variable with:
 const dataBaseURL = process.env.DATABASE;
 ```
 
-Ensure that `server.js` specifies `process.env`. Replace the lines at the bottom with:
+Ensure that `server.js` specifies `process.env`.
+
+```js
+const dataBaseURL = process.env.DATABASE;
+```
+
+Set the port number to use the environment variable in `server.js`:
 
 ```js
 const PORT = process.env.PORT;
-app.listen(PORT, () => console.log(`Server running at port ${PORT}`));
 ```
 
 The server should still be running successfully on port 3000.
 
-Ensure that your package json includes `server.js` as the `main` file:
-
-`"main": "server.js",`
-
-and that you have a node start script defined:
-
-`"start": "node server.js",`
-
-Create a git repo and deploy to Github.
-
-1. Create an account and login to Heroku
-2. Create a project
-3. Go to the deployment tab and specify with Github repo and branch you are deploying from and enable automatic deploys. Be sure to monitor the build.
-4. Push the desired branch to Github
-
-<!-- On Heroku set the production environment variables. -->
-
-## Instructor Notes
-
-In case you get an error message stating that the port is already in use:
-
-`https://stackoverflow.com/questions/4075287/node-express-eaddrinuse-address-already-in-use-kill-server`
-
-Using async/await:
+Node has a built-in `process` object that allows you to access environment variables such as whether you are in a development or production enviromnet.
 
 ```js
-addForm.onsubmit = async (e) => {
-  e.preventDefault();
-
-  const { title, image, description } = event.target;
-
-  const recipe = {
-    title: title.value,
-    image: image.value,
-    description: description.value,
-  };
-
-  await fetch("api/recipes", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(recipe),
-  });
-
-  getRecipes();
-};
+console.log("current node environment", process.env.NODE_ENV);
 ```
+
+## Instructor Notes
